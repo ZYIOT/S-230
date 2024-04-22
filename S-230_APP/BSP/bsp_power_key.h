@@ -1,0 +1,26 @@
+#ifndef __BSP_POWER_KEY_H
+#define __BSP_POWER_KEY_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "main.h"
+#include "hardware_wrapper.h"
+
+#define POWER_SENSOR_OFF()  HARDWARE_GPIO_WRITE_PIN(SENSOR_PWRKEY_GPIO_Port, SENSOR_PWRKEY_Pin, GPIO_PIN_RESET);
+#define POWER_SENSOR_ON()   HARDWARE_GPIO_WRITE_PIN(SENSOR_PWRKEY_GPIO_Port, SENSOR_PWRKEY_Pin, GPIO_PIN_SET);
+
+#define POWER_GPRS_OFF()    HARDWARE_GPIO_WRITE_PIN(GPRS_4G_EN_GPIO_Port, GPRS_4G_EN_Pin, GPIO_PIN_RESET);
+#define POWER_GPRS_ON()     HARDWARE_GPIO_WRITE_PIN(GPRS_4G_EN_GPIO_Port, GPRS_4G_EN_Pin, GPIO_PIN_SET);
+
+#define MCU_STATE_ON()      HARDWARE_GPIO_WRITE_PIN(MCU_STATE_GPIO_Port, MCU_STATE_Pin, GPIO_PIN_RESET);
+#define MCU_STATE_OFF()     HARDWARE_GPIO_WRITE_PIN(MCU_STATE_GPIO_Port, MCU_STATE_Pin, GPIO_PIN_SET);
+
+	
+#ifdef __cplusplus
+}
+#endif
+
+#endif

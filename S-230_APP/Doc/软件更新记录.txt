@@ -1,0 +1,2 @@
+https://github.com/ZYIOT/Y-520_main.git  main  Y-520_main_control_app 
+415bbf1a3df515fe8e151f36c6d905336feed21e  

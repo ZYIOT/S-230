@@ -1,0 +1,8 @@
+        实际定义        图纸定义           对应TFT LCD上的引脚
+
+PB13    | LCD_SCK       | LCD_BL                | SCL 
+PB15    | LCD_MOSI      | LCD_DC                | SDA 
+PB14    | LCD_CS        | LCD_CS                | CS 
+PD10    | LCD_DC        | LCD_SCLK              | DC 
+PD8     | LCD_BL        | LCD_RST               | BLK 
+PD9     | LCD_RST       | LCD_SDA               | RES 
