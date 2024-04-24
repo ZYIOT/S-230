@@ -1,0 +1,31 @@
+{
+    "files.associations": {
+        "*.hex": "code-text-binary",
+        "*.bin": "code-text-binary",
+        "spi_flash.h": "c",
+        "bsp_gpio.h": "c",
+        "gpio.h": "c",
+        "message.h": "c",
+        "stm32_flash.h": "c",
+        "bsp_wdg.h": "c",
+        "app.h": "c"
+    },
+    "MicroPython.executeButton": [
+        {
+            "text": "▶",
+            "tooltip": "Run",
+            "alignment": "left",
+            "command": "extension.executeFile",
+            "priority": 3.5
+        }
+    ],
+    "MicroPython.syncButton": [
+        {
+            "text": "$(sync)",
+            "tooltip": "sync",
+            "alignment": "left",
+            "command": "extension.execute",
+            "priority": 4
+        }
+    ]
+}
