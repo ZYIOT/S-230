@@ -1,20 +1,69 @@
+// encoding = GBK 
+#ifndef __BOARD_CONFIG_Y520_H__
+#define __BOARD_CONFIG_Y520_H__
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
+//*** <<< Use Configuration Wizard in Context Menu >>> ***
+
+// <h> °åÔØÐÅÏ¢ 
+// <s> PN 
 #define PN_CODE "Y-520"
+// <o> SN 
 #define SN_CODE 1118
+// </h>
 
-#define SUPPORT_L6                          // æ°”å¹ç‰ˆæœ¬ 
-#define SUPPORT_TEMPERATURE_AND_HUMIDITY    // æ¸©æ¹¿åº¦ç›‘æµ‹ 
-#define SUPPORT_POWER_OFF_SENSOR            // ä¼ æ„Ÿå™¨ç”µæº(12V)å…³é—­ 
-#define SUPPORT_POWER_OFF_DTU               // GPRSæ¨¡å—ç”µæºå…³é—­ 
-#define SUPPROT_GPRS_USER_PROTOCOL          // ä¸ŽGPRSæ¨¡å—é—´çš„user_protocolé€šè®¯ 
-#define SUPPORT_UART5_CONFIG_OPTION         // ä½¿ç”¨UART5é…ç½®æŽ§åˆ¶ç®±ä¿¡æ¯ 
-#define SUPPORT_CHECK_POWER_VOL_IN          // è¾“å…¥ç”µåŽ‹ç›‘æµ‹ 
-#define SUPPORT_CHECK_POWER_CUR_OUT         // è¾“å‡ºç”µæµç›‘æµ‹ 
+// <h> Ö§³ÖµÄ¹¦ÄÜ 
 
+// <c> Ö§³ÖL6 
+#define SUPPORT_L6                          // Æø´µ°æ±¾ 
+// </c>
 
-#define UART2_PRINT_LOG // ä½¿ç”¨UART2æ‰“å°logä¿¡æ¯ 
+// <c> Ö§³ÖÎÂÊª¶È¼à²â 
+#define SUPPORT_TEMPERATURE_AND_HUMIDITY    // ÎÂÊª¶È¼à²â 
+// </c>
+
+// <c> Ö§³Ö¿ª¹Ø´«¸ÐÆ÷12VµçÔ´ 
+#define SUPPORT_POWER_OFF_SENSOR            // ´«¸ÐÆ÷µçÔ´(12V)¹Ø±Õ 
+// </c>
+
+// <c> Ö§³Ö¿ª¹ØGPRSÄ£¿éµçÔ´ 
+#define SUPPORT_POWER_OFF_DTU               // GPRSÄ£¿éµçÔ´¹Ø±Õ 
+// </c>
+
+// <c> Ö§³ÖUSER_PROTOCOLÍ¨Ñ¶ 
+#define SUPPROT_GPRS_USER_PROTOCOL          // ÓëGPRSÄ£¿é¼äµÄuser_protocolÍ¨Ñ¶ 
+// </c>
+
+// <c> Ö§³ÖUART5ÅäÖÃ°åÔØÐÅÏ¢ 
+#define SUPPORT_UART5_CONFIG_OPTION         // Ê¹ÓÃUART5ÅäÖÃ¿ØÖÆÏäÐÅÏ¢ 
+// </c>
+
+// <c> Ö§³Ö½øÏßµçÑ¹¼à²â 
+#define SUPPORT_CHECK_POWER_VOL_IN          // ÊäÈëµçÑ¹¼à²â 
+// </c>
+
+// <c> Ö§³Ö¸ºÔØµçÁ÷¼à²â 
+#define SUPPORT_CHECK_POWER_CUR_OUT         // Êä³öµçÁ÷¼à²â 
+// </c>
+
+// <c> Ö§³ÖUART2´òÓ¡logÐÅÏ¢ 
+#define UART2_PRINT_LOG // Ê¹ÓÃUART2´òÓ¡logÐÅÏ¢ 
+// </c>
+
+// </h>
+
 #undef LCD12864_ENABLE
 
 #ifdef BOARD_HAS_RELAY
 #define RELAY_UART4_CAN
+#endif
+
+//*** <<< end of configuration section >>> ***
+
+#ifdef __cplusplus
+}
+#endif
 #endif

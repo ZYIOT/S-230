@@ -1,17 +1,61 @@
-// #define RELAY_CHANNEL_SIZE 5
+// encoding = GBK 
+#ifndef __BOARD_CONFIG_S230_H__
+#define __BOARD_CONFIG_S230_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+//*** <<< Use Configuration Wizard in Context Menu >>> ***
+// <h> °åÔØÐÅÏ¢ 
+// <s> PN 
 #define PN_CODE "S-230"
-#define SN_CODE 1208
+// <o> SN 
+#define SN_CODE 1208 
+// </h>
 
-#define SUPPORT_PUMP                        // æ°”å¹ç‰ˆæœ¬ 
-#define SUPPORT_TEMPERATURE_AND_HUMIDITY    // æ¸©æ¹¿åº¦ç›‘æµ‹ 
-#define SUPPORT_POWER_OFF_SENSOR            // ä¼ æ„Ÿå™¨ç”µæº(12V)å…³é—­ 
-#define SUPPORT_POWER_OFF_DTU               // GPRSæ¨¡å—ç”µæºå…³é—­ 
-#define SUPPROT_GPRS_USER_PROTOCOL          // ä¸ŽGPRSæ¨¡å—é—´çš„user_protocolé€šè®¯ 
-#define SUPPORT_UART5_CONFIG_OPTION         // ä½¿ç”¨UART5é…ç½®æŽ§åˆ¶ç®±ä¿¡æ¯ 
+// <h> Ö§³ÖµÄ¹¦ÄÜ 
 
-#define UART2_PRINT_LOG // ä½¿ç”¨UART2æ‰“å°logä¿¡æ¯ 
-#define SUPPORT_TFTLCD  // æ”¯æŒTFTLCDå®žæ—¶æ˜¾ç¤ºä¼ æ„Ÿå™¨æ•°æ® 
-#define SUPPORT_IRED    // æ”¯æŒäººä½“çº¢å¤–ä¼ æ„Ÿå™¨ 
+// <c> Ö§³Ö PUMP 
+#define SUPPORT_PUMP // Æø´µ°æ±¾ 
+// </c>
+
+// <c> Ö§³ÖÎÂÊª¶È¼à²â 
+#define SUPPORT_TEMPERATURE_AND_HUMIDITY    // ÎÂÊª¶È¼à²â 
+// </c>
+
+// <c> Ö§³Ö¿ª¹Ø´«¸ÐÆ÷12VµçÔ´ 
+#define SUPPORT_POWER_OFF_SENSOR            // ´«¸ÐÆ÷µçÔ´(12V)¹Ø±Õ 
+// </c>
+
+// <c> Ö§³Ö¿ª¹ØGPRSÄ£¿éµçÔ´ 
+#define SUPPORT_POWER_OFF_DTU               // GPRSÄ£¿éµçÔ´¹Ø±Õ 
+// </c>
+
+// <c> Ö§³ÖUSER_PROTOCOLÍ¨Ñ¶ 
+#define SUPPROT_GPRS_USER_PROTOCOL          // ÓëGPRSÄ£¿é¼äµÄuser_protocolÍ¨Ñ¶ 
+// </c>
+
+// <c> Ö§³ÖUART5ÅäÖÃ°åÔØÐÅÏ¢ 
+#define SUPPORT_UART5_CONFIG_OPTION         // Ê¹ÓÃUART5ÅäÖÃ¿ØÖÆÏäÐÅÏ¢ 
+// </c>
+
+// <c> Ö§³ÖUART2´òÓ¡logÐÅÏ¢ 
+#define UART2_PRINT_LOG // Ê¹ÓÃUART2´òÓ¡logÐÅÏ¢ 
+// </c>
+
+// <c> Ö§³ÖTFTLCDÊµÊ±ÏÔÊ¾´«¸ÐÆ÷Êý¾Ý 
+#define SUPPORT_TFTLCD  // Ö§³ÖTFTLCDÆÁÊµÊ±ÏÔÊ¾´«¸ÐÆ÷Êý¾Ý 
+// </c>
+
+// <c> Ö§³ÖÈËÌåºìÍâ¿ØÖÆLCDÆÁÁÁÃð 
+#define SUPPORT_IRED    // Ö§³ÖÈËÌåºìÍâ´«¸ÐÆ÷ 
+// </c>
+
+// </h>
+    
+
 
 #undef BOARD_HAS_RELAY  
 
@@ -21,14 +65,21 @@
 #endif
 
 #ifdef SUPPORT_TFTLCD
-#define LCD_SHOW_DIR_HORIZONTAL 0   // æ¨ªå± 
-#define LCD_SHOW_DIR_VERTICAL   1   // ç«–å± 
+#define LCD_SHOW_DIR_HORIZONTAL 0   // ºáÆÁ 
+#define LCD_SHOW_DIR_VERTICAL   1   // ÊúÆÁ 
 #define LCD_SHOW_DIR    (LCD_SHOW_DIR_HORIZONTAL)
 
-#define LCD_SHOW_MODE0  0   // ä¸å åŠ æ˜¾ç¤º 
-#define LCD_SHOW_MODE1  1   // å åŠ æ˜¾ç¤º 
+#define LCD_SHOW_MODE0  0   // ²»µþ¼ÓÏÔÊ¾ 
+#define LCD_SHOW_MODE1  1   // µþ¼ÓÏÔÊ¾ 
 #define LCD_SHOW_MODE   (LCD_SHOW_MODE0)
 
 #define LCD_BACKGROUND_COLOR    WHITE
 #define LCD_ERROR_COLOR         RED 
+#endif
+
+//*** <<< end of configuration section >>> ***
+
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -33,7 +33,7 @@ static void APP_FILEINFO_SHOW(void)
 {
     uint8_t *app_version_str = (uint8_t *)&app_file_name_str;
     uint32_t infoAddr = (uint32_t)&app_file_name_str;
-	APP_LOG_show("3G online device <%s> at %08x\r\n", app_version_str, infoAddr);
+	APP_LOG_show("device <%s> at %08x\r\n", app_version_str, infoAddr);
     APP_LOG_show("compiler at <%s>\r\n", compiler_time);
 }
 

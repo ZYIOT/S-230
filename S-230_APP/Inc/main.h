@@ -34,6 +34,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "app.h"
 #include "board_config.h"
+#include "bsp_board_debug.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

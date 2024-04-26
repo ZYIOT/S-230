@@ -239,6 +239,7 @@ int AppLcdIredCheck(void)
 {
     static size_t sIredCheckTick = 0;
     static uint8_t sLightOnFlag = 1;
+    static uint8_t sFirstTimeout = 1;
     if(0 == sIredCheckTick)
     {
         sIredCheckTick = HARDWARE_GET_TICK();
@@ -259,16 +260,29 @@ int AppLcdIredCheck(void)
     }
     else
     {
-        if(HARDWARE_GET_TICK() - sIredCheckTick >= LCD_LIGHT_ON_TIMEOUT)
+        if(1 == sFirstTimeout)
         {
-            if(!IF_IRED_CHECK_VALID())
+            if(HARDWARE_GET_TICK() - sIredCheckTick >= 60 * 1000)
             {
-                HARDWARE_OS_DELAY_MS(100);
+                BSP_LCD_LIGHT_OFF();
+                sLightOnFlag = 0;
+                APP_LOG_debug("IRED toggle OFF\r\n");
+                sFirstTimeout = 0;
+            }
+        }
+        else
+        {
+            if(HARDWARE_GET_TICK() - sIredCheckTick >= LCD_LIGHT_ON_TIMEOUT)
+            {
                 if(!IF_IRED_CHECK_VALID())
                 {
-                    BSP_LCD_LIGHT_OFF();
-                    sLightOnFlag = 0;
-                    APP_LOG_debug("IRED toggle OFF\r\n");
+                    HARDWARE_OS_DELAY_MS(100);
+                    if(!IF_IRED_CHECK_VALID())
+                    {
+                        BSP_LCD_LIGHT_OFF();
+                        sLightOnFlag = 0;
+                        APP_LOG_debug("IRED toggle OFF\r\n");
+                    }
                 }
             }
         }
