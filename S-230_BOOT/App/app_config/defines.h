@@ -30,8 +30,8 @@ int APP_CONFIG_system_recovery(void);
 
 
 #define DEFAULT_CRC32_VALUE		(0xFFFFFFFF)
-#define APP_FIRMWARE_INFO		(0)
-#define DOWNLOAD_FIRMWARE_INFO	(1)
+#define APP_CONFIG_FIRMWARE_SETTING_INFO		(0)
+#define APP_CONFIG_FIRMWARE_SETTING_INFO_BACK	(1)
 
 
 typedef enum
@@ -39,7 +39,6 @@ typedef enum
 	UNKONW_DEV = 0x0,			// 未知设备
 	MASTER_CONTROL_DEV = 0x1,	// 主控设备
 	COM_MODULE_DEV = 0x2,		// 通信模块设备
-	RELAY_CONTROL_DEV = 0x3,	// 继电器控制板设备 
 	DO_SENSOR_DEV = 0x11,		// 溶氧传感器设备
 	PH_SENSOR_DEV = 0x21,		// pH传感器设备
 }DEVICE_TYPE_E;
@@ -49,23 +48,14 @@ enum
 	NEW_FILE = 0,	// 新文件
 	OLD_FILE = 1,	// 旧文件
 };
-
+    
 typedef enum
 {
-    IAP_UPDATE_UNKNOW = 0,
-	IAP_UPDATE_FAIL = 1,		// 升级失败 
-	IAP_UPDATE_SUCESS = 2,		// 升级成功 
-}UPDATE_RESULT_E;
-
-typedef enum
-{
-	UNKONW_FIRMWARE = 0,		// 未知固件类型
-	MCU_BOOT_FIRMWARE = 1,		// BOOT 固件
-	MCU_APP_FIRMWARE,			// APP 固件
-	MCU_PARAMENT_FIRMWARE,		// PARAMENT 固件
+    MCU_BOOT_FIRMWARE = 0,      // BOOT 固件
+    MCU_APP_FIRMWARE,           // APP 固件
     MCU_FACTORY_FIRMWARE,		// Factory 固件
-    GPRS_MDL_FIRMWARE,			// GPRS 模块固件
-	RELAY_APP_FIRMWARE,			// relay APP 固件
+    MCU_PARAMENT_FIRMWARE,      // PARAMENT 固件
+    UNKONW_FIRMWARE = 255,      // 未知固件类型
 }FILE_TYPE_E;
 
 typedef enum
@@ -97,28 +87,24 @@ typedef struct
 typedef struct 
 {
 	uint32_t download_len;	// 已 download 的数据长度
-    uint8_t update_result;  // 0:升级成功 
-	uint8_t reserved[2];	// 保留 
-    uint8_t firmware_type;  // 固件类型 
+	uint8_t reserved[4];	// 保留 reserved[0]:update_result
 	app_config_firmware_info_t firmware_info;
 }app_config_firmware_setting_info_t, *app_config_firmware_setting_info_pt;
 
 int APP_CONFIG_firmware_setting_info_init(app_config_firmware_setting_info_pt message);
 int APP_CONFIG_firmware_setting_info_read(uint8_t infotype, app_config_firmware_setting_info_pt message);
 int APP_CONFIG_firmware_setting_info_write(uint8_t infotype, app_config_firmware_setting_info_pt message);
-int APP_CONFIG_firmware_setting_info_overwrite(void);
-int APP_CONFIG_firmware_setting_info_load(void);
-int APP_CONFIG_app_firmware_update_success(void);
-int APP_CONFIG_app_firmware_update_fail(void);
-int APP_CONFIG_app_firmware_info_recovery(void);
-int APP_CONFIG_download_firmware_info_recovery(void);
-int APP_CONFIG_firmware_check_info_valid(app_config_firmware_setting_info_pt info);
+int APP_CONFIG_firmware_setting_info_overwrite();
+int APP_CONFIG_firmware_setting_info_load();
+int APP_CONFIG_firmware_setting_info_all_recovery();
+int APP_CONFIG_firmware_setting_info_update_fail();
+int APP_CONFIG_firmware_setting_info_update_fail1();
 
 
 extern app_config_system_t app_config_system;
 
-extern app_config_firmware_setting_info_t app_firmware_info;
-extern app_config_firmware_setting_info_t download_firmware_info;
+extern app_config_firmware_setting_info_t firmware_setting_info1;
+extern app_config_firmware_setting_info_t firmware_setting_info2;
 
 #ifdef __cplusplus
 }

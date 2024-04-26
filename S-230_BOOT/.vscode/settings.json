@@ -1,15 +1,4 @@
 {
-    "files.associations": {
-        "*.hex": "code-text-binary",
-        "*.bin": "code-text-binary",
-        "spi_flash.h": "c",
-        "bsp_gpio.h": "c",
-        "gpio.h": "c",
-        "message.h": "c",
-        "stm32_flash.h": "c",
-        "bsp_wdg.h": "c",
-        "app.h": "c"
-    },
     "MicroPython.executeButton": [
         {
             "text": "▶",

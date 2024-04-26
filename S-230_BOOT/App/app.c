@@ -15,7 +15,7 @@
 #define NUM2STR(num)	#num
 #define VER2STR(major,minor,revision)	NUM2STR(major)"."NUM2STR(minor)"."NUM2STR(revision)
 #define VERSION_STR		VER2STR(BOOT_VERSION_H, BOOT_VERSION_M, BOOT_VERSION_L)
-#define BOOT_FIREWARE_NAME_STR		PN_CODE"_M_BOOT_V"VERSION_STR
+#define BOOT_FIREWARE_NAME_STR		"BOOT_V"VERSION_STR
 
 uint8_t app_info_erro_str[] = "app info error !!!\r\nplease check app file\r\n\r\n";
 const uint8_t boot_file_name_str[64] __attribute__((at(FLASH_BOOTLOADER_START_ADDR+0x400))) = BOOT_FIREWARE_NAME_STR;
@@ -78,8 +78,7 @@ int APP_MAIN(void)
         if((UPDATE_NO_ERROR == check) 
         || (UPDATE_ERROR_FILE_EXIST == check) 
         || (UPDATE_ERROR_DOWNLOAD_UNFINISH == check) 
-        || (UPDATE_ERROR_FILETYPE == check) 
-        || (UPDATE_ERROR_BINTYPE == check))
+        || (UPDATE_ERROR_FILETYPE == check))
         {
             _iap_load_app(FLASH_APP_START_ADDR);
         }

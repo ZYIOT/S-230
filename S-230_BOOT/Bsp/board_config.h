@@ -1,13 +1,3 @@
-/*
- * @Description: 
- * @FilePath: \Y-520_main_control_boot\Bsp\board_config.h
- * @Version: 1.0
- * @Author: ZYIOT_Z&L
- * @Date: 2022-11-29 10:21:29
- * @LastEditTime: 2024-02-18 14:20:27
- * @LastEditors: ZYIOT_Z&L
- * @Company: zytdwl @copyright 
- */
 #ifndef __BSP_CONFIG_H
 #define __BSP_CONFIG_H
 
@@ -29,8 +19,6 @@ extern "C"
 #else
 #define DEBUG_JUMP_TO_APP_ENABLE		(0)
 #endif
-
-#define PN_CODE "S-230"
 
 // BOOT 版本号相关宏定义 
 #define BOOT_VERSION_H	3

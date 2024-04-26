@@ -61,7 +61,7 @@ void firmware_setting_info_test_send(void)
 	usr_setting_firmware_info.firmware_info.version_l = APP_VERSION_L_DEFAULT;
 	usr_setting_firmware_info.firmware_info.file_len = 0x8000;
 	usr_setting_firmware_info.firmware_info.file_crc = 0x12345678;
-	APP_CONFIG_firmware_setting_info_write(DOWNLOAD_FIRMWARE_INFO, &usr_setting_firmware_info);
+	APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &usr_setting_firmware_info);
 #elif DEBUG_DOWNLOAD_FINISH_SET
 	app_config_firmware_setting_info_t usr_setting_firmware_info = {0};
 	usr_setting_firmware_info.download_len = FLASH_DOWNLOAD_SIZE;
@@ -75,14 +75,13 @@ void firmware_setting_info_test_send(void)
 	usr_setting_firmware_info.firmware_info.version_l = 3;
 	usr_setting_firmware_info.firmware_info.file_len = FLASH_DOWNLOAD_SIZE;
 	usr_setting_firmware_info.firmware_info.file_crc = crc32((uint8_t *)FLASH_DOWNLOAD_START_ADDR, FLASH_DOWNLOAD_SIZE);
-	APP_CONFIG_firmware_setting_info_write(DOWNLOAD_FIRMWARE_INFO, &usr_setting_firmware_info);
+	APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &usr_setting_firmware_info);
 
 	usr_setting_firmware_info.firmware_info.version_l = 1;
 	usr_setting_firmware_info.firmware_info.file_crc = DEFAULT_CRC32_VALUE;
-	APP_CONFIG_firmware_setting_info_write(APP_FIRMWARE_INFO, &usr_setting_firmware_info);
+	APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO, &usr_setting_firmware_info);
 #elif DEBUG_EEPROM_RECOVERY_SET
-	APP_CONFIG_app_firmware_info_recovery();
-	APP_CONFIG_download_firmware_info_recovery();
+	APP_CONFIG_firmware_setting_info_all_recovery();
 #else
 #endif
     HARDWARE_HAL_DELAY_MS(20);
@@ -93,10 +92,10 @@ void firmware_setting_info_test_send(void)
 
 void firmware_setting_info_test_recv(void)
 {
-	app_config_firmware_setting_info_pt pinfo1 = &app_firmware_info;
-	app_config_firmware_setting_info_pt pinfo2 = &download_firmware_info;
+	app_config_firmware_setting_info_pt pinfo1 = &firmware_setting_info1;
+	app_config_firmware_setting_info_pt pinfo2 = &firmware_setting_info2;
 
-	if(download_firmware_info.download_len != download_firmware_info.firmware_info.file_len)
+	if(firmware_setting_info2.download_len != firmware_setting_info2.firmware_info.file_len)
 	{
 		// 创建任务，主动发送继续下载帧，发送完成后主动删除任务
 		APP_LOG_trace("create download continue thread...\r\n");
@@ -115,7 +114,7 @@ void firmware_setting_info_test_recv(void)
 		 				(uint8_t *)pinfo2, 
 						 sizeof(app_config_firmware_setting_info_t))))
 		{
-			APP_CONFIG_download_firmware_info_recovery();
+			APP_CONFIG_firmware_setting_info2_recovery();
 			APP_LOG_trace("create flush ok thread...\r\n");
 			while(1)
 			{
