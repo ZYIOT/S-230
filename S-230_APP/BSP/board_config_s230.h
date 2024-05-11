@@ -18,7 +18,7 @@ extern "C"
 // <h> 支持的功能 
 
 // <c> 支持 PUMP 
-#define SUPPORT_PUMP // 气吹版本 
+#define SUPPORT_PUMP // 水泵版本 
 // </c>
 
 // <c> 支持温湿度监测 

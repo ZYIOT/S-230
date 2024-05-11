@@ -41,12 +41,12 @@ extern "C"
 #define SUPPORT_UART5_CONFIG_OPTION         // 使用UART5配置控制箱信息 
 // </c>
 
-// <c> 支持进线电压监测 
-#define SUPPORT_CHECK_POWER_VOL_IN          // 输入电压监测 
+// <c> 支持进线电压检测 
+#define SUPPORT_CHECK_POWER_VOL_IN          // 检测进线的电压 
 // </c>
 
-// <c> 支持负载电流监测 
-#define SUPPORT_CHECK_POWER_CUR_OUT         // 输出电流监测 
+// <c> 支持负载输出电流检测 
+#define SUPPORT_CHECK_POWER_CUR_OUT         // 检测负载输出电流 
 // </c>
 
 // <c> 支持UART2打印log信息 

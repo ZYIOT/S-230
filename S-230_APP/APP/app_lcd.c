@@ -162,6 +162,10 @@ int AppLcdRefresh(void)
                 }
                 popIndex += 1;
             }
+            else if(SENSOR_UNKNOW_STATE == LCD_SENSOR_STATUS(i))
+            {
+                LAST_DATA_STATUS(i) = SENSOR_DATA_UNCHANGE;
+            }
         }
         if(popIndex < LCD_MAX_ITEM_CNT)
         {

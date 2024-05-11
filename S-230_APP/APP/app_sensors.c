@@ -58,6 +58,7 @@ extern t_LcdSensorShow g_lcdSensorShow;
 #define CLR_EEPROM_CONFIG()     (g_lcdSensorShow.sensorHasConfig &= (uint8_t)(~SENSOR_EEPROM_CONFIG))
 #define CLR_DRIVER_CONFIG()     (g_lcdSensorShow.sensorHasConfig &= (uint8_t)(~SENSOR_DRIVER_CONFIG))
 #define CLR_PAUSE_CONFIG()      (g_lcdSensorShow.sensorHasConfig &= (uint8_t)(~SENSOR_PAUSE_CONFIG))
+uint8_t s_findSensor = 0;
 #endif
 #ifndef SUPPORT_IRED
 extern uint8_t gLcdLightOn;
@@ -645,7 +646,25 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
         if(REFRESH_HOLD != GET_AUTO_SCAN_TICK())    // 当使用EEPROM中的传感器配置且未接入传感器时，才调用该函数匹配驱动并设置默认值 
         {
             uint8_t theory = app_config_sensor[0][sensor_id].model;
-            RS485_DRIVER_match_by_model(sensor, theory);
+            rc = RS485_DRIVER_match_by_model(sensor, theory);
+            if(RS485_OK == rc)
+            {
+#ifdef SUPPORT_TFTLCD
+                s_findSensor |= 0x1;
+                if(RS485_DRIVER_SENSOR_ID_DO == sensor_id)
+                {
+                    g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_TEMPERATURE] = SENSOR_INITING_STATE;
+                    g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_TEMPERATURE] = SENSOR_DATA_UNCHANGE;
+                    g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_DO] = SENSOR_INITING_STATE;
+                    g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_DO] = SENSOR_DATA_UNCHANGE;
+                }
+                else if(RS485_DRIVER_SENSOR_ID_PH == sensor_id)
+                {
+                    g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_INITING_STATE;
+                    g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_DATA_UNCHANGE;
+                }
+#endif 
+            }
             // 设置默认的SN、软硬件版本号 
             _set_sensor_default_message(sensor);
         }
@@ -663,6 +682,20 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
         // HARDWARE_OS_DELAY_MS(200);
     }
     sensor->enable = RS485_ENABLE;
+#ifdef SUPPORT_TFTLCD
+    if(RS485_DRIVER_SENSOR_ID_DO == sensor_id)
+    {
+        g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_TEMPERATURE] = SENSOR_INITING_STATE;
+        g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_TEMPERATURE] = SENSOR_DATA_UNCHANGE;
+        g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_DO] = SENSOR_INITING_STATE;
+        g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_DO] = SENSOR_DATA_UNCHANGE;
+    }
+    else if(RS485_DRIVER_SENSOR_ID_PH == sensor_id)
+    {
+        g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_INITING_STATE;
+        g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_DATA_UNCHANGE;
+    }
+#endif    
     return RS485_OK;
 }
 
@@ -748,9 +781,6 @@ static int _rs485_auto_scan_sensors(void)
     static int64_t update_message_tick = REFRESH_NEW;
     static uint32_t update_message_count = 0;
     static uint8_t update_message_flag = 0;
-#ifdef SUPPORT_TFTLCD
-    uint8_t findSensor = 0;
-#endif
     // if(REFRESH_INIT == GET_AUTO_SCAN_TICK()
     if((REFRESH_INIT == GET_AUTO_SCAN_TICK() && HARDWARE_GET_TICK() > 30 * 1000)
     || REFRESH_NEW == GET_AUTO_SCAN_TICK()    // 上电重启 or “传感器配置”后执行一次扫描 
@@ -778,7 +808,7 @@ static int _rs485_auto_scan_sensors(void)
                 if(RS485_OK == rc) 
                 {
 #ifdef SUPPORT_TFTLCD        
-                    findSensor += 1;
+                    s_findSensor |= 0x2;
 #endif 
                     if(0 != sensor->sensor_change)
                     {
@@ -792,11 +822,17 @@ static int _rs485_auto_scan_sensors(void)
         }
 #ifdef SUPPORT_TFTLCD
         CLR_PAUSE_CONFIG();
+        CLR_EEPROM_CONFIG();
         CLR_DRIVER_CONFIG();
-        if(0 != findSensor)
+        if(0x2 & s_findSensor)
         {
             SET_DRIVER_CONFIG();
         }
+        if(0x1 & s_findSensor)
+        {
+            SET_EEPROM_CONFIG();
+        }
+        s_findSensor = 0;
 #endif
         // _show_water_indicator_sensor_value();
         if(REFRESH_NEW == GET_AUTO_SCAN_TICK() || (0 != sensor_change))
