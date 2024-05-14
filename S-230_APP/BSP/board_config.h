@@ -85,7 +85,7 @@ extern "C"
 
 // <h> 主板定义 
 
-// <h> APP 版本信息 
+// <e4> APP 版本信息 
 // <o> MAJOR
 // <o1> MINOR 
 // <o2> REVISION 
@@ -94,9 +94,10 @@ extern "C"
 #define APP_FIRMWARE_MINOR 0
 #define APP_FIRMWARE_REVISION 0
 #define APP_FIRMWARE_BUILD 0
-// </h>
+// </e>
+#define ENABLE_EDIT_APP_FIRMWARE_VERSION  0
 
-// <h> APP 默认版本信息 
+// <e4> APP 默认版本信息 
 // <o> MAJOR
 // <o1> MINOR 
 // <o2> REVISION 
@@ -105,9 +106,10 @@ extern "C"
 #define APP_FIRMWARE_MINOR_DEFAULT 0
 #define APP_FIRMWARE_REVISION_DEFAULT 0
 #define APP_FIRMWARE_BUILD_DEFAULT 0
-// </h>
+// </e>
+#define ENABLE_EDIT_APP_FIRMWARE_DEFAULT_VERSION  0
 
-// <h> FORMATTER 版本信息 
+// <e4> FORMATTER 版本信息 
 // <o> MAJOR
 // <o1> MINOR 
 // <o2> REVISION 
@@ -116,9 +118,10 @@ extern "C"
 #define FORMATTER_FIRMWARE_MINOR 0
 #define FORMATTER_FIRMWARE_REVISION 0
 #define FORMATTER_FIRMWARE_BUILD 0
-// </h>
+// </e>
+#define ENABLE_EDIT_FORMATTER_FIRMWARE_VERSION  0
 
-// <h> 硬件信息 
+// <e4> 硬件信息 
 // <o> MAJOR
 // <o1> MINOR 
 // <o2> REVISION 
@@ -127,7 +130,8 @@ extern "C"
 #define APP_HARDWARE_MINOR 0
 #define APP_HARDWARE_REVISION 0
 #define APP_HARDWARE_BUILD 0
-// </h>
+// </e>
+#define ENABLE_EDIT_APP_HARDWARE_VERSION  0
 
 // </h>
 

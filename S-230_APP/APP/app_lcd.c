@@ -122,6 +122,7 @@ int AppLcdRefresh(void)
                 if(SENSOR_INITING_STATE != LAST_SENSOR_STATUS(i))
                 {
                     LAST_SENSOR_STATUS(i) = SENSOR_INITING_STATE;
+                    LAST_DATA_STATUS(i) = SENSOR_DATA_UNCHANGE;
                     // 显示 "item:--"
                     BspLcdShowItem(i, popIndex);
                     BspLcdShowUnknowValue(i, popIndex);

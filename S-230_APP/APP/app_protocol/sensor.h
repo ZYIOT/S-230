@@ -438,6 +438,13 @@ int G2_SERVER_read_sensor_data_message_process(g2_server_packet_pt packet)
             else
             {
                 message.indicators[indicator_id].probe_status = 0xe0;
+#ifdef PH202_ADC_DEBUG
+                if(1 == indicator_id)
+                {
+                    APP_LOG_trace("[0x%08x]:vm = %d\r\n", (uint32_t)(&water_indicator->vm), water_indicator->vm);
+                }
+                message.indicators[indicator_id].value_mv = water_indicator->vm;
+#endif
             }
         }
     }

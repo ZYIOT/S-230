@@ -65,6 +65,19 @@ static int _write_calibrate(rs485_sensor_pt rs485, uint8_t type, void *params)
     return RS485_write_register(rs485->port, rs485->id, PH201_CALIBRATE_REG, type, NULL, NULL, NULL, NULL);
 }
 
+#ifdef PH202_ADC_DEBUG
+static int _parse_value(uint8_t buffer[RS485_BUFFER_MAX_SIZE], size_t len, void *ret, void *args)
+{
+    rs485_sensor_indicator_pt indicator = (rs485_sensor_indicator_pt)ret;
+    indicator->value1 = read_uint16_t_BE(&buffer[2]) / 100.0;
+    indicator->vm1 = read_int16_t_BE(&buffer[4]);
+    indicator->value2 = 0;
+    indicator->vm2 = read_uint16_t_BE(&buffer[0]);
+    indicator->error_code = 0;
+    indicator->status = RS485_OK;
+    return RS485_OK;
+}
+#else
 static int _parse_value(uint8_t buffer[RS485_BUFFER_MAX_SIZE], size_t len, void *ret, void *args)
 {
     rs485_sensor_indicator_pt indicator = (rs485_sensor_indicator_pt)ret;
@@ -75,6 +88,7 @@ static int _parse_value(uint8_t buffer[RS485_BUFFER_MAX_SIZE], size_t len, void 
     indicator->status = RS485_OK;
     return RS485_OK;
 }
+#endif
 
 static int _read_value1(rs485_sensor_pt rs485, rs485_sensor_indicator_pt indicator)
 {

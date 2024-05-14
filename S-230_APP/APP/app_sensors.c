@@ -247,6 +247,7 @@ static int record_water_indicator(uint8_t id, float value, uint16_t vm, rs485_se
         mean_filter_out(&water_indicator->filter);
         water_indicator->error_count++;
 #ifdef SUPPORT_TFTLCD
+        APP_LOG_warn("id:%d, errcnt:%d\r\n", id, water_indicator->error_count);
         if(water_indicator->error_count >= 3)
         {
             g_lcdSensorShow.lcdSensorStatus[id] = SENSOR_NORMAL_STATE;
@@ -533,11 +534,42 @@ int APP_SENSORS_init(void)
             g_lcdSensorShow.lcdSensorStatus[i] = SENSOR_INITING_STATE;
             g_lcdSensorShow.lcdSensorDataStatus[i] = SENSOR_DATA_UNCHANGE;
             g_lcdSensorShow.sensorHasConfig |= SENSOR_EEPROM_CONFIG;
+            APP_LOG_trace("i:%d, init SENSOR_INITING_STATE\r\n", i);
         }
-    }     
+    }
 #endif                
     return APP_OK;
 }
+
+#ifdef PH202_ADC_DEBUG   
+int16_t *do_vm = NULL;
+static int _ph_adc_upload_debug(uint8_t id, rs485_sensor_indicator_pt indicator)
+{
+    app_water_indicator_value_pt water_indicator;
+    int rc = APP_SENSORS_water_indicator_get(id, &water_indicator);
+    APP_CHECK_RC(rc)
+    water_indicator->sensor = indicator->sensor;
+    if(1 == id)
+    {
+        do_vm = &(water_indicator->vm);
+        APP_LOG_trace("do_vm = 0x%08x\r\n", do_vm);
+    }
+    else if(2 == id)
+    {
+        APP_LOG_trace("get do_vm = 0x%08x\r\n", do_vm);
+        if(NULL != do_vm)
+        {
+            *do_vm = indicator->vm2;
+            APP_LOG_trace("set *do_vm = %d\r\n", *do_vm);
+        }
+        else
+        {
+            return APP_ERROR;
+        }
+    }
+    return APP_OK;
+}
+#endif
 
 static void _show_sensor_indicator(rs485_sensor_indicator_pt indicator)
 {
@@ -554,6 +586,17 @@ static void _show_sensor_indicator(rs485_sensor_indicator_pt indicator)
     {
         __RECORD_INDICATOR(WATER_INDICATOR_INDEX_LEVEL, value1, vm1);
     }
+    
+#ifdef PH202_ADC_DEBUG  
+    if(indicator->id == RS485_DRIVER_SENSOR_ID_DO)
+    {
+        _ph_adc_upload_debug(WATER_INDICATOR_INDEX_DO, indicator);
+    } 
+    else if(indicator->id == RS485_DRIVER_SENSOR_ID_PH)
+    {
+        _ph_adc_upload_debug(WATER_INDICATOR_INDEX_PH, indicator);
+    }
+#endif
 }
 
 static void _set_sensor_default_message(rs485_sensor_pt sensor)
@@ -647,9 +690,9 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
         {
             uint8_t theory = app_config_sensor[0][sensor_id].model;
             rc = RS485_DRIVER_match_by_model(sensor, theory);
+#ifdef SUPPORT_TFTLCD
             if(RS485_OK == rc)
             {
-#ifdef SUPPORT_TFTLCD
                 s_findSensor |= 0x1;
                 if(RS485_DRIVER_SENSOR_ID_DO == sensor_id)
                 {
@@ -663,8 +706,9 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
                     g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_INITING_STATE;
                     g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_DATA_UNCHANGE;
                 }
-#endif 
+                APP_LOG_trace("sensor_id:%d, match_by_model SENSOR_INITING_STATE\r\n", sensor_id);
             }
+#endif 
             // 设置默认的SN、软硬件版本号 
             _set_sensor_default_message(sensor);
         }
@@ -695,6 +739,7 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
         g_lcdSensorShow.lcdSensorStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_INITING_STATE;
         g_lcdSensorShow.lcdSensorDataStatus[WATER_INDICATOR_INDEX_PH] = SENSOR_DATA_UNCHANGE;
     }
+    APP_LOG_trace("sensor_id:%d, match/scan SENSOR_INITING_STATE\r\n", sensor_id);
 #endif    
     return RS485_OK;
 }
@@ -1297,6 +1342,13 @@ int APP_SENSORS_read_status_protocol(uint8_t probe_id, g2_server_sensor_data_mes
             else
             {
                 message->indicators[indicator_id].probe_status = 0xe0;
+#ifdef PH202_ADC_DEBUG
+                if(1 == indicator_id)
+                {
+                    APP_LOG_trace("[0x%08x]:vm = %d\r\n", (uint32_t)(&water_indicator->vm), water_indicator->vm);
+                }
+                message->indicators[indicator_id].value_mv = water_indicator->vm;
+#endif
             }
         }
     }

@@ -5,6 +5,7 @@
 #include "bsp_usart.h"
 #include "bsp_protocol.h"
 #include "bsp_log.h"
+#include "bsp_board_debug.h"
 #include "app.h"
 #include "hardware_wrapper.h"
 
@@ -17,8 +18,27 @@
 #define BOARD_CONFIG_UART_HANDLE    (&huart5)
 #define BOARD_CONFOG_RECV_BUFFER    (NULL)
 
+#ifdef SHOW_PROTOCOL_DATA
+    #define BSP_LOG_PROTOCOL(...)      BSP_LOG_debug(##__VA_ARGS__)
+    #define BSP_LOG_PROTOCOL_HEX(...)  BSP_LOG_debug_hex(##__VA_ARGS__)
+#else
+    #define BSP_LOG_PROTOCOL(...)
+    #define BSP_LOG_PROTOCOL_HEX(...)
+#endif
+
+#ifdef SHOW_GPRS_DATA
+    #define BSP_LOG_GPRS(...)      BSP_LOG_debug(##__VA_ARGS__)
+    #define BSP_LOG_GPRS_HEX(...)  BSP_LOG_debug_hex(##__VA_ARGS__)
+#else
+    #define BSP_LOG_GPRS(...)
+    #define BSP_LOG_GPRS_HEX(...)
+#endif
+
+
+
 static HARDWARE_SEMAPHORE_TYPE_T protocol_sem;
 static HARDWARE_SEMAPHORE_TYPE_T board_sem;
+
 int BSP_PROTOCOL_init(void)
 {
     protocol_sem = HARDWARE_CREATE_SEMAPHORE();
@@ -31,37 +51,31 @@ extern void APP_NETWORK_after_send_message(void);
 
 int _pwrite(uint8_t buffer[G2_SERVER_PROTOCOL_BUFFER_SIZE], size_t len, size_t tick)
 {
-    BSP_LOG_trace("Pw:  len=%d, data=", len);
-    BSP_LOG_trace_hex(buffer, len);
-    BSP_LOG_trace("\r\n");
-	
+    BSP_LOG_PROTOCOL("Pw:len=%d, data=", len);
+    BSP_LOG_PROTOCOL_HEX(buffer, len);
+    BSP_LOG_PROTOCOL("\r\n");
     HARDWARE_TAKE_SEMAPHORE(protocol_sem);
     int rc = HAL_UART_Transmit(GPRS_COMM_UART_HANDLE, buffer, len, tick) == HAL_OK ? PROTOCOL_OK : PROTOCOL_ERROR;
     HARDWARE_GIVE_SEMAPHORE(protocol_sem);
     if (rc == PROTOCOL_OK)
     {
         APP_NETWORK_after_send_message();
-    }
-	
-	BSP_LOG_trace("\r\n");
-	
+    }	
     return rc;
 }
 
 int _pread(uint8_t buffer[G2_SERVER_PROTOCOL_BUFFER_SIZE], size_t len, size_t tick)
 {
-    BSP_LOG_trace("Pr:  len=%d, data=", len);
+    BSP_LOG_PROTOCOL("Pr:len=%d, data=", len);
     int index = 0, rc = 0;
-
 	do
     {
         rc = xStreamBufferReceive(GPRS_COMM_RECV_BUFFER, &buffer[index], len - index, tick);
         G2_SERVER_CHECK_READ_RC_AND_RETURN
-        BSP_LOG_trace_hex(&buffer[index], rc);
+        BSP_LOG_PROTOCOL_HEX(&buffer[index], rc);
         index += rc;
     } while (index < len);
-
-	BSP_LOG_trace("\r\n");
+	BSP_LOG_PROTOCOL("\r\n");
     return index;
 }
 
@@ -145,30 +159,27 @@ int BSP_USER_PROTOCOL_init(void)
 
 static int _gwrite(uint8_t buffer[USER_PROTOCOL_PROTOCOL_BUFFER_SIZE], size_t len, size_t tick)
 {
-    BSP_LOG_trace("Gw:  len=%d, data=", len);
-    BSP_LOG_trace_hex(buffer, len);
-    BSP_LOG_trace("\r\n");
+    BSP_LOG_GPRS("Gw:len=%d, data=", len);
+    BSP_LOG_GPRS_HEX(buffer, len);
+    BSP_LOG_GPRS("\r\n");
     HARDWARE_TAKE_SEMAPHORE(gprs_config_sem);
     int rc = HAL_UART_Transmit(GPRS_CONFIG_UART_HANDLE, buffer, len, tick) == HAL_OK ? PROTOCOL_OK : PROTOCOL_ERROR;
-    HARDWARE_GIVE_SEMAPHORE(gprs_config_sem);
-    BSP_LOG_trace("\r\n");
-	
+    HARDWARE_GIVE_SEMAPHORE(gprs_config_sem);	
     return rc;
 }
 
 static int _gread(uint8_t buffer[USER_PROTOCOL_PROTOCOL_BUFFER_SIZE], size_t len, size_t tick)
 {
-    BSP_LOG_trace("Gr:  len=%d, data=", len);
+    BSP_LOG_GPRS("Gr:len=%d, data=", len);
     int index = 0, rc = 0;
     do
     {
         rc = xStreamBufferReceive(GPRS_CONFIG_RECV_BUFFER, &buffer[index], len - index, tick);
         USER_PROTOCOL_CHECK_READ_RC_AND_RETURN
-        BSP_LOG_trace_hex(&buffer[index], rc);
+        BSP_LOG_GPRS_HEX(&buffer[index], rc);
         index += rc;
     } while (index < len);
-	BSP_LOG_trace("\r\n");
-    
+	BSP_LOG_GPRS("\r\n");
     return index;
 }
 
