@@ -417,7 +417,7 @@ void APP_NETWORK_task_run(void *argument)
             if (rc == APP_OK)
             {
                 app_network.csq = csq;
-                APP_LOG_debug("CSQ: %d\r\n", app_network.csq);
+                APP_LOG_trace("CSQ: %d\r\n", app_network.csq);
             }
         }
         APP_NETWORK_check_stataus();

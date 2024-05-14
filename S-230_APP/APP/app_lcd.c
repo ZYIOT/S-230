@@ -5,6 +5,18 @@
 #include "app_log.h"
 #include "app.h"
 
+#ifdef SHOW_DEVICE_TIME
+#define APP_LOG_SHOW_TIME(...)  APP_LOG_debug(##__VA_ARGS__)
+#else
+#define APP_LOG_SHOW_TIME(...)  
+#endif
+
+#ifdef SHOW_LCD_SENSOR_STATUS
+#define APP_LOG_LCD_SENSOR(...) APP_LOG_debug(##__VA_ARGS__)
+#else
+#define APP_LOG_LCD_SENSOR(...)
+#endif
+
 // 传感器数据顺序与LCD显示顺序的映射关系 
 const uint8_t cDataItemMap[3] = {1, 0, 2};  // DO - item0, 温度 - item1,  pH - item2 
 
@@ -48,6 +60,10 @@ uint8_t getSignalRange(void)
         range = LCD_SIGNAL_RANGE1;
     }
     else
+    {
+        range = LCD_SIGNAL_RANGE0;
+    }
+    if(APP_SERVER_DISCONNECTED())
     {
         range = LCD_SIGNAL_RANGE0;
     }
@@ -107,7 +123,7 @@ int AppLcdRefresh(void)
     uint8_t popIndex = 0;
     uint8_t i = 0;
     
-    BSP_LOG_debug("config: %d, sensor status: %d %d %d, data status: %d %d %d\r\n", 
+    APP_LOG_LCD_SENSOR("config: %d, sensor status: %d %d %d, data status: %d %d %d\r\n", 
                 g_lcdSensorShow.sensorHasConfig, 
                 LCD_SENSOR_STATUS(0), LCD_SENSOR_STATUS(1), LCD_SENSOR_STATUS(2), 
                 LCD_DATA_STATUS(0), LCD_DATA_STATUS(1), LCD_DATA_STATUS(2));
@@ -307,7 +323,7 @@ void APP_IRED_task_run(void *argument)
         if (HARDWARE_GET_TICK() - time_tick >= 3000)
         {
             BSP_RTC_get(&time.year, &time.month, &time.day, &time.hour, &time.minute, &time.second, &week);
-            APP_LOG_debug("now: 20%02d-%02d-%02d %02d:%02d:%02d\r\n", time.year, time.month, time.day, time.hour, time.minute, time.second);
+            APP_LOG_SHOW_TIME("now: 20%02d-%02d-%02d %02d:%02d:%02d\r\n", time.year, time.month, time.day, time.hour, time.minute, time.second);
             time_tick = HARDWARE_GET_TICK();
         }
         HARDWARE_OS_DELAY_MS(1000);

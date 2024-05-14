@@ -5,6 +5,12 @@
 #include "utils.h"
 #include "app_sensors.h"
 
+#ifdef SHOW_PUMP_STATUS
+#define APP_LOG_PUMP_STATUS(...)    APP_LOG_debug(##__VA_ARGS__)
+#else
+#define APP_LOG_PUMP_STATUS(...)
+#endif
+
 app_pump_t app_pump;
 static uint8_t check_count = 0;
 void _increment_error_count(void);
@@ -88,7 +94,7 @@ void APP_PUMP_task_run(void *argument)
 void APP_PUMP_set_check_frequency(uint16_t fq)
 {
     static int i = 0;
-    APP_LOG_debug("\r\npump frequency: %u\r\n", frequency);
+    APP_LOG_PUMP_STATUS("\r\npump frequency: %u\r\n", frequency);
     app_pump.frequency[i] = frequency;
     i++;
     frequency = 0;

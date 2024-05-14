@@ -25,6 +25,15 @@ extern "C"
     // <c> 显示GPRS通讯数据 
     #define SHOW_GPRS_DATA 
     // </c>    
+    // <c> 显示设备time 
+    //#define SHOW_DEVICE_TIME 
+    // </c>
+    // <c> 显示LCD的传感器状态 
+    //#define SHOW_LCD_SENSOR_STATUS 
+    // </c>
+    // <c> 显示pump状态 
+    // #define SHOW_PUMP_STATUS
+    // </c>
 // </e>
 #define ENABLE_LOG_TRACE 1
 // </h>
@@ -40,6 +49,15 @@ extern "C"
     #endif 
     #ifdef SHOW_GPRS_DATA 
     #undef SHOW_GPRS_DATA 
+    #endif
+    #ifdef SHOW_DEVICE_TIME
+    #undef SHOW_DEVICE_TIME
+    #endif
+    #ifdef SHOW_LCD_SENSOR_STATUS
+    #undef SHOW_LCD_SENSOR_STATUS
+    #endif
+    #ifdef SHOW_PUMP_STATUS 
+    #undef SHOW_PUMP_STATUS
     #endif
 #else    
 #endif 

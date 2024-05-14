@@ -91,15 +91,15 @@ static void _show_board_run_status(void)
                     GET_RELAY_BOARD_CHECK_RESULT());
     }
 #else
-    // app_status_tick_cnt++;
-    // if(0 == app_status_tick_cnt % 30)
-    // {
-    //     APP_LOG_debug("device:%u csq:%d net:%d server:%d\r\n", 
-    //                 APP_CONFIG_device_id(), 
-    //                 app_network.csq, 
-    //                 app_network.network_status, 
-    //                 app_network.connected_status);
-    // }
+    app_status_tick_cnt++;
+    if(0 == app_status_tick_cnt % 30)
+    {
+        APP_LOG_debug("device:%u csq:%d net:%d server:%d\r\n", 
+                    APP_CONFIG_device_id(), 
+                    app_network.csq, 
+                    app_network.network_status, 
+                    app_network.connected_status);
+    }
 #endif
 
 }
