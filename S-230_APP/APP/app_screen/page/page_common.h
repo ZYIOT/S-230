@@ -67,21 +67,21 @@ char *get_sensor_indicator_status(rs485_sensor_indicator_pt indicator)
 {
     if (indicator == NULL)
     {
-        return "ÊöÇÊó†Êï∞ÊçÆ";
+        return "‘›Œﬁ ˝æ›";
     }
     switch (indicator->status)
     {
     case RS485_OK:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê≠£Â∏∏");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "’˝≥£");
         break;
     case RS485_READ_ERROR:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ËØªÂèñË∂ÖÊó∂");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "∂¡»°≥¨ ±");
         break;
     case RS485_CRC_ERROR:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê†°È™åÁ†ÅÈîôËØØ");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "–£—È¬Î¥ÌŒÛ");
         break;
     default:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ËØªÂèñÈîôËØØ");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "∂¡»°¥ÌŒÛ");
         break;
     }
 
@@ -105,22 +105,22 @@ char *get_calibrate_status_name()
     switch (get_calibrate_status())
     {
     case -100:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê≠£Âú®Ê†°ÂáÜ");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "’˝‘⁄–£◊º");
         break;
     case -255:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "‰∏çÊîØÊåÅËØ•Êìç‰Ωú");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "≤ª÷ß≥÷∏√≤Ÿ◊˜");
         break;
     case RS485_OK:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê†°ÂáÜÊàêÂäü");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "–£◊º≥…π¶");
         break;
     case RS485_PARAM_ERROR:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÂèÇÊï∞‰∏çÊ≠£Á°Æ");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "≤Œ ˝≤ª’˝»∑");
         break;
     case RS485_READ_ERROR:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê†°ÂáÜË∂ÖÊó∂");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "–£◊º≥¨ ±");
         break;
     case RS485_ERROR:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Ê†°ÂáÜÂ§±Ë¥•");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "–£◊º ß∞‹");
         break;
     default:
         break;
@@ -130,19 +130,19 @@ char *get_calibrate_status_name()
 
 char *get_timer_calibrate_status(app_screen_page_pt page)
 {
-    _CONVERT_TIMER_PARAMS_AND_RETURN(page, "Ê≠£Âú®Ê†°ÂáÜ")
+    _CONVERT_TIMER_PARAMS_AND_RETURN(page, "’˝‘⁄–£◊º")
     if (params->is_finished != 1)
     {
-        return "Ê≠£Âú®Ê†°ÂáÜ";
+        return "’˝‘⁄–£◊º";
     }
     return get_calibrate_status_name();
 }
 
 app_screen_message_node_t sensor_messages[] = {
     {.name = "PN:", .handler = &get_sensor_pn},
-    {.name = "Âú∞ÂùÄ:", .handler = &get_sensor_addr},
-    {.name = "ËΩØ‰ª∂:", .handler = &get_sensor_firmware},
-    {.name = "Á°¨‰ª∂:", .handler = &get_sensor_hardware},
+    {.name = "µÿ÷∑:", .handler = &get_sensor_addr},
+    {.name = "»Ìº˛:", .handler = &get_sensor_firmware},
+    {.name = "”≤º˛:", .handler = &get_sensor_hardware},
     {.name = "SN:", .handler = NULL},
     {.name = "", .handler = &get_sensor_sn},
     APP_SCREEN_MESSAGE_NODE_END};
@@ -154,15 +154,15 @@ void sensor_calibrate_confirm_handler(app_screen_page_pt page)
     _CONVERT_TIMER_PARAMS(page)
     if (params->is_finished == 1)
     {
-        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "ËøîÂõû");
+        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "∑µªÿ");
         if (TIMER_PAGE_IS_OK(params))
         {
-            BSP_LCD12864_show_string(LCD_MAX_ROW, 0, "Á°ÆËÆ§");
+            BSP_LCD12864_show_string(LCD_MAX_ROW, 0, "»∑»œ");
         }
     }
     else
     {
-        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "ÂèñÊ∂à");
+        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "»°œ˚");
     }
 }
 

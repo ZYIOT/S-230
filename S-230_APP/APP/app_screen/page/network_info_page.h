@@ -7,22 +7,22 @@ char *get_network_status()
         switch (app_network.connected_status)
         {
         case CONNECTED_STATUS_CONNECTED:
-            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "å·²è¿æ¥");
+            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÒÑÁ¬½Ó");
             break;
         // case CONNECTED_STATUS_CONNECTING:
-        //     snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ­£åœ¨è¿æ¥æœåŠ¡");
+        //     snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÕıÔÚÁ¬½Ó·şÎñ");
         //     break;
         case CONNECTED_STATUS_DISCONNECTED:
-            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æœªè¿æ¥æœåŠ¡");
+            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Î´Á¬½Ó·şÎñ");
             break;
         default:
-            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æœªçŸ¥é”™è¯¯");
+            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Î´Öª´íÎó");
             break;
         }
     }
     else
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ç½‘ç»œæœªè¿æ¥");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÍøÂçÎ´Á¬½Ó");
     }
 
     return app_screen_msg;
@@ -32,7 +32,7 @@ char *get_network_csq()
 {
     if (app_network.csq > 31)
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ç½‘ç»œä¿¡å·å·®");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÍøÂçĞÅºÅ²î");
     }
     else
     {
@@ -42,9 +42,9 @@ char *get_network_csq()
 }
 
 app_screen_message_node_t network_info_messages[] = {
-    {.name = "ç½‘ç»œçŠ¶æ€:", .handler = NULL},
+    {.name = "ÍøÂç×´Ì¬:", .handler = NULL},
     {.name = "  ", .handler = &get_network_status},
-    {.name = "ä¿¡å·å¼ºåº¦:", .handler = NULL},
+    {.name = "ĞÅºÅÇ¿¶È:", .handler = NULL},
     {.name = "  ", .handler = &get_network_csq},
     APP_SCREEN_MESSAGE_NODE_END};
 

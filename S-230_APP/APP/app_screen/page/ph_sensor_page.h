@@ -15,18 +15,18 @@ char *get_ph_sensor_indicator_vm()
 }
 
 app_screen_message_node_t ph_sensor_data[] = {
-    {.name = "å‹å·: ", .handler = &get_ph_sensor_PN},
-    {.name = "çŠ¶æ€: ", .handler = &get_ph_sensor_indicator_status},
-    {.name = "pHå€¼: ", .handler = &get_sensor_ph},
-    {.name = "mVå€¼: ", .handler = &get_ph_sensor_indicator_vm},
+    {.name = "ĞÍºÅ: ", .handler = &get_ph_sensor_PN},
+    {.name = "×´Ì¬: ", .handler = &get_ph_sensor_indicator_status},
+    {.name = "pHÖµ: ", .handler = &get_sensor_ph},
+    {.name = "mVÖµ: ", .handler = &get_ph_sensor_indicator_vm},
     APP_SCREEN_MESSAGE_NODE_END};
 
 NEW_MESSAGE_PAGE(ph_sensor_data_page, ph_sensor_data, &has_ph_sensor_check, NULL, NULL)
 
 app_screen_menu_node_t ph_sensor_menus[] = {
-    {.name = "ä¼ æ„Ÿå™¨æ•°æ®", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &ph_sensor_data_page}, .visibility = NULL},
-    // {.name = "ä¼ æ„Ÿå™¨ä¿¡æ¯", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_message_page}, .visibility = NULL},
-    {.name = "ä¼ æ„Ÿå™¨æ ¡å‡†", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &ph_sensor_calibration_page}, .visibility = NULL},
+    {.name = "´«¸ĞÆ÷Êı¾İ", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &ph_sensor_data_page}, .visibility = NULL},
+    // {.name = "´«¸ĞÆ÷ĞÅÏ¢", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_message_page}, .visibility = NULL},
+    {.name = "´«¸ĞÆ÷Ğ£×¼", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &ph_sensor_calibration_page}, .visibility = NULL},
     APP_SCREEN_MENU_NODE_END};
 
 NEW_MENU_PAGE(ph_sensor_page, ph_sensor_menus, &has_ph_sensor_check, NULL, NULL)

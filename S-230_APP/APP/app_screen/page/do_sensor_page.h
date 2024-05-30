@@ -21,19 +21,19 @@ char *get_sensor_temperature()
 }
 
 app_screen_message_node_t do_sensor_data[] = {
-    {.name = "å‹å·: ", .handler = &get_do_sensor_PN},
-    {.name = "çŠ¶æ€: ", .handler = &get_do_sensor_indicator_status},
-    {.name = "æ¸©åº¦: ", .handler = &get_sensor_temperature},
-    {.name = "æº¶æ°§: ", .handler = &get_sensor_do},
-    // {.name = "é¥±å’Œåº¦:", .handler = &get_do_sensor_indicator_saturated},
+    {.name = "ĞÍºÅ: ", .handler = &get_do_sensor_PN},
+    {.name = "×´Ì¬: ", .handler = &get_do_sensor_indicator_status},
+    {.name = "ÎÂ¶È: ", .handler = &get_sensor_temperature},
+    {.name = "ÈÜÑõ: ", .handler = &get_sensor_do},
+    // {.name = "±¥ºÍ¶È:", .handler = &get_do_sensor_indicator_saturated},
     APP_SCREEN_MESSAGE_NODE_END};
 
 NEW_MESSAGE_PAGE(do_sensor_data_page, do_sensor_data, &has_do_sensor_check, NULL, NULL)
 
 app_screen_menu_node_t do_sensor_menus[] = {
-    {.name = "ä¼ æ„Ÿå™¨æ•°æ®", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &do_sensor_data_page}, .visibility = NULL},
-    // {.name = "ä¼ æ„Ÿå™¨ä¿¡æ¯", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_message_page}, .visibility = NULL},
-    {.name = "ä¼ æ„Ÿå™¨æ ¡å‡†", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &do_sensor_calibration_page}, .visibility = NULL},
+    {.name = "´«¸ĞÆ÷Êı¾İ", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &do_sensor_data_page}, .visibility = NULL},
+    // {.name = "´«¸ĞÆ÷ĞÅÏ¢", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_message_page}, .visibility = NULL},
+    {.name = "´«¸ĞÆ÷Ğ£×¼", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &do_sensor_calibration_page}, .visibility = NULL},
     APP_SCREEN_MENU_NODE_END};
 
 NEW_MENU_PAGE(do_sensor_page, do_sensor_menus, &has_do_sensor_check, NULL, NULL)

@@ -14,8 +14,8 @@ typedef struct
 
 typedef struct
 {
-    uint8_t start; //ä»Žç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;   // å…±æœ‰å¤šå°‘è¡Œ
+    uint8_t start; //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;   // ¹²ÓÐ¶àÉÙÐÐ
 } app_screen_message_params_t;
 
 #define _CONVERT_MESSAGE_VARIABLES(page)                                               \

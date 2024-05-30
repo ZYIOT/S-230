@@ -26,9 +26,9 @@ typedef struct app_screen_form_node
 
 typedef struct
 {
-    uint8_t current; //å½“å‰é€‰æ‹©é¡¹
-    uint8_t start;   //ä»Žç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;     // å…±æœ‰å¤šå°‘ä¸ªé€‰æ‹©
+    uint8_t current; //µ±Ç°Ñ¡ÔñÏî
+    uint8_t start;   //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;     // ¹²ÓÐ¶àÉÙ¸öÑ¡Ôñ
 } app_screen_form_params_t;
 
 #define _CONVERT_FORM_VARIABLES(page)                                            \
@@ -79,12 +79,12 @@ void form_page_render(app_screen_page_pt page)
                 BSP_LCD12864_show_row(row, 1, content->name);
                 if (params->current == idx)
                 {
-                    BSP_LCD12864_show_string(row, 0, "â—");
+                    BSP_LCD12864_show_string(row, 0, "¡ñ");
                     //	LCD_reverse(row);
                 }
                 else
                 {
-                    BSP_LCD12864_show_string(row, 0, "ã€€");
+                    BSP_LCD12864_show_string(row, 0, "¡¡");
                 }
             }
             else if (content->type == FORM_NODE_FUNCTION && content->next.handler != NULL)

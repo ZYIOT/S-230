@@ -47,12 +47,12 @@ typedef struct
 typedef int (*app_screen_timer_check_handler)(app_screen_page_s_pt page);
 typedef struct
 {
-    uint8_t start;       //ä»Žç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;         // å…±æœ‰å¤šå°‘è¡Œ
-    uint8_t is_finished; //æ˜¯å¦å·²ç»å®Œæˆ
-    uint8_t finished_rc; //å®Œæˆçš„çŠ¶æ€
-    uint16_t timeout;    //timerè¶…æ—¶æ•°
-    uint16_t timer;      //timerè®¡æ•°
+    uint8_t start;       //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;         // ¹²ÓÐ¶àÉÙÐÐ
+    uint8_t is_finished; //ÊÇ·ñÒÑ¾­Íê³É
+    uint8_t finished_rc; //Íê³ÉµÄ×´Ì¬
+    uint16_t timeout;    //timer³¬Ê±Êý
+    uint16_t timer;      //timer¼ÆÊý
     app_screen_timer_check_handler check;
     app_screen_handler confirm_handler;
     app_screen_page_pt next_page;
@@ -194,15 +194,15 @@ void timer_default_confirm_handler(app_screen_page_pt page)
     _CONVERT_TIMER_PARAMS(page)
     if (params->is_finished == 1)
     {
-        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "è¿”å›ž");
+        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "·µ»Ø");
     }
     else
     {
-        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "å–æ¶ˆ");
+        BSP_LCD12864_show_row(LCD_MAX_ROW, 6, "È¡Ïû");
     }
     if (TIMER_PAGE_IS_OK(params) && params->next_page != NULL)
     {
-        BSP_LCD12864_show_string(LCD_MAX_ROW, 0, "ç¡®è®¤");
+        BSP_LCD12864_show_string(LCD_MAX_ROW, 0, "È·ÈÏ");
     }
 }
 

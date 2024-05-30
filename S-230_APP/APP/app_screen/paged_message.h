@@ -15,8 +15,8 @@ typedef struct
 
 typedef struct
 {
-    uint8_t start; //ä»ç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;   // å…±æœ‰å¤šå°‘è¡Œ
+    uint8_t start; //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;   // ¹²ÓĞ¶àÉÙĞĞ
     uint8_t timer;
     app_screen_paged_message_node_pt nodes[30];
 } app_screen_paged_message_params_t;

@@ -38,11 +38,11 @@ typedef struct
 
 typedef struct
 {
-    uint8_t start;    //ä»ç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;      //å…±æœ‰å¤šå°‘è¡Œ
-    uint16_t timer;   //timerè®¡æ•°
-    uint16_t timeout; //timerè¶…æ—¶æ•°
-    uint16_t status;  //alertçŠ¶æ€
+    uint8_t start;    //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;      //¹²ÓĞ¶àÉÙĞĞ
+    uint16_t timer;   //timer¼ÆÊı
+    uint16_t timeout; //timer³¬Ê±Êı
+    uint16_t status;  //alert×´Ì¬
 } app_screen_alert_params_t;
 
 void alert_page_init(app_screen_page_pt page)
@@ -100,7 +100,7 @@ void alert_page_render(app_screen_page_pt page)
         idx++;
         content++;
     }
-    BSP_LCD12864_show_row(LCD_MAX_ROW, 0, "è¿”å›");
+    BSP_LCD12864_show_row(LCD_MAX_ROW, 0, "·µ»Ø");
 }
 
 void alert_page_key_handler(app_screen_page_pt page, uint8_t key)

@@ -1,9 +1,9 @@
 
 app_screen_menu_node_t settings_menus[] = {
-    {.name = "è®¾å¤‡ä¿¡æ¯", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &device_info_page}, .visibility = NULL},
-    {.name = "ç½‘ç»œçŠ¶æ€", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &network_info_page}, .visibility = NULL},
-    {.name = "è®¾å¤‡æ—¶é—´", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &time_info_page}, .visibility = NULL},
-    {.name = "ä¼ æ„Ÿå™¨", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_page}, .visibility = &has_sensors_visibility},
+    {.name = "Éè±¸ĞÅÏ¢", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &device_info_page}, .visibility = NULL},
+    {.name = "ÍøÂç×´Ì¬", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &network_info_page}, .visibility = NULL},
+    {.name = "Éè±¸Ê±¼ä", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &time_info_page}, .visibility = NULL},
+    {.name = "´«¸ĞÆ÷", .type = MENU_NODE_PAGE, .click = NULL, .next = {.page = &sensor_page}, .visibility = &has_sensors_visibility},
     APP_SCREEN_MENU_NODE_END};
 
 NEW_MENU_PAGE(settings_page, settings_menus, NULL, NULL, NULL)

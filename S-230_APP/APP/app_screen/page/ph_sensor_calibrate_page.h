@@ -12,7 +12,7 @@ int ph_sensor_calibrate_message_check_handler(app_screen_page_pt page)
     if (TIMER_PAGE_IS_TIMEOUT(params) && get_calibrate_status() == RS485_OK)
     {
         app_screen_page_pt p;
-        app_screen_history_pop(&p); // å¼¹å‡ºæ ¡å‡†èœå•
+        app_screen_history_pop(&p); // µ¯³öĞ£×¼²Ëµ¥
         params->next_page = ph_calibrate_sensor_data_page;
         params->is_finished = 1;
         params->finished_rc = APP_SCREEN_TIMER_RC_OK;
@@ -43,14 +43,14 @@ void ph_sensor_calibrate_message_before_handler(app_screen_page_pt page, app_scr
 
 char *get_ph_sensor_calibrate_title(app_screen_page_pt page)
 {
-    _CONVERT_TIMER_PARAMS_AND_RETURN(page, "ç¨‹åºå‡ºé”™äº†");
+    _CONVERT_TIMER_PARAMS_AND_RETURN(page, "³ÌĞò³ö´íÁË");
     if (TIMER_PAGE_IS_ERROR(params))
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ— æ³•æ ¡å‡†è¯¥ä¼ æ„Ÿå™¨");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÎŞ·¨Ğ£×¼¸Ã´«¸ĞÆ÷");
     }
     else
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ç¡®è®¤è¿›è¡Œæ ¡å‡†ï¼Ÿ");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "È·ÈÏ½øĞĞĞ£×¼£¿");
     }
     return app_screen_msg;
 }
@@ -60,18 +60,18 @@ char *get_ph_sensor_calibrate_tip(app_screen_page_pt page)
     _CONVERT_TIMER_PARAMS_AND_RETURN(page, "");
     if (TIMER_PAGE_IS_ERROR(params))
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ˜¯å¦æŠŠä¼ æ„Ÿå™¨æ”¾å…¥");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÊÇ·ñ°Ñ´«¸ĞÆ÷·ÅÈë");
     }
     else
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "è¯·æŠŠä¼ æ„Ÿå™¨æ”¾åœ¨ç¼“");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Çë°Ñ´«¸ĞÆ÷·ÅÔÚ»º");
     }
     return app_screen_msg;
 }
 
 char *get_ph_sensor_calibrate_tip1(app_screen_page_pt page)
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "å†²æ¶²ä¸­");
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "³åÒºÖĞ");
     return app_screen_msg;
 }
 
@@ -145,9 +145,9 @@ static int set_ph_sensor_calibrate_type_10(app_screen_menu_node_t *node)
 }
 
 app_screen_menu_node_t ph_sensor_calibration_menus[] = {
-    {.name = "pH7 æ ¡å‡†", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_7, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
-    // {.name = "pH4 æ ¡å‡†", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_4, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
-    {.name = "pH10æ ¡å‡†", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_10, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
+    {.name = "pH7 Ğ£×¼", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_7, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
+    // {.name = "pH4 Ğ£×¼", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_4, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
+    {.name = "pH10Ğ£×¼", .type = MENU_NODE_PAGE, .click = &set_ph_sensor_calibrate_type_10, .next = {.page = &ph_sensor_calibrate_page}, .visibility = NULL},
     APP_SCREEN_MENU_NODE_END};
 
 NEW_MENU_PAGE(ph_sensor_calibration_page, ph_sensor_calibration_menus, &has_ph_sensor_check, NULL, NULL)

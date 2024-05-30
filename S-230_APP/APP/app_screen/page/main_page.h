@@ -17,7 +17,7 @@ char *get_sensor_indicator_value_string(uint8_t sensor_id, char *format, get_sen
     {
         if (HARDWARE_GET_TICK() > SCREEN_INDICATOR_ERROR_TIMEOUT)
         {
-            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ•…éšœ");
+            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "¹ÊÕÏ");
         }
         else
         {
@@ -38,7 +38,7 @@ char *get_sensor_indicator_vm_string(uint8_t sensor_id, char *format, get_sensor
     {
         if (HARDWARE_GET_TICK() > SCREEN_INDICATOR_ERROR_TIMEOUT)
         {
-            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ•…éšœ");
+            snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "¹ÊÕÏ");
         }
         else
         {
@@ -99,7 +99,7 @@ char *get_water_indicator_value_string(uint8_t indicator_id, char *format)
     {
         if (HARDWARE_GET_TICK() > SCREEN_INDICATOR_ERROR_TIMEOUT)
         {
-            return "æ•…éšœ";
+            return "¹ÊÕÏ";
         }
         else
         {
@@ -196,14 +196,14 @@ int no_sensors_visibility(void)
 }
 
 app_screen_paged_message_node_t main_messages[] = {
-    {"æ¸©åº¦: ", .handler = &get_water_temperature, .visibility = &get_sensor_temperature_visibility},
-    {"æº¶æ°§: ", .handler = &get_water_do, .visibility = &get_sensor_do_visibility},
+    {"ÎÂ¶È: ", .handler = &get_water_temperature, .visibility = &get_sensor_temperature_visibility},
+    {"ÈÜÑõ: ", .handler = &get_water_do, .visibility = &get_sensor_do_visibility},
     {"pH: ", .handler = &get_water_ph, .visibility = &get_sensor_ph_visibility},
 
-    // {"å¶ç»¿ç´ :", .handler = &get_water_chlorophyll, .visibility = &get_sensor_chlorophyll_visibility},
+    // {"Ò¶ÂÌËØ:", .handler = &get_water_chlorophyll, .visibility = &get_sensor_chlorophyll_visibility},
     // {"COD:", .handler = &get_water_cod, .visibility = &get_sensor_cod_visibility},
-    // {"æ°¨æ°®:", .handler = &get_water_nh3, .visibility = &get_sensor_nh3_visibility},
-    {"  æœªé…ç½®ä¼ æ„Ÿå™¨", .handler = NULL, .visibility = &no_sensors_visibility},
+    // {"°±µª:", .handler = &get_water_nh3, .visibility = &get_sensor_nh3_visibility},
+    {"  Î´ÅäÖÃ´«¸ĞÆ÷", .handler = NULL, .visibility = &no_sensors_visibility},
     APP_SCREEN_PAGED_MESSAGE_NODE_END};
 
 NEW_PAGED_MESSAGE_PAGE(main_page, main_messages, NULL, NULL, NULL)

@@ -4,13 +4,13 @@ char *show_operation_alert_title(app_screen_page_pt page)
     switch (params->status)
     {
     case APP_SCREEN_ALERT_SUCCESS:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    鎿嶄綔鎴愬姛");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    操作成功");
         break;
     case APP_SCREEN_ALERT_FAURE:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    鎿嶄綔澶辫触");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    操作失败");
         break;
     default:
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    鏈煡缁撴灉");
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "    未知结果");
         break;
     }
 

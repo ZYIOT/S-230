@@ -35,10 +35,10 @@ static int _show_eeprom_tip(void)
     switch (eeprom_init_tip)
     {
     case EEPROM_INIT_TIP_FORMAT:
-        BSP_LCD12864_show_row(1, 0, "  格式化成功");
+        BSP_LCD12864_show_row(1, 0, "  ��ʽ���ɹ�");
         break;
     case EEPROM_INIT_TIP_RECOVERY:
-        BSP_LCD12864_show_row(1, 0, "恢复出厂设置成功");
+        BSP_LCD12864_show_row(1, 0, "�ָ��������óɹ�");
         break;
     default:
         return APP_ERROR;
@@ -51,11 +51,11 @@ static int _splash(void)
 {
     char msg[20] = {0};
     BSP_LCD12864_clear_txt();
-    BSP_LCD12864_show_row(0, 0, "中易智慧渔业系统");
-    BSP_LCD12864_show_row(1, 0, "让水产养殖更容易");
-    snprintf(msg, 19, "主控ID:%07u", APP_CONFIG_device_id());
+    BSP_LCD12864_show_row(0, 0, "�����ǻ���ҵϵͳ");
+    BSP_LCD12864_show_row(1, 0, "��ˮ����ֳ������");
+    snprintf(msg, 19, "����ID:%07u", APP_CONFIG_device_id());
     BSP_LCD12864_show_row(2, 0, msg);
-    snprintf(msg, 19, "版本:V%u.%u.%u", APP_FIRMWARE_MAJOR, APP_FIRMWARE_MINOR, APP_FIRMWARE_REVISION);
+    snprintf(msg, 19, "�汾:V%u.%u.%u", APP_FIRMWARE_MAJOR, APP_FIRMWARE_MINOR, APP_FIRMWARE_REVISION);
     BSP_LCD12864_show_row(3, 0, msg);
     return APP_OK;
 }

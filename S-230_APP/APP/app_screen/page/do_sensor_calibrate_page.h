@@ -11,7 +11,7 @@ int do_sensor_calibrate_message_check_handler(app_screen_page_pt page)
     if (TIMER_PAGE_IS_TIMEOUT(params) && get_calibrate_status() == RS485_OK)
     {
         app_screen_page_pt p;
-        app_screen_history_pop(&p); // å¼¹å‡ºæ ¡å‡†èœå•
+        app_screen_history_pop(&p); // µ¯³öÐ£×¼²Ëµ¥
         params->next_page = do_calibrate_sensor_data_page;
         params->is_finished = 1;
         params->finished_rc = APP_SCREEN_TIMER_RC_OK;
@@ -42,18 +42,18 @@ void do_sensor_calibrate_message_before_handler(app_screen_page_pt page, app_scr
 
 char *get_do_sensor_calibrate_title(app_screen_page_pt page)
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ç¡®è®¤è¿›è¡Œæ ¡å‡†ï¼Ÿ");
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "È·ÈÏ½øÐÐÐ£×¼£¿");
     return app_screen_msg;
 }
 
 char *get_do_sensor_calibrate_tip(app_screen_page_pt page)
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "è¯·æŠŠä¼ æ„Ÿå™¨æ”¾åœ¨ç©º");
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "Çë°Ñ´«¸ÐÆ÷·ÅÔÚ¿Õ");
     return app_screen_msg;
 }
 char *get_do_sensor_calibrate_tip1(app_screen_page_pt page)
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "æ°”ä¸­15åˆ†é’Ÿ");
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "ÆøÖÐ15·ÖÖÓ");
     return app_screen_msg;
 }
 
@@ -91,7 +91,7 @@ static int set_do_sensor_calibrate_type_full(app_screen_menu_node_t *node)
 }
 
 app_screen_menu_node_t do_sensor_calibration_menus[] = {
-    {.name = "é¥±å’Œæ°§æ ¡å‡†", .type = MENU_NODE_PAGE, .click = &set_do_sensor_calibrate_type_full, .next = {.page = &do_sensor_calibrate_page}, .visibility = NULL},
+    {.name = "±¥ºÍÑõÐ£×¼", .type = MENU_NODE_PAGE, .click = &set_do_sensor_calibrate_type_full, .next = {.page = &do_sensor_calibrate_page}, .visibility = NULL},
     APP_SCREEN_MENU_NODE_END};
 
 NEW_MENU_PAGE(do_sensor_calibration_page, do_sensor_calibration_menus, &has_do_sensor_check, NULL, NULL)

@@ -3,13 +3,13 @@
 #define __APP_SCREEN_COMMON_H
 typedef enum
 {
-    PAGE_TYPE_CONFIRM,       // éœ€è¦ç¡®è®¤çš„ç•Œé¢ï¼Œå¯ä»¥é€‰æ‹©å–æ¶ˆå’Œç¡®è®¤
-    PAGE_TYPE_TIMER,         // æ­£åœ¨å¤„ç†çš„ç•Œé¢ï¼Œå¯ä»¥é€‰æ‹©å–æ¶ˆ
-    PAGE_TYPE_AUTO_FORWARD,  // å®šæ—¶æ¢é¡µ
-    PAGE_TYPE_MESSAGE,       // æ¶ˆæ¯æ˜¾ç¤º
-    PAGE_TYPE_MENU,          // èœå•
-    PAGE_TYPE_ALERT,         // æç¤º
-    PAGE_TYPE_PAGED_MESSAGE, // è‡ªåŠ¨æ¢é¡µçš„æ¶ˆæ¯æ˜¾ç¤º
+    PAGE_TYPE_CONFIRM,       // ĞèÒªÈ·ÈÏµÄ½çÃæ£¬¿ÉÒÔÑ¡ÔñÈ¡ÏûºÍÈ·ÈÏ
+    PAGE_TYPE_TIMER,         // ÕıÔÚ´¦ÀíµÄ½çÃæ£¬¿ÉÒÔÑ¡ÔñÈ¡Ïû
+    PAGE_TYPE_AUTO_FORWARD,  // ¶¨Ê±»»Ò³
+    PAGE_TYPE_MESSAGE,       // ÏûÏ¢ÏÔÊ¾
+    PAGE_TYPE_MENU,          // ²Ëµ¥
+    PAGE_TYPE_ALERT,         // ÌáÊ¾
+    PAGE_TYPE_PAGED_MESSAGE, // ×Ô¶¯»»Ò³µÄÏûÏ¢ÏÔÊ¾
 } app_screen_page_type_t;
 
 typedef struct app_screen_page *app_screen_page_s_pt;
@@ -20,21 +20,21 @@ typedef void (*app_screen_key_handler)(app_screen_page_s_pt page, uint8_t key);
 typedef struct app_screen_page
 {
     app_screen_page_type_t type;
-    uint8_t initialized;      // æ˜¯å¦å·²ç»åˆå§‹åŒ–
-    uint8_t user_initialized; // æ˜¯å¦å·²ç»ç”¨æˆ·åˆå§‹åŒ–
-    uint8_t save_history;     // æ˜¯å¦ä¿å­˜åˆ°å†å²é¡µä¸Š
+    uint8_t initialized;      // ÊÇ·ñÒÑ¾­³õÊ¼»¯
+    uint8_t user_initialized; // ÊÇ·ñÒÑ¾­ÓÃ»§³õÊ¼»¯
+    uint8_t save_history;     // ÊÇ·ñ±£´æµ½ÀúÊ·Ò³ÉÏ
     void *params;
     void *content;
-    // struct app_screen_page *parent;     // ä¸Šä¸€é¡µ
-    app_screen_handler init;            //ç»„ä»¶åˆå§‹åŒ–å‡½æ•°
-    app_screen_handler user_init;       //ç»„ä»¶åˆå§‹åŒ–å‡½æ•°--ç”¨æˆ·ä½¿ç”¨
-    app_screen_check_handler check;     //initåï¼Œbeforeå‰è°ƒç”¨ï¼Œå¦‚æœè¿”å›æˆåŠŸï¼Œæ˜¾ç¤ºè¯¥é¡µï¼Œå¦åˆ™é€€åˆ°ä¸»é¡µ
-    app_screen_before_handler before;   //æ˜¾ç¤ºè¯¥ç»„ä»¶å‰è°ƒç”¨--ç”¨æˆ·ä½¿ç”¨
-    app_screen_handler before_render;   //æ˜¾ç¤ºè¯¥ç»„ä»¶å‰è°ƒç”¨--ç»„ä»¶ä½¿ç”¨
-    app_screen_handler render;          //ç»„ä»¶çš„æ¸²æŸ“å‡½æ•°
-    app_screen_handler after;           //ç¦»å¼€ç»„ä»¶æ—¶è°ƒç”¨--ç”¨æˆ·ä½¿ç”¨
-    app_screen_key_handler key_handler; //ç»„ä»¶çš„æŒ‰é”®äº‹ä»¶å¤„ç†å‡½æ•°
-    app_screen_handler timer_handler;   //ç»„ä»¶çš„æ—¶é—´äº‹ä»¶å¤„ç†å‡½æ•°
+    // struct app_screen_page *parent;     // ÉÏÒ»Ò³
+    app_screen_handler init;            //×é¼ş³õÊ¼»¯º¯Êı
+    app_screen_handler user_init;       //×é¼ş³õÊ¼»¯º¯Êı--ÓÃ»§Ê¹ÓÃ
+    app_screen_check_handler check;     //initºó£¬beforeÇ°µ÷ÓÃ£¬Èç¹û·µ»Ø³É¹¦£¬ÏÔÊ¾¸ÃÒ³£¬·ñÔòÍËµ½Ö÷Ò³
+    app_screen_before_handler before;   //ÏÔÊ¾¸Ã×é¼şÇ°µ÷ÓÃ--ÓÃ»§Ê¹ÓÃ
+    app_screen_handler before_render;   //ÏÔÊ¾¸Ã×é¼şÇ°µ÷ÓÃ--×é¼şÊ¹ÓÃ
+    app_screen_handler render;          //×é¼şµÄäÖÈ¾º¯Êı
+    app_screen_handler after;           //Àë¿ª×é¼şÊ±µ÷ÓÃ--ÓÃ»§Ê¹ÓÃ
+    app_screen_key_handler key_handler; //×é¼şµÄ°´¼üÊÂ¼ş´¦Àíº¯Êı
+    app_screen_handler timer_handler;   //×é¼şµÄÊ±¼äÊÂ¼ş´¦Àíº¯Êı
 } app_screen_page_t, *app_screen_page_pt;
 
 app_screen_page_pt current_page;

@@ -27,9 +27,9 @@ typedef struct app_screen_menu_node
 
 typedef struct
 {
-    uint8_t current; //å½“å‰é€‰æ‹©é¡¹
-    uint8_t start;   //ä»Žç¬¬Nä¸ªå¼€å§‹æ˜¾ç¤º
-    uint8_t max;     // å…±æœ‰å¤šå°‘ä¸ªé€‰æ‹©
+    uint8_t current; //µ±Ç°Ñ¡ÔñÏî
+    uint8_t start;   //´ÓµÚN¸ö¿ªÊ¼ÏÔÊ¾
+    uint8_t max;     // ¹²ÓÐ¶àÉÙ¸öÑ¡Ôñ
     app_screen_menu_node_pt nodes[30];
 } app_screen_menu_params_t;
 
@@ -104,7 +104,7 @@ void menu_page_render(app_screen_page_pt page)
                 }
                 else
                 {
-                    BSP_LCD12864_show_string(row, 0, "ã€€");
+                    BSP_LCD12864_show_string(row, 0, "¡¡");
                 }
             }
             else if (node->type == MENU_NODE_FUNCTION && node->next.handler != NULL)
