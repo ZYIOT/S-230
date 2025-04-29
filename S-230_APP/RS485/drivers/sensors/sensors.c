@@ -36,8 +36,14 @@ int RS485_DRIVER_init(void)
 #ifdef ENABLE_RS485_DIRVER_SENSOR_ANBULEILA_WL991
     RS485_DRIVER_level_anbuleila_init();
 #endif
-#ifdef ENABLE_RS485_DIRVER_SENSOR_PH260
+#ifdef ENABLE_RS485_DIRVER_SENSORS_CHEMINS_PH260
     RS485_DRIVER_chemins_ph260_init();
+#endif
+#ifdef ENABLE_RS485_DRIVER_SENSOR_DO_DEFAULT
+    RS485_DRIVER_zyiot_do_default_init();
+#endif
+#ifdef ENABLE_RS485_DRIVER_SENSORS_CHEMINS_NHN760
+    RS485_DRIVER_chemins_nhn760_init();
 #endif
     return RS485_OK;
 }
@@ -45,7 +51,7 @@ int RS485_DRIVER_init(void)
 // 通过传感器 ID 的 check_sensor 盲读传感器数据 来匹配驱动 
 static int _scan_by_id_and_mode(rs485_sensor_pt sensor, rs485_recognition_mode_t recognition_mode)
 {
-    int rc = 0;
+    int rc = RS485_ERROR;
     rs485_sensor_driver_pt sensors_drv = sensors_driver[0];
     if (sensor->id == 0)
     {
@@ -53,6 +59,7 @@ static int _scan_by_id_and_mode(rs485_sensor_pt sensor, rs485_recognition_mode_t
     }
     for (int i = 0; i < sensor_total_drv; i++)
     {
+        rc = RS485_ERROR;
         sensors_drv = sensors_driver[i];
         if (sensors_drv != NULL &&
             (sensors_drv->id == sensor->id) &&
@@ -83,6 +90,58 @@ static int _scan_by_id_and_mode(rs485_sensor_pt sensor, rs485_recognition_mode_t
     }
     return rc;
 }
+
+static int _set_do_ph_sensor_driver_default(rs485_sensor_pt sensor)
+{
+    if (sensor->id == 0)
+    {
+        return RS485_ERROR;
+    }
+    uint8_t index = 0;
+    uint8_t modelId = 0;
+    rs485_sensor_driver_pt sensors_drv = NULL;
+    if(RS485_DRIVER_SENSOR_ID_DO == sensor->id) // 如果是 DO 传感器，则默认传感器型号为 DO-Y100 
+    {
+#ifdef ENABLE_DO_SENSOR_DEFAULT   
+        modelId = RS485_SENSOR_MODEL_ID_DOY170;
+#else
+        modelId = RS485_SENSOR_MODEL_ID_DOY100;
+#endif        
+    }
+    else if(RS485_DRIVER_SENSOR_ID_PH == sensor->id) // 如果是 PH 传感器，则默认传感器型号为 PH-201 
+    {
+        modelId = RS485_SENSOR_MODEL_ID_PH201;
+    }
+    for(index = 0; index < sensor_total_drv; index++)
+    {
+        if(modelId == sensors_driver[index]->model)
+        {
+            break;
+        }
+    }
+    if((sensor_total_drv == index) || (0 == modelId))
+    {
+        return RS485_ERROR;
+    }
+    sensors_drv = sensors_driver[index];
+    {
+        sensor->manufacturer = sensors_drv->manufacturer;
+        sensor->model = sensors_drv->model;
+        sensor->protocol = sensors_drv->protocol;
+        // 更新 dev 匹配的 PN 
+        sensor->sensor_change = strcmp(sensor->PN, sensors_drv->action->PN);
+        if(0 != sensor->sensor_change)
+        {
+            BSP_LOG_debug("sensor change\r\n");
+        }
+        memset(sensor->PN, 0, 8);
+        strcpy(sensor->PN, sensors_drv->action->PN);
+        sensor->action = sensors_drv->action;
+        BSP_LOG_debug("DO/PH Match default <%s>\r\n", sensor->PN);
+        return RS485_OK;
+    }
+}
+
 
 // 通过传感器固定位置的PN比较
 int RS485_DRIVER_match(rs485_sensor_pt sensor)
@@ -153,7 +212,7 @@ int RS485_DRIVER_scan(rs485_sensor_pt sensor)
         if (rc == RS485_READ_ERROR) //如果传感器没有任何返回。就不再尝试
         {
             return RS485_READ_ERROR;
-        }
+        } 
         if (rc == RS485_OK)
         {
             return RS485_OK;
@@ -242,6 +301,14 @@ int RS485_DRIVER_match_by_model(rs485_sensor_pt sensor, uint8_t theory)
             //     BSP_LOG_debug("Match model <%s>\r\n", sensor->PN);
             // }
             return RS485_OK;
+        }
+    }
+    // 如果通过 model 也无法匹配 
+    {
+        if((RS485_DRIVER_SENSOR_ID_DO == sensor->id) 
+        || (RS485_DRIVER_SENSOR_ID_PH == sensor->id))
+        {
+            _set_do_ph_sensor_driver_default(sensor);
         }
     }
     return RS485_ERROR;

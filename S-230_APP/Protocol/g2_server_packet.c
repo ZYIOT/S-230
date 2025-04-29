@@ -222,10 +222,14 @@ WINAPI_EXPORT int WINAPI G2_SERVER_PACKET_read(g2_server_port_pt port, g2_server
 	return rc;
 }
 
-
+#include "app_log.h"
+uint32_t sendInCnt = 0;
+uint32_t sendOutCnt = 0;
 static uint8_t sendBuf[G2_SERVER_PROTOCOL_BUFFER_SIZE] = {0};
 WINAPI_EXPORT int WINAPI G2_SERVER_PACKET_write(g2_server_port_pt port, g2_server_packet_pt packet)
 {
+	sendInCnt += 1;
+	APP_LOG_debug("PROTOCOL send in cnt = %d\r\n", sendInCnt);
     HARDWARE_TAKE_SEMAPHORE(serialize_sem);		// 加锁，避免函数重入导致 sendBuf 数据错乱 
 	packet->device_id = G2_SERVER_PROTOCOL_DEVICE_ID;
 	if(packet->code == G2_SERVER_MESSAGE_OPERATION_DELETE)
@@ -254,6 +258,8 @@ WINAPI_EXPORT int WINAPI G2_SERVER_PACKET_write(g2_server_port_pt port, g2_serve
 	}
 #endif
     HARDWARE_GIVE_SEMAPHORE(serialize_sem);
+	sendOutCnt += 1;
+	APP_LOG_debug("PROTOCOL send out cnt = %d\r\n", sendOutCnt);
 	return PROTOCOL_OK;
 }
 

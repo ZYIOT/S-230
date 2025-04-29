@@ -42,11 +42,20 @@ void _iap_load_app(uint32_t appxaddr)
     APP_LOG_trace("Ready Jump to App,AppAddress:%x\r\n",appxaddr);
     HARDWARE_HAL_DELAY_MS(20);
 	BSP_WDG_stop();
+    __disable_irq(); // 在APP 应用的 SystemInit函数的最后加上 __enable_irq();
+    __set_PRIMASK(1); // 关闭STM32总中断
+    __set_FAULTMASK(1);
+#ifdef USE_HAL_DRIVER
+    HAL_RCC_DeInit();
+    HAL_DeInit();
+#endif
 #if (1 == DEBUG_JUMP_TO_APP_ENABLE)
     /* Jump to user application */
     jump_to_application = (pFunction) *(__IO uint32_t*) (appxaddr + 4);
     /* Initialize user application's Stack Pointer */
+    __set_PSP(*(__IO uint32_t *)appxaddr);
     __set_MSP(*(__IO uint32_t*) appxaddr);
+    __set_CONTROL(0);
     jump_to_application();							//跳转到APP.
 #else
 	firmware_setting_info_test_recv();
@@ -57,7 +66,8 @@ static void APP_FILEINFO_SHOW(void)
 {
     uint8_t *app_version_str = (uint8_t *)(FLASH_BOOTLOADER_START_ADDR + 0x400);
     uint32_t infoAddr = FLASH_BOOTLOADER_START_ADDR + 0x400;
-	BSP_LOG_show("<%s> boot file <%s> at %08x\r\n", compiler_time, app_version_str, infoAddr);
+	APP_LOG_show("boot file <%s> at %08x\r\n", app_version_str, infoAddr);
+    APP_LOG_show("compiler at <%s>\r\n", compiler_time);
 }
 
 int APP_MAIN(void)
@@ -78,7 +88,8 @@ int APP_MAIN(void)
         if((UPDATE_NO_ERROR == check) 
         || (UPDATE_ERROR_FILE_EXIST == check) 
         || (UPDATE_ERROR_DOWNLOAD_UNFINISH == check) 
-        || (UPDATE_ERROR_FILETYPE == check))
+        || (UPDATE_ERROR_FILETYPE == check) 
+        || (UPDATE_ERROR_BINTYPE == check))
         {
             _iap_load_app(FLASH_APP_START_ADDR);
         }

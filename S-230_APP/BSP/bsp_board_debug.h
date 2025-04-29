@@ -24,9 +24,9 @@ extern "C"
     // </c>
     // <c> 显示GPRS通讯数据 
     #define SHOW_GPRS_DATA 
-    // </c>    
+    // </c>
     // <c> 显示设备time 
-    //#define SHOW_DEVICE_TIME 
+    #define SHOW_DEVICE_TIME 
     // </c>
     // <c> 显示LCD的传感器状态 
     //#define SHOW_LCD_SENSOR_STATUS 
@@ -67,8 +67,13 @@ extern "C"
 // </c>
 
 //<c> 调试 PH202 的 ADC 值 
- //#define PH202_ADC_DEBUG 
+//#define PH202_ADC_DEBUG 
 // </c>
+
+//<c> 使能 DO 传感器有默认值  
+#define ENABLE_DO_SENSOR_DEFAULT 
+// </c>
+// #define USE_NEW_SENSOR_SCAN_DRIVER
 
 // </h>
 

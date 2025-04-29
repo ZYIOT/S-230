@@ -160,7 +160,7 @@ UPDATE_ERROR_TYPE_E _check_update_firmware_frame(g2_server_firmware_data_message
 }
 
 // 更新当前 update 固件信息到 eeprom 中
-static UPDATE_ERROR_TYPE_E _update_firmware_setting_back(void)
+static UPDATE_ERROR_TYPE_E _update_firmware_setting_back(uint8_t fileType)
 {
 	UPDATE_ERROR_TYPE_E rc = UPDATE_NO_ERROR;
 
@@ -168,7 +168,7 @@ static UPDATE_ERROR_TYPE_E _update_firmware_setting_back(void)
 	firmware_setting_info2.reserved[0] = 0;
 	firmware_setting_info2.reserved[1] = 0;
 	firmware_setting_info2.reserved[2] = 0;
-	firmware_setting_info2.reserved[3] = 0;
+	firmware_setting_info2.reserved[3] = fileType;
 	memcpy((uint8_t *)&firmware_setting_info2.firmware_info, (uint8_t *)&update_firmware_monitor.firmware_info, sizeof(usr_firmware_info_t));
 	if(DOWNLOAD_FINISH == _if_download_firmware_finish())
 	{
@@ -609,7 +609,7 @@ int G2_SERVER_write_firmware_data_message_process(g2_server_packet_pt packet)
 				else
 				{
 					// 更新写入的位置(到EEPROM)
-					_update_firmware_setting_back();
+					_update_firmware_setting_back(MCU_APP_FIRMWARE);
 				}
 				// 发送 download 完成帧
 				_send_firmware_download_end_message(packet, rc);

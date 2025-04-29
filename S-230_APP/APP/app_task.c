@@ -33,7 +33,7 @@
         .priority = (osPriority_t)_priority,                                                      \
         .stack_size = _stack};                                                                    \
     _##_name##_task_handle = osThreadNew(APP_##_name##_task_run, NULL, &_name##_task_attributes); \
-    APP_LOG_debug(#_name " handle %x\r\n", _##_name##_task_handle);                               \
+    APP_LOG_show("* "#_name " handle %x\r\n", _##_name##_task_handle);                            \
     HAL_Delay(10);
 
 
@@ -103,6 +103,8 @@ int APP_TASK_init(void)
     4、注意 DMA 相关的 buffer 不要分配到 CCM 中。
     */
     osKernelInitialize();
+    APP_LOG_show("APP TASK CONFIG INFO\r\n");
+    APP_LOG_show("*********************\r\n");
     __RUN_TASK(PROTOCOL, osPriorityHigh, 0x1C00);
     __RUN_TASK(SENSORS, osPriorityHigh, 0x1C00);
     __RUN_TASK(NETWORK, osPriorityAboveNormal, 0x1C00);
@@ -123,6 +125,7 @@ int APP_TASK_init(void)
 #ifdef SUPPORT_IRED
     __RUN_TASK(IRED, osPriorityAboveNormal, 0x400);
 #endif
+    APP_LOG_show("*********************\r\n");
     return APP_OK;
 }
 

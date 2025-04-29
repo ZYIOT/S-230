@@ -34,6 +34,7 @@ extern "C"
     #define RS485_DRIVER_CHLOROPHYLL_MANUFACTURER_PROBEST   0x02    // 福州普佩斯 
 
     // NH3 厂家编号 
+    #define RS485_DRIVER_NH3_MANUFACTURER_CHEMINS   0x01    // 烟台凯米斯 
     #define RS485_DRIVER_NH3_MANUFACTURER_PROBEST   0x02    // 福州普佩斯 
 
     // COD 厂家编号 
@@ -70,13 +71,25 @@ extern "C"
     #define RS485_SENSOR_MODEL_ID_SAL610          8 
     #define RS485_SENSOR_MODEL_ID_ORP320          9 
     #define RS485_SENSOR_MODEL_ID_ORP620          10 
-    #define RS485_SENSOR_MODEL_ID_PH260           11
-    #define RS485_SENSOR_MODEL_ID_DOY123          12
+    #define RS485_SENSOR_MODEL_ID_NHN710          11
+    #define RS485_SENSOR_MODEL_ID_COD861          12 
+    #define RS485_SENSOR_MODEL_ID_NHN720          13
+    #define RS485_SENSOR_MODEL_ID_COD860          14 
+    #define RS485_SENSOR_MODEL_ID_PH260           15
+    #define RS485_SENSOR_MODEL_ID_DOY123          16
+    #define RS485_SENSOR_MODEL_ID_NHN760          17
 
     // 传感器探头类型 theory 定义
     #define SENSOR_THEORY_OTHER     0   // 其他
     #define SENSOR_THEORY_MEMBRANE  1   // 膜法
     #define SENSOR_THEORY_OPTICS    2   // 荧光法
+    #define SENSOR_THEORY_3         3 
+    #define SENSOR_THEORY_4         4 
+    #define SENSOR_THEORY_5         5 
+    #define SENSOR_THEORY_6         6 
+    #define SENSOR_THEORY_7         7
+    #define SENSOR_THEORY_8         8 
+    #define SENSOR_THEORY_9         9
 
     // 传感器 SN_CODE 定义
     #define SENSOR_SN_CODE_DO100    (3100)
@@ -90,6 +103,7 @@ extern "C"
     #define SENSOR_SN_CODE_DOY123   (3123)
     #define SENSOR_SN_CODE_DOY150   (3150)
     #define SENSOR_SN_CODE_DOY170   (3170)
+    #define SENSOR_SN_CODE_DOY180   (3180)
     #define SENSOR_SN_CODE_PH200    (3200)
     #define SENSOR_SN_CODE_PH201    (3201)
     #define SENSOR_SN_CODE_PH202    (3202)
@@ -100,6 +114,9 @@ extern "C"
     #define SENSOR_SN_CODE_ORP320   (3320)
     #define SENSOR_SN_CODE_SAL610   (3610)
     #define SENSOR_SN_CODE_ORP620   (3620)
+    #define SENSOR_SN_CODE_NHN710   (3710)
+    #define SENSOR_SN_CODE_NHN760   (3760)
+    #define SENSOR_SN_CODE_COD861   (3861)
     #define SENSOR_SN_CODE_WL991    (3991)
 
     #define SENSOR_SN_ID_DEFAULT    (1)
@@ -152,8 +169,16 @@ extern "C"
     #include "drivers/sensors/chemins/orp620.h"
     #endif
 
-    #ifdef ENABLE_RS485_DIRVER_SENSOR_PH260
+    #ifdef ENABLE_RS485_DIRVER_SENSORS_CHEMINS_PH260
     #include "drivers/sensors/chemins/ph260.h"
+    #endif
+
+    #ifdef ENABLE_RS485_DRIVER_SENSOR_DO_DEFAULT
+    #include "drivers/sensors/zyiot/do_default.h"
+    #endif
+
+    #ifdef ENABLE_RS485_DRIVER_SENSORS_CHEMINS_NHN760
+    #include "drivers/sensors/chemins/nhn760.h"
     #endif
 
     int RS485_DRIVER_init(void);

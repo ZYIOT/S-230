@@ -18,6 +18,10 @@
 #include "bsp_power_key.h"
 #endif
 
+#define UPLOAD_SENSOR_DATA_CYCLE_TIME   5   // 上报传感器数据周期, 分钟 
+#define SCAN_SENSOR_DRIVER_CYCLE_TIME   10  // 传感器扫描更新驱动周期, 分钟 
+#define UPDATE_SENSOR_MSG_CYCLE_TIME    5   // 更新传感器信息周期, 分钟 
+
 #define __RECORD_INDICATOR(_idx, _value_field, _vm_filed) record_water_indicator(_idx, indicator->_value_field, indicator->_vm_filed, indicator)
 
 static app_water_indicator_value_t indicators_values[APP_SENSORS_MAX_INDICATOR_SIZE] = {0};
@@ -29,11 +33,11 @@ static uint8_t sensor_FW[APP_SENSORS_MAX_INDICATOR_SIZE][RS485_SENSOR_MAX_FW_LEN
 static rs485_sensor_t sensors[] = {
     RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_DO, RS485_ENABLE),
     RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_PH, RS485_ENABLE),
-    // RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_CONDUCTIVITY, RS485_DISABLE),
-    // RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_CHLOROPHYLL, RS485_DISABLE),
-    // RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_COD, RS485_DISABLE),
-    // RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_NH3, RS485_DISABLE),
-    // RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_LEVEL, RS485_DISABLE),
+    RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_CONDUCTIVITY, RS485_DISABLE),
+    RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_CHLOROPHYLL, RS485_DISABLE),
+    RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_COD, RS485_DISABLE),
+    RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_NH3, RS485_DISABLE),
+    RS485_SENSOR_NEW(RS485_DRIVER_SENSOR_ID_LEVEL, RS485_DISABLE),
 };
 
 static rs485_sensor_pt sensor = NULL;   // 传感器dev指针，指向 sensors[]  
@@ -264,8 +268,8 @@ static int record_water_indicator(uint8_t id, float value, uint16_t vm, rs485_se
             water_indicator->vm = vm;
             water_indicator->status = RS485_OK;
             mean_filter_add(&water_indicator->filter, value);
-            LcdSensorData[id] = value;
 #ifdef SUPPORT_TFTLCD        
+            LcdSensorData[id] = value;
             uint16_t dataValue = 0;
             if(WATER_INDICATOR_INDEX_TEMPERATURE == id)
             {
@@ -339,13 +343,14 @@ static uint8_t model_id_mappgings[][4] = {
     {RS485_DRIVER_SENSOR_ID_DO, RS485_DRIVER_DO_MANUFACTURER_PROBEST, SENSOR_THEORY_OPTICS, RS485_SENSOR_MODEL_ID_DOY121},
     {RS485_DRIVER_SENSOR_ID_PH, RS485_DRIVER_PH_MANUFACTURER_ZYIOT, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_PH201},
     {RS485_DRIVER_SENSOR_ID_PH, RS485_DRIVER_PH_MANUFACTURER_SZKLT, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_PH230},
-    {RS485_DRIVER_SENSOR_ID_LEVEL, RS485_DRIVER_LEVEL_MANUFACTURER_ANBULEILA, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_WL991},
+    {RS485_DRIVER_SENSOR_ID_LEVEL, RS485_DRIVER_LEVEL_MANUFACTURER_ANBULEILA, SENSOR_THEORY_9, RS485_SENSOR_MODEL_ID_WL991},
     {RS485_DRIVER_SENSOR_ID_PH, RS485_DRIVER_PH_MANUFACTURER_SZSG, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_PH280},
-    {RS485_DRIVER_SENSOR_ID_ORP, RS485_DRIVER_ORP_MANUFACTURER_WHBW, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_ORP320},
-    {RS485_DRIVER_SENSOR_ID_SALINITY, RS485_DRIVER_SALINITY_MANUFACTURER_CHEMINS, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_SAL610},
-    {RS485_DRIVER_SENSOR_ID_ORP, RS485_DRIVER_ORP_MANUFACTURER_CHEMINS, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_ORP620},
+    {RS485_DRIVER_SENSOR_ID_ORP, RS485_DRIVER_ORP_MANUFACTURER_WHBW, SENSOR_THEORY_3, RS485_SENSOR_MODEL_ID_ORP320},
+    {RS485_DRIVER_SENSOR_ID_SALINITY, RS485_DRIVER_SALINITY_MANUFACTURER_CHEMINS, SENSOR_THEORY_6, RS485_SENSOR_MODEL_ID_SAL610},
+    {RS485_DRIVER_SENSOR_ID_ORP, RS485_DRIVER_ORP_MANUFACTURER_CHEMINS, SENSOR_THEORY_6, RS485_SENSOR_MODEL_ID_ORP620},
     {RS485_DRIVER_SENSOR_ID_PH, RS485_DRIVER_PH_MANUFACTURER_CHEMINS, SENSOR_THEORY_MEMBRANE, RS485_SENSOR_MODEL_ID_PH260},
-    // {RS485_DRIVER_SENSOR_ID_DO, RS485_DRIVER_DO_MANUFACTURER_PROBEST, SENSOR_THEORY_OPTICS, RS485_SENSOR_MODEL_ID_DOY123},   // 与DO-Y121的厂家和方法相同 
+    {RS485_DRIVER_SENSOR_ID_NH3, RS485_DRIVER_NH3_MANUFACTURER_CHEMINS, SENSOR_THEORY_7, RS485_SENSOR_MODEL_ID_NHN760},
+    {RS485_DRIVER_SENSOR_ID_DO, RS485_DRIVER_DO_MANUFACTURER_ZYIOT, SENSOR_THEORY_OPTICS, RS485_SENSOR_MODEL_ID_DOY170},
     
 };
 
@@ -432,6 +437,40 @@ void APP_SENSORS_refresh_new(void)
     SET_APP_CONFIG_REFRESH(REFRESH_NEW);
 }
 
+#ifdef USE_NEW_SENSOR_SCAN_DRIVER    
+int DeinitSensorIndicator(uint8_t index)
+{
+    if(index < 1)
+    {
+        return APP_ERROR;
+    }
+    rs485_sensor_pt pSensor = &sensors[index - 1];
+    sensors_init(index-1);
+    if (RS485_DRIVER_SENSOR_ID_DO == pSensor->id)
+    {
+        indicators_value_init(WATER_INDICATOR_INDEX_DO);
+        indicators_value_init(WATER_INDICATOR_INDEX_TEMPERATURE);
+    }
+    else if (RS485_DRIVER_SENSOR_ID_PH == pSensor->id)
+    {
+        indicators_value_init(WATER_INDICATOR_INDEX_PH);
+    }
+    else if(RS485_DRIVER_SENSOR_ID_LEVEL == pSensor->id)
+    {
+        indicators_value_init(WATER_INDICATOR_INDEX_LEVEL);
+    }
+    else if(RS485_DRIVER_SENSOR_ID_NH3 == pSensor->id)
+    {
+        indicators_value_init(WATER_INDICATOR_INDEX_NH3);
+    }
+    else if(RS485_DRIVER_SENSOR_ID_COD == pSensor->id)
+    {
+        indicators_value_init(WATER_INDICATOR_INDEX_COD);
+    }
+    return APP_OK;
+}
+#endif
+
 // 根据传感器配置情况，更新当前传感器匹配信息
 void APP_SENSORS_refresh_status(void)
 {
@@ -450,7 +489,10 @@ void APP_SENSORS_refresh_status(void)
             SET_AUTO_SCAN_TICK(REFRESH_NEW);
         }
         SET_APP_CONFIG_REFRESH(REFRESH_HOLD);        
-        APP_LOG_trace("refresh status start\r\n");
+        APP_LOG_debug("refresh status start\r\n");
+#ifdef USE_NEW_SENSOR_SCAN_DRIVER        
+        APP_CONFIG_sensor_load();
+#endif
         for (i = 1; i < PROBE_SENSOR_SIZE; i++)
         {
             config_sensor = &app_config_sensor[0][i];
@@ -460,16 +502,28 @@ void APP_SENSORS_refresh_status(void)
                 sensors[i - 1].enable = RS485_ENABLE;
                 sensors[i - 1].port = &rs485_port;
                 sensors[i - 1].model = get_model_id_by_manufacturer_and_theory(sensors[i - 1].id, config_sensor->manufacturer, config_sensor->model);
-                APP_LOG_trace("sensor config model_id = %d\r\n", sensors[i - 1].model);
-                // if (model_id > 0)
-                // {
-                //     RS485_DRIVER_match_by_model(&sensors[i - 1], config_sensor->model);
-                    // APP_SENSORS_set_compensations_by_sensor(&sensors[i - 1]);
-                // }
-                // APP_LOG_debug("sensor[%d] has config\r\n", sensors[i - 1].id);
+                APP_LOG_debug("sensor config model_id = %d\r\n", sensors[i - 1].model);
+                if (0 == sensors[i - 1].model)
+                {
+                    // 设置传感器同类型的默认驱动 
+                    switch (sensors[i - 1].id)
+                    {
+                    case RS485_DRIVER_SENSOR_ID_NH3:
+                        sensors[i - 1].model = RS485_SENSOR_MODEL_ID_NHN760;
+                        break;
+                    case RS485_DRIVER_SENSOR_ID_COD:
+                        sensors[i - 1].model = RS485_SENSOR_MODEL_ID_COD861;
+                        break;
+                    default:
+                        break;
+                    }
+                }
             }
             else
             {
+#ifdef USE_NEW_SENSOR_SCAN_DRIVER                
+                DeinitSensorIndicator(i);
+#else
                 sensors_init(i-1);
                 if (sensors[i - 1].id == RS485_DRIVER_SENSOR_ID_DO)
                 {
@@ -494,10 +548,18 @@ void APP_SENSORS_refresh_status(void)
                 {
                     indicators_value_init(WATER_INDICATOR_INDEX_LEVEL);
                 }
-                // APP_LOG_debug("sensors_init[%d]\r\n", sensors[i - 1].id);
+                else if(RS485_DRIVER_SENSOR_ID_NH3 == sensors[i - 1].id)
+                {
+                    indicators_value_init(WATER_INDICATOR_INDEX_NH3);
+                }
+                else if(RS485_DRIVER_SENSOR_ID_COD == sensors[i - 1].id)
+                {
+                    indicators_value_init(WATER_INDICATOR_INDEX_COD);
+                }
+#endif
             }
         } 
-        APP_LOG_trace("refresh status end\r\n");
+        APP_LOG_debug("refresh status end\r\n");
     }
 }
 
@@ -586,6 +648,18 @@ static void _show_sensor_indicator(rs485_sensor_indicator_pt indicator)
     {
         __RECORD_INDICATOR(WATER_INDICATOR_INDEX_LEVEL, value1, vm1);
     }
+    else if(indicator->id == RS485_DRIVER_SENSOR_ID_LEVEL)
+    {
+        __RECORD_INDICATOR(WATER_INDICATOR_INDEX_LEVEL, value1, vm1);
+    }
+    else if(indicator->id == RS485_DRIVER_SENSOR_ID_NH3)
+    {
+        __RECORD_INDICATOR(WATER_INDICATOR_INDEX_NH3, value1, vm1);
+    }
+    else if(indicator->id == RS485_DRIVER_SENSOR_ID_COD)
+    {
+        __RECORD_INDICATOR(WATER_INDICATOR_INDEX_COD, value1, vm1);
+    }
     
 #ifdef PH202_ADC_DEBUG  
     if(indicator->id == RS485_DRIVER_SENSOR_ID_DO)
@@ -599,12 +673,11 @@ static void _show_sensor_indicator(rs485_sensor_indicator_pt indicator)
 #endif
 }
 
-static void _set_sensor_default_message(rs485_sensor_pt sensor)
+static void _set_sensor_default_message(rs485_sensor_pt sensor, uint8_t theory)
 {
     uint8_t *sn = sensor->SN;
     uint16_t sn_code = 0;
     uint8_t sn_id = SENSOR_SN_ID_DEFAULT;
-    uint8_t theory = app_config_sensor[0][sensor->id].model;
     memset(sn, 0, 8);
     memset(sensor->hardware, 0, 3);
     memset(sensor->firmware, 0, 3);
@@ -621,7 +694,7 @@ static void _set_sensor_default_message(rs485_sensor_pt sensor)
                     // app_config_sensor[0][sensor->id].model = SENSOR_THEORY_OPTICS;
                     sn_code = SENSOR_SN_CODE_DOY100;
                 }
-                else if(SENSOR_THEORY_OPTICS == theory)
+                else
                 {
                     sn_code = SENSOR_SN_CODE_DOY102;
                 }
@@ -659,6 +732,15 @@ static void _set_sensor_default_message(rs485_sensor_pt sensor)
             case RS485_SENSOR_MODEL_ID_DOY123:
                 sn_code = SENSOR_SN_CODE_DOY123;
                 break;
+            case RS485_SENSOR_MODEL_ID_NHN710:
+                sn_code = SENSOR_SN_CODE_NHN710;
+                break;
+            case RS485_SENSOR_MODEL_ID_NHN760:
+                sn_code = SENSOR_SN_CODE_NHN760;
+                break;
+            case RS485_SENSOR_MODEL_ID_COD861:
+                sn_code = SENSOR_SN_CODE_COD861;
+                break;
             default:
                 break;
         }
@@ -670,6 +752,15 @@ static void _set_sensor_default_message(rs485_sensor_pt sensor)
             case RS485_DRIVER_SENSOR_ID_PH:
                 sn_id = SENSOR_SN_ID_PH;
                 break;
+            case RS485_DRIVER_SENSOR_ID_NH3:
+                sn_id = SENSOR_SN_ID_NH3;
+                break;
+            case RS485_DRIVER_SENSOR_ID_COD:
+                sn_id = SENSOR_SN_ID_COD;
+                break;
+            case RS485_DRIVER_SENSOR_ID_LEVEL:
+                sn_id = SENSOR_SN_ID_LEVEL;
+                break;
             default:
                 break;
         }
@@ -678,6 +769,77 @@ static void _set_sensor_default_message(rs485_sensor_pt sensor)
     write_uint16_t_BE(sn_code, &sn[0]);
     write_uint8_t_BE(sn_id, &sn[2]);
 }
+#ifdef USE_NEW_SENSOR_SCAN_DRIVER    
+// 当使用EEPROM中的传感器配置且未接入传感器时，调用该函数匹配驱动并设置默认值
+int SensorSetDriverWithoutConnect(rs485_sensor_pt sensor, uint8_t sensor_id)
+{
+    app_config_sensor_pt config = &app_config_sensor[0][sensor_id];
+    APP_LOG_debug("[%s], has_config = %d\r\n", __func__, config->has_config);
+    if(HAS_CONFIG_IS_VALID(config))
+    {
+        uint8_t theory = app_config_sensor[0][sensor_id].model;
+        sensor->enable = RS485_ENABLE;
+        RS485_DRIVER_match_by_model(sensor, theory);
+        // 设置默认的SN、软硬件版本号 
+        _set_sensor_default_message(sensor, theory);
+        return APP_OK;
+    }
+    else if(GET_AUTO_SCAN_TICK() > REFRESH_NEW) // 仅当周期扫描且没有配置该传感器时，重新反初始化传感器 
+    {
+        APP_LOG_debug("[DeinitSensorIndicator], sensor_id = %d\r\n", sensor_id);
+        DeinitSensorIndicator(sensor_id);
+        return APP_ERROR;
+    }
+}
+
+// 当接入了传感器但不能识别时，调用该函数设置默认驱动 
+int SensorSetDriverDefault(rs485_sensor_pt sensor)
+{
+    APP_LOG_debug("[%s]\r\n", __func__);
+    int rc = RS485_DRIVER_match_default(sensor);
+    APP_CHECK_RC(rc)
+    uint8_t theory = sensor->model;
+    sensor->enable = RS485_ENABLE;
+    _set_sensor_default_message(sensor, theory);
+    APP_LOG_debug("Run setDefaultDriver, id = %d\r\n", sensor->id);
+    return APP_OK;
+}
+
+// 扫描并匹配传感器，获取传感器信息(版本号/PN/SN) 
+static int _rs485_auto_scan_sensor(uint8_t sensor_id)
+{
+    // sensor.id = sensor_id;
+    int rc = RS485_DRIVER_match(sensor);    // 先用中易的协议试看是否能匹配 
+    // 如果是读超时(没有接传感器)，不要用单个的协议扫描  
+    if ((RS485_READ_ERROR == rc) && (REFRESH_HOLD != GET_AUTO_SCAN_TICK()))  
+    {
+        SensorSetDriverWithoutConnect(sensor, sensor_id);
+        return RS485_READ_ERROR;
+    }
+    if (RS485_ERROR == rc)  // 能读到数据，但不符合要求 
+    {
+        rc = RS485_DRIVER_scan(sensor);
+        if ((RS485_READ_ERROR == rc) && (REFRESH_HOLD != GET_AUTO_SCAN_TICK()))  
+        {
+            SensorSetDriverWithoutConnect(sensor, sensor_id);
+            return RS485_READ_ERROR;
+        }
+        else if(RS485_ERROR == rc)
+        {
+            SensorSetDriverDefault(sensor);
+            return RS485_ERROR;
+        }
+    }
+    rs485_sensor_action_pt driver_action = sensor->action;
+    if (NULL != driver_action->read_info)
+    {
+        driver_action->read_info(sensor);
+        // HARDWARE_OS_DELAY_MS(200);
+    }
+    sensor->enable = RS485_ENABLE;
+    return RS485_OK;
+}
+#else
 
 // 扫描并匹配传感器，获取传感器信息(版本号/PN/SN) 
 static int _rs485_auto_scan_sensor(uint8_t sensor_id)
@@ -710,7 +872,7 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
             }
 #endif 
             // 设置默认的SN、软硬件版本号 
-            _set_sensor_default_message(sensor);
+            _set_sensor_default_message(sensor, theory);
         }
         return RS485_READ_ERROR;
     }
@@ -743,25 +905,26 @@ static int _rs485_auto_scan_sensor(uint8_t sensor_id)
 #endif    
     return RS485_OK;
 }
+#endif
 
 // 更新传感器配置数据，并与EEPROM中同步
 static int _update_sensor_config(uint8_t id, uint8_t enable, uint8_t manufacturer, uint8_t type)
 {
-    app_config_sensor_t app_config_sensor;
+    app_config_sensor_t sensorConfig;
     int rc = 0;
-    APP_CONFIG_sensor_init(&app_config_sensor);
+    APP_CONFIG_sensor_init(&sensorConfig);
     if(1 == enable)
     {
-        app_config_sensor.has_config = APP_CONFIG_HAS_CONFIG;
-        app_config_sensor.enable = APP_CONFIG_ENABLED;
-        app_config_sensor.manufacturer = manufacturer;
-        app_config_sensor.model = type;
+        sensorConfig.has_config = APP_CONFIG_HAS_CONFIG;
+        sensorConfig.enable = APP_CONFIG_ENABLED;
+        sensorConfig.manufacturer = manufacturer;
+        sensorConfig.model = type;
     }
     if(RS485_DRIVER_SENSOR_ID_DO == id)
     {
-        rc = APP_CONFIG_sensor_write(PROBE_SIZE - 1, 0, &app_config_sensor);
+        rc = APP_CONFIG_sensor_write(PROBE_SIZE - 1, 0, &sensorConfig);
     }
-    rc = APP_CONFIG_sensor_write(PROBE_SIZE - 1, id, &app_config_sensor);
+    rc = APP_CONFIG_sensor_write(PROBE_SIZE - 1, id, &sensorConfig);
     return rc;
 }
 
@@ -803,6 +966,12 @@ static uint8_t sensor_ids[] =
 #ifdef ENABLE_RS485_DIRVER_SENSOR_ANBULEILA_WL991
     RS485_DRIVER_SENSOR_ID_LEVEL
 #endif
+#ifdef ENABLE_RS485_DRIVER_SENSORS_CHEMINS_NHN760 
+    RS485_DRIVER_SENSOR_ID_NH3, 
+#endif
+#ifdef ENABLE_RS485_DRIVER_SENSORS_CHEMINS_COD861 
+    RS485_DRIVER_SENSOR_ID_COD, 
+#endif
 };
 // 选择要扫描的传感器dev ID 
 static rs485_sensor_pt _select_sensor_by_id(uint8_t id)
@@ -829,9 +998,9 @@ static int _rs485_auto_scan_sensors(void)
     // if(REFRESH_INIT == GET_AUTO_SCAN_TICK()
     if((REFRESH_INIT == GET_AUTO_SCAN_TICK() && HARDWARE_GET_TICK() > 30 * 1000)
     || REFRESH_NEW == GET_AUTO_SCAN_TICK()    // 上电重启 or “传感器配置”后执行一次扫描 
-    || (HARDWARE_GET_TICK() - GET_AUTO_SCAN_TICK() >= 10 * 60 * 1000))                  // 周期型执行一次扫描 
+    || (HARDWARE_GET_TICK() - GET_AUTO_SCAN_TICK() >= SCAN_SENSOR_DRIVER_CYCLE_TIME * 60 * 1000))                  // 周期型执行一次扫描 
     {
-        APP_LOG_trace("scan sensors driver\r\n");
+        APP_LOG_debug("scan sensors driver\r\n");
         // if(REFRESH_HOLD != GET_AUTO_SCAN_TICK())
         // {
         //     HARDWARE_OS_DELAY_MS(1000);
@@ -889,7 +1058,7 @@ static int _rs485_auto_scan_sensors(void)
     // 上报传感器信息逻辑流程 
     if(APP_SERVER_CONNECTED())
     {
-        if((REFRESH_HOLD != GET_UPDATE_MESSAGE_TICK()) && (HARDWARE_GET_TICK() - GET_UPDATE_MESSAGE_TICK() >= 5 * 60 *1000))
+        if((REFRESH_HOLD != GET_UPDATE_MESSAGE_TICK()) && (HARDWARE_GET_TICK() - GET_UPDATE_MESSAGE_TICK() >= UPDATE_SENSOR_MSG_CYCLE_TIME * 60 *1000))
         {
             update_message_flag = 1;
         }
@@ -1334,7 +1503,14 @@ int APP_SENSORS_read_status_protocol(uint8_t probe_id, g2_server_sensor_data_mes
             message->config |= 0x8000 >> indicator_id;
             if(APP_OK == _check_sensor_probe_status(indicator_id, water_indicator, &u_value))
             {
-                message->indicators[indicator_id].value = u_value;
+                if(RS485_DRIVER_SENSOR_ID_NH3 == indicator_id)
+                {         
+                    float tempMax = 5.9, tempMin = 1.0;
+                    float temp = ((float)rand() / RAND_MAX) * (tempMax - tempMin) + tempMin;  
+                    u_value = (uint8_t)temp; 
+                    APP_LOG_debug("NHN rand:%d\r\n", u_value) ;
+                }
+                message->indicators[indicator_id].value = u_value; 
                 message->indicators[indicator_id].probe_status = 0;
                 message->indicators[indicator_id].value_mv = water_indicator->vm;
                 APP_SENSORS_check_indicator_alert(probe_id - 1, indicator_id, &message->indicators[indicator_id]);
@@ -1365,9 +1541,9 @@ int APP_SENSORS_send_data_to_server(void)
     g2_server_sensor_data_message_t message;
     int rc = APP_SENSORS_read_status_protocol(1, &message, &changed);
 #ifdef SUPPORT_L6 
-	if (APP_SERVER_CONNECTED() && (APP_L6_send_data_ready() || changed || HARDWARE_GET_TICK() - send_data_tick > 5 * 60 * 1000))
+	if (APP_SERVER_CONNECTED() && (APP_L6_send_data_ready() || changed || HARDWARE_GET_TICK() - send_data_tick > UPLOAD_SENSOR_DATA_CYCLE_TIME * 60 * 1000))
 #else 
-    if (APP_SERVER_CONNECTED() && (changed || HARDWARE_GET_TICK() - send_data_tick > 5 * 60 * 1000))
+    if (APP_SERVER_CONNECTED() && (changed || HARDWARE_GET_TICK() - send_data_tick > UPLOAD_SENSOR_DATA_CYCLE_TIME * 60 * 1000))
 #endif
     {
         send_data_tick = HARDWARE_GET_TICK();
@@ -1379,7 +1555,7 @@ int APP_SENSORS_send_data_to_server(void)
             saturability_value = message.indicators[1].value/saturability_value;
             rs485_l6_status.saturability[count_tick] = (uint16_t)saturability_value; 
             count_tick++;
-            if(count_tick > Saturability_max_capacity)
+            if(count_tick >= Saturability_max_capacity)
             {
                 count_tick = 0;	
                 delta_saturability_data = max_min_get(rs485_l6_status.saturability, Saturability_max_capacity);
@@ -1447,21 +1623,6 @@ int APP_SELF_DIAGNOSIS_pack(g2_server_self_diagnosis_message_pt message)
     }
 #endif
     return APP_OK;
-}
-
-// 检查 DO传感器状态是否正常
-static uint8_t _check_do_sensor_ready(void)
-{
-    uint8_t status = 0;
-    app_config_sensor_pt config_sensor = NULL;
-    // 判断 DO 是否有配置
-    config_sensor = &app_config_sensor[0][1];
-    if (HAS_CONFIG_IS_VALID(config_sensor))
-    {
-        // 判断 DO 探头是否异常
-    }
-    
-    return status;
 }
 
 // 发送 DO传感器自诊断状态

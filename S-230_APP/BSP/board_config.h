@@ -26,7 +26,7 @@ extern "C"
 #define RELAY_SIZE          1
 #define RELAY_CHANNEL_SIZE  5
 #define PROBE_SIZE          1
-#define PROBE_SENSOR_SIZE   3
+#define PROBE_SENSOR_SIZE   8
 #define INDICATOR_SIZE      8
 
 
@@ -92,8 +92,8 @@ extern "C"
 // <o3> BUILD 
 #define APP_FIRMWARE_MAJOR 3
 #define APP_FIRMWARE_MINOR 0
-#define APP_FIRMWARE_REVISION 0
-#define APP_FIRMWARE_BUILD 0
+#define APP_FIRMWARE_REVISION 1
+#define APP_FIRMWARE_BUILD 4
 // </e>
 #define ENABLE_EDIT_APP_FIRMWARE_VERSION  0
 

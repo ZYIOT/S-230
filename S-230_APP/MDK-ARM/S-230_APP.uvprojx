@@ -773,6 +773,16 @@
               <FileType>1</FileType>
               <FilePath>..\RS485\drivers\sensors\chemins\ph260.c</FilePath>
             </File>
+            <File>
+              <FileName>do_default.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\RS485\drivers\sensors\zyiot\do_default.c</FilePath>
+            </File>
+            <File>
+              <FileName>nhn760.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\RS485\drivers\sensors\chemins\nhn760.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

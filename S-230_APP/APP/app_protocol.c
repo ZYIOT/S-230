@@ -97,6 +97,7 @@ void APP_PROTOCOL_task_run(void *argument)
 {
     g2_server_packet_t packet;
     int rc = 0;
+    uint32_t recvCnt = 0;
     BSP_PROTOCOL_init();
     for (;;)
     {
@@ -104,6 +105,8 @@ void APP_PROTOCOL_task_run(void *argument)
         rc = BSP_PROTOCOL_PACKET_read(&packet);
         if (rc == PROTOCOL_OK)
         {
+            recvCnt += 1;
+            APP_LOG_debug("PROTOCOL recv cnt = %d\r\n", recvCnt);
             if (G2_SERVER_receive_packet(&packet) == PROTOCOL_NOT_SUPPORT)
             {
                 BSP_PROTOCOL_send_error_response(&packet);

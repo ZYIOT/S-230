@@ -1,3 +1,13 @@
+/*
+ * @Description: 
+ * @FilePath: \Y-520_main_control_boot\Bsp\board_config.h
+ * @Version: 1.0
+ * @Author: ZYIOT_Z&L
+ * @Date: 2022-11-29 10:21:29
+ * @LastEditTime: 2024-02-18 14:20:27
+ * @LastEditors: ZYIOT_Z&L
+ * @Company: zytdwl @copyright 
+ */
 #ifndef __BSP_CONFIG_H
 #define __BSP_CONFIG_H
 
@@ -8,7 +18,7 @@ extern "C"
 
 #define BSP_LOG_DEFAULT_LEVEL 5
 #define ENABLE_LOG_TRACE
-#define DISABLE_WDG
+//#define DISABLE_WDG
 
 
 // DEBUG 时使用的变量宏定义 

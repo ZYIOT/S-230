@@ -41,6 +41,11 @@ int BSP_HAL_init(void)
   int rc = DWT_init();
   APP_CHECK_RC_AND_RESET(rc);
   HAL_TIM_Base_Start_IT(&htim2);
+  
+  __enable_irq();
+  __set_PRIMASK(0);
+  __set_FAULTMASK(0);
+  
   return APP_OK;
 }
 

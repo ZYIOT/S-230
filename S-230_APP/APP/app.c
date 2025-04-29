@@ -37,6 +37,31 @@ static void APP_FILEINFO_SHOW(void)
     APP_LOG_show("compiler at <%s>\r\n", compiler_time);
 }
 
+static void APP_LOGINFO_SHOW(void)
+{
+    APP_LOG_show("APP LOG CONFIG INFO\r\n");
+    APP_LOG_show("*********************\r\n");
+#ifdef SHOW_RS485_DATA
+    APP_LOG_show("* show [RS485 DATA]\r\n");
+#endif
+#ifdef SHOW_PROTOCOL_DATA
+    APP_LOG_show("* show [PROTOCOL DATA]\r\n");
+#endif
+#ifdef SHOW_GPRS_DATA
+    APP_LOG_show("* show [GPRS DATA]\r\n");
+#endif
+#ifdef SHOW_DEVICE_TIME
+    APP_LOG_show("* show [DEVICE TIME]\r\n");
+#endif
+#ifdef SHOW_LCD_SENSOR_STATUS
+    APP_LOG_show("* show [LCD SENSOR STATUS]\r\n");
+#endif
+#ifdef SHOW_PUMP_STATUS
+    APP_LOG_show("* show [PUMP STATUS]\r\n");
+#endif
+    APP_LOG_show("*********************\r\n");
+}
+
 static int _app_init(void)
 {
     MCU_STATE_ON();
@@ -57,14 +82,15 @@ static int _app_init(void)
 
 int main(void)
 {
-    __HAL_RCC_HSI_ENABLE();
-    __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
+    // __HAL_RCC_HSI_ENABLE();
+    // __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
     BSP_HAL_init();
     BSP_UART_init();
     APP_LOG_init();
     APP_LOG_level_show();
     APP_LOGO_show();
 	APP_FILEINFO_SHOW();
+    APP_LOGINFO_SHOW();
     _app_init();
     APP_TASK_init();
     BSP_WDG_feed();

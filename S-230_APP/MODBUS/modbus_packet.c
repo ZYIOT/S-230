@@ -146,8 +146,8 @@ static int _find_header(modbus_port_pt port, modbus_packet_pt packet)
     {
       rc = port->read(&buffer[MODBUS_HEADER_SIZE - 1], 1, MODBUS_READ_TIMEOUT);
     }
-    new_header = 1;
     MODBUS_CHECK_READ_RC_AND_RETURN
+    new_header = 1;
     _header_deserialize(buffer, packet);
     if (_check_header(packet) == MODBUS_OK)
     {
