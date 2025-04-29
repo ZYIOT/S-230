@@ -3,12 +3,12 @@
 #include "bsp_mcu.h"
 #include "bsp_wdg.h"
 #include "board_config.h"
+#include "bsp_board_debug.h"
 #include "app.h"
 #include "app_log.h"
 #include "app_update_firmware.h"
-#if DEBUG_FIRMWARE_SETTING_INFO_TEST
-#include "firmware_setting_info_test.h"
-#endif
+#include "app_config/map.h"
+
 
 
 // 版本更改时，修改board_config.h里对应的版本号的宏的值即可
@@ -37,6 +37,7 @@ pFunction jump_to_application;
  * 其    它    : 
 
 *****************************************************************************/
+#if 1
 void _iap_load_app(uint32_t appxaddr)
 {
     APP_LOG_trace("Ready Jump to App,AppAddress:%x\r\n",appxaddr);
@@ -61,6 +62,23 @@ void _iap_load_app(uint32_t appxaddr)
 	firmware_setting_info_test_recv();
 #endif
 }
+#else
+void _iap_load_app(uint32_t appxaddr)
+{
+    APP_LOG_trace("Ready Jump to App,AppAddress:%x\r\n",appxaddr);
+    HARDWARE_HAL_DELAY_MS(20);
+	BSP_WDG_stop();
+#if (1 == DEBUG_JUMP_TO_APP_ENABLE)
+    /* Jump to user application */
+    jump_to_application = (pFunction) *(__IO uint32_t*) (appxaddr + 4);
+    /* Initialize user application's Stack Pointer */
+    __set_MSP(*(__IO uint32_t*) appxaddr);
+    jump_to_application();							//跳转到APP.
+#else
+	firmware_setting_info_test_recv();
+#endif
+}
+#endif
 
 static void APP_FILEINFO_SHOW(void)
 {

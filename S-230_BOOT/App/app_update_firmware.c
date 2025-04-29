@@ -3,9 +3,12 @@
 #include "app_update_firmware.h"
 #include "stm32_flash.h"
 #include "board_config.h"
+#include "bsp_board_debug.h"
 #include "bsp_mcu.h"
 #include "bsp_wdg.h"
 #include "app_log.h"
+#include "app_config/map.h"
+#include "app_config/defines.h"
 #include "app_config/message.h"
 #include "utils.h"
 #if DEBUG_FIRMWARE_SETTING_INFO_TEST

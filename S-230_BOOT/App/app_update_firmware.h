@@ -10,8 +10,6 @@ extern "C"
 #endif
 
 #include "main.h"
-#include "app_config/map.h"
-#include "app_config/defines.h"
 
 
 #define REBOOT_TRY_MAX_COUNT	(5)		// 尝试 reboot 的最大次数 

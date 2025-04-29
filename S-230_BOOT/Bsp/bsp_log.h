@@ -6,6 +6,7 @@ extern "C"
 {
 #endif
 #include "app.h"
+#include "bsp_board_debug.h"
 
 /* DO NOT USE log methods in ISR */
 #define BSP_LOG_LEVEL_NONE 0

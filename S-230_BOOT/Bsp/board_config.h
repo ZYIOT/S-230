@@ -1,13 +1,4 @@
-/*
- * @Description: 
- * @FilePath: \Y-520_main_control_boot\Bsp\board_config.h
- * @Version: 1.0
- * @Author: ZYIOT_Z&L
- * @Date: 2022-11-29 10:21:29
- * @LastEditTime: 2024-02-18 14:20:27
- * @LastEditors: ZYIOT_Z&L
- * @Company: zytdwl @copyright 
- */
+/* encoding = GBK */
 #ifndef __BSP_CONFIG_H
 #define __BSP_CONFIG_H
 
@@ -16,33 +7,44 @@ extern "C"
 {
 #endif
 
-#define BSP_LOG_DEFAULT_LEVEL 5
-#define ENABLE_LOG_TRACE
-//#define DISABLE_WDG
+//*** <<< Use Configuration Wizard in Context Menu >>> ***
 
-
-// DEBUG Êó∂‰ΩøÁî®ÁöÑÂèòÈáèÂÆèÂÆö‰πâ 
-#define DEBUG_FIRMWARE_SETTING_INFO_TEST	(0)
-
-#if (0 == DEBUG_FIRMWARE_SETTING_INFO_TEST)
-#define DEBUG_JUMP_TO_APP_ENABLE		(1)
-#else
-#define DEBUG_JUMP_TO_APP_ENABLE		(0)
-#endif
-
-// BOOT ÁâàÊú¨Âè∑Áõ∏ÂÖ≥ÂÆèÂÆö‰πâ 
+// <h> ÷˜∞Â∂®“Â 
+// <e3> BOOT»Ìº˛∞Ê±æ–≈œ¢ 
+// <o> MAJOR
+// <o1> MINOR 
+// <o2> REVISION 
 #define BOOT_VERSION_H	3
 #define BOOT_VERSION_M	0
-#define BOOT_VERSION_L	0
+#define BOOT_VERSION_L	1
+// </e>
+#define ENABLE_EDIT_BOOT_VERSION  0
 
-#define BOOT_HARDWARE_MAJOR 	1
-#define BOOT_HARDWARE_MINOR 	0
-#define BOOT_HARDWARE_REVISION 	0
-
+// <e3> APPƒ¨»œ»Ìº˛∞Ê±æ–≈œ¢ 
+// <o> DEFAULT_MAJOR
+// <o1> DEFAULT_MINOR 
+// <o2> DEFAULT_REVISION 
 #define APP_VERSION_H_DEFAULT	3
 #define APP_VERSION_M_DEFAULT	0
 #define APP_VERSION_L_DEFAULT	0
+// </e>
+#define ENABLE_EDIT_APP_DEFAULT_VERSION  0
 
+// <e3> ”≤º˛–≈œ¢ 
+// <o> MAJOR
+// <o1> MINOR 
+// <o2> REVISION 
+#define BOOT_HARDWARE_MAJOR 	1
+#define BOOT_HARDWARE_MINOR 	0
+#define BOOT_HARDWARE_REVISION 	0
+// </e>
+#define ENABLE_EDIT_HARDWARE_VERSION  0
+
+// </h>
+
+
+
+//*** <<< end of configuration section >>> ***
 
 #ifdef __cplusplus
 }

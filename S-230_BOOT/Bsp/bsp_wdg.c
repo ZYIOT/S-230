@@ -1,5 +1,5 @@
 #include "bsp_wdg.h"
-#include "board_config.h"
+#include "bsp_board_debug.h"
 #include "tim.h"
 #include "hardware_wrapper.h"
 

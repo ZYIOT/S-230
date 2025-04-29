@@ -6,6 +6,8 @@ extern "C"
 #endif
 #include "defines.h"
 #include "common.h"
+#include "board_config.h"
+#include "bsp_board_debug.h"
 
 
 int APP_CONFIG_system_init(app_config_system_pt message)
