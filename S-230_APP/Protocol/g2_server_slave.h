@@ -72,8 +72,8 @@ WINAPI_EXPORT int WINAPI G2_SERVER_send_write_relay_power_config_message(g2_serv
 
 
 #define G2_SERVER_MESSAGES_MAP(F) \
-    F(G2_SERVER_MESSAGE_DEVICE_ID, _read, _READ, device_id) \
-    F(G2_SERVER_MESSAGE_DEVICE_ID, _write, _WRITE, device_id) \
+    F(G2_SERVER_MESSAGE_DEVICE_ID, _read, _READ, deviceID) \
+    F(G2_SERVER_MESSAGE_DEVICE_ID, _write, _WRITE, deviceID) \
     F(G2_SERVER_MESSAGE_VERSION, _read, _READ, version) \
     F(G2_SERVER_MESSAGE_VERSION, _write, _WRITE, version) \
     F(G2_SERVER_MESSAGE_SENSOR_CONFIG, _read, _READ, sensor_config) \

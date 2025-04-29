@@ -6,9 +6,9 @@ extern "C"
 {
 #endif
 
-#define APP_LOGO_init()
+#define APP_LOGO_Init()
 
-void APP_LOGO_show(void);
+void APP_LOGO_Show(void);
 
 #ifdef __cplusplus
 }

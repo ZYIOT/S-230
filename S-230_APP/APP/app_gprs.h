@@ -30,17 +30,17 @@ typedef struct
     int8_t status;      // 状态 
     uint8_t errcnt;     // 错误次数 
     uint8_t rstcnt;     // 复位次数 
-}app_gprs_status_t, *app_gprs_status_pt;
+}APP_GPRS_Status_t, *APP_GPRS_Status_pt;
 
 void APP_GPRS_task_run(void *argument);
 
-int USER_PROTOCOL_write_role_message_process(user_protocol_packet_pt packet);
-int USER_PROTOCOL_read_sim_iccid_message_process(user_protocol_packet_pt packet);
-int USER_PROTOCOL_read_sim_manufacturer_message_process(user_protocol_packet_pt packet);
+int USER_PROTOCOL_WriteRoleMessageProcess(user_protocol_packet_pt packet);
+int USER_PROTOCOL_ReadSimIccidMessageProcess(user_protocol_packet_pt packet);
+int USER_PROTOCOL_ReadSimManufacturerMessageProcess(user_protocol_packet_pt packet);
 int USER_PROTOCOL_write_device_id_message_process(user_protocol_packet_pt packet);
 
-int G2_SERVER_read_iccid_message_process(g2_server_packet_pt packet);
-int APP_GPRS_read_iccid_message_process(void);
+int G2_SERVER_ReadIccidMessageProcess(g2_server_packet_pt packet);
+int APP_GPRS_ReadIccidMessageProcess(void);
 
 #ifdef __cplusplus
 }

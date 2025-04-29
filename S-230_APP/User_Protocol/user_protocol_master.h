@@ -29,7 +29,7 @@ int USER_PROTOCOL_receive_packet(user_protocol_packet_pt packet);
 int USER_PROTOCOL_send_write_role_message(user_protocol_port_pt port, user_protocol_packet_pt packet, uint8_t *role);
 int USER_PROTOCOL_send_read_sim_iccid_message(user_protocol_port_pt port, user_protocol_packet_pt packet);
 int USER_PROTOCOL_send_read_sim_manufaturer_message(user_protocol_port_pt port, user_protocol_packet_pt packet);
-int USER_PROTOCOL_send_write_device_id_message(user_protocol_port_pt port, user_protocol_packet_pt packet, uint8_t *device_id);
+int USER_PROTOCOL_send_write_device_id_message(user_protocol_port_pt port, user_protocol_packet_pt packet, uint8_t *deviceID);
 
 #ifdef __cplusplus
 }

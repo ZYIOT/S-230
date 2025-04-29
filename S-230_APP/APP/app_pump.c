@@ -6,48 +6,52 @@
 #include "app_sensors.h"
 
 #ifdef SHOW_PUMP_STATUS
-#define APP_LOG_PUMP_STATUS(...)    APP_LOG_debug(##__VA_ARGS__)
+#define APP_LOG_PUMP_STATUS(...)    APP_LOG_Debug(##__VA_ARGS__)
 #else
 #define APP_LOG_PUMP_STATUS(...)
 #endif
 
-app_pump_t app_pump;
-static uint8_t check_count = 0;
-void _increment_error_count(void);
+APP_PUMP_t g_appPump;
+static uint8_t s_checkCount = 0;
 
-int APP_PUMP_init(void)
+static void IncrementErrorCount(void)
+{
+    g_appPump.errorCount++;
+}
+
+int APP_PUMP_Init(void)
 {
     BSP_PUMP_init();
-    app_pump.status = APP_PUMP_STATUS_OFF;
-    app_pump.last_status = APP_PUMP_STATUS_OFF;
-    app_pump.changed = 0;
-    app_pump.status_on_checking = 0;
-    app_pump.check = APP_PUMP_CHECK_NORMAL;
-    app_pump.error_count = 0;
+    g_appPump.status = APP_PUMP_STATUS_OFF;
+    g_appPump.lastStatus = APP_PUMP_STATUS_OFF;
+    g_appPump.changed = 0;
+    g_appPump.statusOnChecking = 0;
+    g_appPump.check = APP_PUMP_CHECK_NORMAL;
+    g_appPump.errorCount = 0;
     for (int i = 0; i < _APP_PUMP_FREQUENCY_ARRAY_LEN; i++)
     {
-        app_pump.frequency[i] = 0;
+        g_appPump.frequency[i] = 0;
     }
     return APP_OK;
 }
 
-int APP_PUMP_on(void)
+int APP_PUMP_On(void)
 {
-    if (app_pump.status != APP_PUMP_STATUS_ON)
+    if (g_appPump.status != APP_PUMP_STATUS_ON)
     {
-        check_count = 0;
-        app_pump.status = APP_PUMP_STATUS_ON;
+        s_checkCount = 0;
+        g_appPump.status = APP_PUMP_STATUS_ON;
     }
     BSP_PUMP_on();
     return APP_OK;
 }
 
-int APP_PUMP_off(void)
+int APP_PUMP_Off(void)
 {
-    if (app_pump.status != APP_PUMP_STATUS_OFF)
+    if (g_appPump.status != APP_PUMP_STATUS_OFF)
     {
-        check_count = 0;
-        app_pump.status = APP_PUMP_STATUS_OFF;
+        s_checkCount = 0;
+        g_appPump.status = APP_PUMP_STATUS_OFF;
     }
 
     BSP_PUMP_off();
@@ -55,21 +59,21 @@ int APP_PUMP_off(void)
 }
 
 #include "app_config/defines.h"
-volatile uint32_t frequency = 0;
-volatile uint8_t pump_status = 0;
+volatile uint32_t vs_frequency = 0;
+volatile uint8_t vs_pumpStatus = 0;
 
-int APP_PUMP_refresh(uint8_t refresh_status)
+int APP_PUMP_Refresh(uint8_t refreshStatus)
 {
-    if (refresh_status > 0)
+    if (refreshStatus > 0)
     {
-        app_pump.status = APP_PUMP_STATUS_ON;
-        APP_PUMP_on();
+        g_appPump.status = APP_PUMP_STATUS_ON;
+        APP_PUMP_On();
     }
     else
     {
-        app_pump.status = APP_PUMP_STATUS_OFF;
-        app_pump.check = APP_PUMP_CHECK_NORMAL;
-        APP_PUMP_off();
+        g_appPump.status = APP_PUMP_STATUS_OFF;
+        g_appPump.check = APP_PUMP_CHECK_NORMAL;
+        APP_PUMP_Off();
     }
     return APP_OK;
 }
@@ -78,47 +82,47 @@ void APP_PUMP_task_run(void *argument)
 {
     uint8_t last_check_status = 0;
     uint8_t check_status = 0;
-    app_config_pump_status_pt cmsg = &app_config_pump_status[0];
+    APP_CONFIG_PumpStatus_pt cmsg = &g_appConfigPumpStatus[0];
     for (;;)
     {
-        APP_PUMP_refresh(cmsg->status[0]);
+        APP_PUMP_Refresh(cmsg->status[0]);
         check_status = BSP_PUMP_read_status();
         if (last_check_status != check_status)
         {
             last_check_status = check_status;
-            frequency++;
+            vs_frequency++;
         }
     }
 }
 
-void APP_PUMP_set_check_frequency(uint16_t fq)
+void APP_PUMP_SetCheckFrequency(uint16_t fq)
 {
     static int i = 0;
-    APP_LOG_PUMP_STATUS("\r\npump frequency: %u\r\n", frequency);
-    app_pump.frequency[i] = frequency;
+    APP_LOG_PUMP_STATUS("\r\npump frequency: %u\r\n", vs_frequency);
+    g_appPump.frequency[i] = vs_frequency;
     i++;
-    frequency = 0;
+    vs_frequency = 0;
     i %= _APP_PUMP_FREQUENCY_ARRAY_LEN;
-    APP_PUMP_check();
+    APP_PUMP_Check();
 }
 
-int APP_PUMP_check(void)
+int APP_PUMP_Check(void)
 {
     uint8_t c = APP_PUMP_CHECK_ERROR;
     int changed = 0;
 
-    if (app_pump.status == APP_PUMP_STATUS_ON)
+    if (g_appPump.status == APP_PUMP_STATUS_ON)
     {
         // 刚开启水泵时，有可能导致故障的状态；等多检测几次报确实有故障再报
-        if (check_count < _APP_PUMP_FREQUENCY_ARRAY_LEN)
+        if (s_checkCount < _APP_PUMP_FREQUENCY_ARRAY_LEN)
         {
-            check_count++;
-            app_pump.status_on_checking = 1;
+            s_checkCount++;
+            g_appPump.statusOnChecking = 1;
             return APP_OK;
         }
         for (int i = 0; i < _APP_PUMP_FREQUENCY_ARRAY_LEN; i++)
         {
-            if (app_pump.frequency[i] >= 10)
+            if (g_appPump.frequency[i] >= 10)
             {
                 c = APP_PUMP_CHECK_NORMAL;
             }
@@ -127,49 +131,45 @@ int APP_PUMP_check(void)
     else
     {
         c = APP_PUMP_CHECK_NORMAL;
-        check_count = 0;
+        s_checkCount = 0;
     }
-    app_pump.status_on_checking = 0;
-    if ((app_pump.last_status != app_pump.status))
+    g_appPump.statusOnChecking = 0;
+    if ((g_appPump.lastStatus != g_appPump.status))
     {
         changed = 1;
     }
-    if (c != app_pump.check)
+    if (c != g_appPump.check)
     {
-        app_pump.check = c;
+        g_appPump.check = c;
         changed = 1;
         if (c == APP_PUMP_CHECK_ERROR)
         {
-            _increment_error_count();
+            IncrementErrorCount();
         }
     }
 
-    app_pump.check = c;
-    if (app_pump.changed == 0)
+    g_appPump.check = c;
+    if (g_appPump.changed == 0)
     {
-        app_pump.changed = changed;
+        g_appPump.changed = changed;
     }
     return APP_OK;
 }
 
-int APP_PUMP_changed(int *changed)
+int APP_PUMP_Changed(int *changed)
 {
     *changed = 0;
-    if (app_pump.changed == 1)
+    if (g_appPump.changed == 1)
     {
-        if (app_pump.status == APP_PUMP_STATUS_ON && app_pump.status_on_checking == 1)
+        if (g_appPump.status == APP_PUMP_STATUS_ON && g_appPump.statusOnChecking == 1)
         {
             return APP_ERROR;
         }
         *changed = 1;
-        app_pump.changed = 0;
-        app_pump.last_status = app_pump.status;
+        g_appPump.changed = 0;
+        g_appPump.lastStatus = g_appPump.status;
         return APP_OK;
     }
     return APP_ERROR;
 }
 
-static void _increment_error_count(void)
-{
-    app_pump.error_count++;
-}

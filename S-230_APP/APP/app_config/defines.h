@@ -12,24 +12,24 @@ extern "C"
 #define APP_CONFIG_MAX_TIMES_TASK 8
 #define APP_CONFIG_MAX_LIMIT_TASK 4
 
-int epprom_read_block(uint16_t page, uint8_t *buf);
-int epprom_write_block(uint16_t page, uint8_t *buf);
+int EEPROM_ReadBlock(uint16_t page, uint8_t *buf);
+int EEPROM_WriteBlock(uint16_t page, uint8_t *buf);
  
 typedef struct
 {
-    uint32_t device_id;  /* 设备ID */
+    uint32_t deviceID;  /* 设备ID */
     uint8_t SN[5];  /* SN：年，月，串号,保留位 */
     uint8_t hardware[3];  /* 硬件版本 */
-    uint8_t log_level;  /* 日志等级 */
-} app_config_system_t, *app_config_system_pt;
+    uint8_t logLevel;  /* 日志等级 */
+} APP_CONFIG_System_t, *APP_CONFIG_System_pt;
 
-int APP_CONFIG_system_init(app_config_system_pt message);
-int APP_CONFIG_system_write( app_config_system_pt message);
-int APP_CONFIG_system_read( app_config_system_pt message);
-int APP_CONFIG_system_load(void);
-int APP_CONFIG_system_recovery(void);
-int APP_CONFIG_system_write_device_id( app_config_system_pt message, uint32_t device_id);
-int APP_CONFIG_system_write_sn( app_config_system_pt message, uint8_t SN[5], uint8_t hardware[3]);
+int APP_CONFIG_SystemInit(APP_CONFIG_System_pt message);
+int APP_CONFIG_SystemWrite( APP_CONFIG_System_pt message);
+int APP_CONFIG_SystemRead( APP_CONFIG_System_pt message);
+int APP_CONFIG_SystemLoad(void);
+int APP_CONFIG_SystemRecovery(void);
+int APP_CONFIG_SystemWriteDeviceID( APP_CONFIG_System_pt message, uint32_t deviceID);
+int APP_CONFIG_SystemWriteSN( APP_CONFIG_System_pt message, uint8_t SN[5], uint8_t hardware[3]);
  
 typedef struct
 {
@@ -39,258 +39,260 @@ typedef struct
     uint8_t hour;  /* 时 */
     uint8_t minute;  /* 分 */
     uint8_t second;  /* 秒 */
-} app_config_time_t, *app_config_time_pt;
+} APP_CONFIG_Time_t, *APP_CONFIG_Time_pt;
 
-int APP_CONFIG_time_init(app_config_time_pt message);
+int APP_CONFIG_TimeInit(APP_CONFIG_Time_pt message);
  
 typedef struct
 {
     uint8_t enable;  /* 是否启用设备 */
-    app_config_time_t record_error_at;  /* 错误清0时间 */
-} app_config_device_enable_t, *app_config_device_enable_pt;
+    APP_CONFIG_Time_t recordErrorAt;  /* 错误清0时间 */
+} APP_CONFIG_DeviceEnable_t, *APP_CONFIG_DeviceEnable_pt;
 
-int APP_CONFIG_device_enable_init(app_config_device_enable_pt message);
-int APP_CONFIG_device_enable_write( app_config_device_enable_pt message);
-int APP_CONFIG_device_enable_read( app_config_device_enable_pt message);
-int APP_CONFIG_device_enable_load(void);
-int APP_CONFIG_device_enable_recovery(void);
-int APP_CONFIG_device_enable_write_enable( app_config_device_enable_pt message, uint8_t enable);
-int APP_CONFIG_device_enable_write_record_error_at( app_config_device_enable_pt message, app_config_time_t record_error_at);
+int APP_CONFIG_DeviceEnableInit(APP_CONFIG_DeviceEnable_pt message);
+int APP_CONFIG_DeviceEnableWrite( APP_CONFIG_DeviceEnable_pt message);
+int APP_CONFIG_DeviceEnableRead( APP_CONFIG_DeviceEnable_pt message);
+int APP_CONFIG_DeviceEnableLoad(void);
+int APP_CONFIG_DeviceEnableRecovery(void);
+int APP_CONFIG_DeviceEnableWriteEnable( APP_CONFIG_DeviceEnable_pt message, uint8_t enable);
+int APP_CONFIG_DeviceEnableWriteRecordErrorAt( APP_CONFIG_DeviceEnable_pt message, APP_CONFIG_Time_t recordErrorAt);
  
 typedef struct
 {
     uint8_t reason;  /* 握手原因 */
-} app_config_device_connect_t, *app_config_device_connect_pt;
+} APP_CONFIG_DeviceConnect_t, *APP_CONFIG_DeviceConnect_pt;
 
-int APP_CONFIG_device_connect_init(app_config_device_connect_pt message);
-int APP_CONFIG_device_connect_write( app_config_device_connect_pt message);
-int APP_CONFIG_device_connect_read( app_config_device_connect_pt message);
-int APP_CONFIG_device_connect_load(void);
-int APP_CONFIG_device_connect_recovery(void);
-int APP_CONFIG_device_connect_write_reason( app_config_device_connect_pt message, uint8_t reason);
+int APP_CONFIG_DeviceConnectInit(APP_CONFIG_DeviceConnect_pt message);
+int APP_CONFIG_DeviceConnectWrite( APP_CONFIG_DeviceConnect_pt message);
+int APP_CONFIG_DeviceConnectRead( APP_CONFIG_DeviceConnect_pt message);
+int APP_CONFIG_DeviceConnectLoad(void);
+int APP_CONFIG_DeviceConnectRecovery(void);
+int APP_CONFIG_DeviceConnectWriteReason( APP_CONFIG_DeviceConnect_pt message, uint8_t reason);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
     uint8_t warning;  /* 是否启用告警 */
-} app_config_probe_enable_t, *app_config_probe_enable_pt;
+} APP_CONFIG_ProbeEnable_t, *APP_CONFIG_ProbeEnable_pt;
 
-int APP_CONFIG_probe_enable_init(app_config_probe_enable_pt message);
-int APP_CONFIG_probe_enable_write(uint8_t probe_id,  app_config_probe_enable_pt message);
-int APP_CONFIG_probe_enable_read(uint8_t probe_id,  app_config_probe_enable_pt message);
-int APP_CONFIG_probe_enable_load(void);
-int APP_CONFIG_probe_enable_recovery(void);
-int APP_CONFIG_probe_enable_write_has_config(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t has_config);
-int APP_CONFIG_probe_enable_write_enable(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t enable);
-int APP_CONFIG_probe_enable_write_warning(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t warning);
+int APP_CONFIG_ProbeEnableInit(APP_CONFIG_ProbeEnable_pt message);
+int APP_CONFIG_ProbeEnableWrite(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message);
+int APP_CONFIG_ProbeEnableRead(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message);
+int APP_CONFIG_ProbeEnableLoad(void);
+int APP_CONFIG_ProbeEnableRecovery(void);
+int APP_CONFIG_ProbeEnableWriteHasConfig(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t hasConfig);
+int APP_CONFIG_ProbeEnableWriteEnable(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t enable);
+int APP_CONFIG_ProbeEnableWriteWarnning(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t warning);
  
 typedef struct
 {
     uint8_t status[16];  /* 水泵状态 */
-} app_config_pump_status_t, *app_config_pump_status_pt;
+} APP_CONFIG_PumpStatus_t, *APP_CONFIG_PumpStatus_pt;
 
-int APP_CONFIG_pump_status_init(app_config_pump_status_pt message);
-int APP_CONFIG_pump_status_write(uint8_t probe_id,  app_config_pump_status_pt message);
-int APP_CONFIG_pump_status_read(uint8_t probe_id,  app_config_pump_status_pt message);
-int APP_CONFIG_pump_status_load(void);
-int APP_CONFIG_pump_status_recovery(void);
-int APP_CONFIG_pump_status_write_status(uint8_t probe_id,  app_config_pump_status_pt message, uint8_t status_index, uint8_t status);
+int APP_CONFIG_PumpStatusInit(APP_CONFIG_PumpStatus_pt message);
+int APP_CONFIG_PumpStatusWrite(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message);
+int APP_CONFIG_PumpStatusRead(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message);
+int APP_CONFIG_PumpStatusLoad(void);
+int APP_CONFIG_PumpStatusRecovery(void);
+int APP_CONFIG_PumpStatusWriteStatus(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message, uint8_t status_index, uint8_t status);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
     uint8_t warning;  /* 是否启用告警 */
     uint8_t manufacturer;  /* 探头厂商ID */
     uint8_t model;  /* 探头类型 */
     uint8_t protocol;  /* 协议ID */
-} app_config_sensor_t, *app_config_sensor_pt;
+} APP_CONFIG_Sensor_t, *APP_CONFIG_Sensor_pt;
 
-int APP_CONFIG_sensor_init(app_config_sensor_pt message);
-int APP_CONFIG_sensor_write(uint8_t probe_id, uint8_t sensor_id,  app_config_sensor_pt message);
-int APP_CONFIG_sensor_read(uint8_t probe_id, uint8_t sensor_id,  app_config_sensor_pt message);
-int APP_CONFIG_sensor_load(void);
-int APP_CONFIG_sensor_recovery(void);
+int APP_CONFIG_SensorInit(APP_CONFIG_Sensor_pt message);
+int APP_CONFIG_SensorWrite(uint8_t probeID, uint8_t sensorID,  APP_CONFIG_Sensor_pt message);
+int APP_CONFIG_SensorRead(uint8_t probeID, uint8_t sensorID,  APP_CONFIG_Sensor_pt message);
+int APP_CONFIG_SensorLoad(void);
+int APP_CONFIG_SensorRecovery(void);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint16_t value;  /* 值 */
-} app_config_compensation_t, *app_config_compensation_pt;
+} APP_CONFIG_Compensation_t, *APP_CONFIG_Compensation_pt;
 
-int APP_CONFIG_compensation_init(app_config_compensation_pt message);
-int APP_CONFIG_compensation_write(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message);
-int APP_CONFIG_compensation_read(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message);
-int APP_CONFIG_compensation_load(void);
-int APP_CONFIG_compensation_recovery(void);
-int APP_CONFIG_compensation_write_data(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message, uint8_t has_config, uint16_t value);
+int APP_CONFIG_CompensationInit(APP_CONFIG_Compensation_pt message);
+int APP_CONFIG_CompensationWrite(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message);
+int APP_CONFIG_CompensationRead(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message);
+int APP_CONFIG_CompensationLoad(void);
+int APP_CONFIG_CompensationRecovery(void);
+int APP_CONFIG_CompensationWriteData(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message, uint8_t hasConfig, uint16_t value);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
     uint16_t max;  /* 上限 */
     uint16_t min;  /* 下限 */
     uint16_t threshold;  /* 窗口值 */
-} app_config_indicator_alert_t, *app_config_indicator_alert_pt;
+} APP_CONFIG_IndicatorAlert_t, *APP_CONFIG_IndicatorAlert_pt;
 
-int APP_CONFIG_indicator_alert_init(app_config_indicator_alert_pt message);
-int APP_CONFIG_indicator_alert_write(uint8_t probe_id, uint8_t indicator_id,  app_config_indicator_alert_pt message);
-int APP_CONFIG_indicator_alert_read(uint8_t probe_id, uint8_t indicator_id,  app_config_indicator_alert_pt message);
-int APP_CONFIG_indicator_alert_load(void);
-int APP_CONFIG_indicator_alert_recovery(void);
+int APP_CONFIG_IndicatorAlertInit(APP_CONFIG_IndicatorAlert_pt message);
+int APP_CONFIG_IndicatorAlertWrite(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_IndicatorAlert_pt message);
+int APP_CONFIG_IndicatorAlertRead(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_IndicatorAlert_pt message);
+int APP_CONFIG_IndicatorAlertLoad(void);
+int APP_CONFIG_IndicatorAlertRecovery(void);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
-} app_config_config_enable_t, *app_config_config_enable_pt;
+} APP_CONFIG_ConfigEnable_t, *APP_CONFIG_ConfigEnable_pt;
 
-int APP_CONFIG_config_enable_init(app_config_config_enable_pt message);
+int APP_CONFIG_ConfigEnableInit(APP_CONFIG_ConfigEnable_pt message);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t channel;  /* 通道 */
     uint8_t type;  /* 控制类型 */
-    uint16_t up_limit;  /* 上限 */
-    uint16_t down_limit;  /* 下限 */
-} app_config_limit_t, *app_config_limit_pt;
+    uint16_t upLimit;  /* 上限 */
+    uint16_t downLimit;  /* 下限 */
+} APP_CONFIG_Limit_t, *APP_CONFIG_Limit_pt;
 
-int APP_CONFIG_limit_init(app_config_limit_pt message);
-int APP_CONFIG_limit_write(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message);
-int APP_CONFIG_limit_read(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message);
-int APP_CONFIG_limit_load(void);
-int APP_CONFIG_limit_recovery(void);
-int APP_CONFIG_limit_write_enable(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message, uint8_t has_config, uint8_t enable);
+int APP_CONFIG_LimitInit(APP_CONFIG_Limit_pt message);
+int APP_CONFIG_LimitWrite(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message);
+int APP_CONFIG_LimitRead(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message);
+int APP_CONFIG_LimitLoad(void);
+int APP_CONFIG_LimitRecovery(void);
+int APP_CONFIG_LimitWriteEnable(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message, uint8_t hasConfig, uint8_t enable);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
     uint8_t warning;  /* 是否启用告警 */
-} app_config_relay_t, *app_config_relay_pt;
+} APP_CONFIG_Relay_t, *APP_CONFIG_Relay_pt;
 
-int APP_CONFIG_relay_init(app_config_relay_pt message);
-int APP_CONFIG_relay_write(uint8_t relay_id,  app_config_relay_pt message);
-int APP_CONFIG_relay_read(uint8_t relay_id,  app_config_relay_pt message);
-int APP_CONFIG_relay_load(void);
-int APP_CONFIG_relay_recovery(void);
-int APP_CONFIG_relay_write_has_config(uint8_t relay_id,  app_config_relay_pt message, uint8_t has_config);
-int APP_CONFIG_relay_write_enable(uint8_t relay_id,  app_config_relay_pt message, uint8_t enable);
-int APP_CONFIG_relay_write_warning(uint8_t relay_id,  app_config_relay_pt message, uint8_t warning);
+int APP_CONFIG_RelayInit(APP_CONFIG_Relay_pt message);
+int APP_CONFIG_RelayWrite(uint8_t relayID,  APP_CONFIG_Relay_pt message);
+int APP_CONFIG_RelayRead(uint8_t relayID,  APP_CONFIG_Relay_pt message);
+int APP_CONFIG_RelayLoad(void);
+int APP_CONFIG_RelayRecovery(void);
+int APP_CONFIG_RelayWriteHasConfig(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t hasConfig);
+int APP_CONFIG_RelayWriteEnable(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t enable);
+int APP_CONFIG_RelayWriteWarnning(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t warning);
  
 typedef struct
 {
-    app_config_config_enable_t task[8];  /* 任务 */
-} app_config_times_enable_t, *app_config_times_enable_pt;
+    APP_CONFIG_ConfigEnable_t task[8];  /* 任务 */
+} APP_CONFIG_TimeEnable_t, *APP_CONFIG_TimeEnable_pt;
 
-int APP_CONFIG_times_enable_init(app_config_times_enable_pt message);
-int APP_CONFIG_times_enable_write(uint8_t relay_id,  app_config_times_enable_pt message);
-int APP_CONFIG_times_enable_read(uint8_t relay_id,  app_config_times_enable_pt message);
-int APP_CONFIG_times_enable_load(void);
-int APP_CONFIG_times_enable_recovery(void);
-int APP_CONFIG_times_enable_write_config_enable(uint8_t relay_id,  app_config_times_enable_pt message, uint8_t task_index, app_config_config_enable_t task);
+int APP_CONFIG_TimesEnableInit(APP_CONFIG_TimeEnable_pt message);
+int APP_CONFIG_TimesEnableWrite(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message);
+int APP_CONFIG_TimesEnableRead(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message);
+int APP_CONFIG_TimesEnableLoad(void);
+int APP_CONFIG_TimesEnableRecovery(void);
+int APP_CONFIG_TimesEnableWriteConfigEnable(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message, uint8_t taskIndex, APP_CONFIG_ConfigEnable_t task);
  
 typedef struct
 {
     uint8_t type;  /* 控制类型|是否有配置 */
-    uint8_t start_hour;  /* 开启时间 时 */
-    uint8_t start_minute;  /* 开启时间 分 */
-    uint8_t end_hour;  /* 结束时间 时 */
-    uint8_t end_minute;  /* 结束时间 分 */
-} app_config_times_job_t, *app_config_times_job_pt;
+    uint8_t startHour;  /* 开启时间 时 */
+    uint8_t startMinute;  /* 开启时间 分 */
+    uint8_t endHour;  /* 结束时间 时 */
+    uint8_t endMinute;  /* 结束时间 分 */
+} APP_CONFIG_TimesJob_t, *APP_CONFIG_TimesJob_pt;
 
-int APP_CONFIG_times_job_init(app_config_times_job_pt message);
+int APP_CONFIG_TimesJobInit(APP_CONFIG_TimesJob_pt message);
  
 typedef struct
 {
-    uint8_t has_limit;  /* 是否有门限 */
+    uint8_t hasLimit;  /* 是否有门限 */
     uint16_t channel;  /* 通道 */
-    uint8_t probe_id;  /* 变送器ID */
-    uint8_t indicator_id;  /* 水质数据ID */
+    uint8_t probeID;  /* 变送器ID */
+    uint8_t indicatorID;  /* 水质数据ID */
     uint16_t value;  /* 门限 */
     uint16_t threshold;  /* 窗口值 */
-    uint8_t execute_type;  /* 执行类型 */
-    app_config_times_job_t times[4];  /* 时间段 */
-} app_config_times_t, *app_config_times_pt;
+    uint8_t executeType;  /* 执行类型 */
+    APP_CONFIG_TimesJob_t times[4];  /* 时间段 */
+} APP_CONFIG_Times_t, *APP_CONFIG_Times_pt;
 
-int APP_CONFIG_times_init(app_config_times_pt message);
-int APP_CONFIG_times_write(uint8_t relay_id, uint8_t task_id,  app_config_times_pt message);
-int APP_CONFIG_times_read(uint8_t relay_id, uint8_t task_id,  app_config_times_pt message);
-int APP_CONFIG_times_load(void);
-int APP_CONFIG_times_recovery(void);
+int APP_CONFIG_TimesInit(APP_CONFIG_Times_pt message);
+int APP_CONFIG_TimesWrite(uint8_t relayID, uint8_t taskID,  APP_CONFIG_Times_pt message);
+int APP_CONFIG_TimesRead(uint8_t relayID, uint8_t taskID,  APP_CONFIG_Times_pt message);
+int APP_CONFIG_TimesLoad(void);
+int APP_CONFIG_TimesRecovery(void);
  
 typedef struct
 {
-    uint8_t has_config;  /* 是否有配置 */
+    uint8_t hasConfig;  /* 是否有配置 */
     uint8_t enable;  /* 是否启用 */
     uint8_t type;  /* 控制类型 */
-    app_config_time_t start;  /* 开始时间 */
-    app_config_time_t end;  /* 开始时间 */
-} app_config_manual_relay_t, *app_config_manual_relay_pt;
+    APP_CONFIG_Time_t start;  /* 开始时间 */
+    APP_CONFIG_Time_t end;  /* 开始时间 */
+} APP_CONFIG_ManualRelay_t, *APP_CONFIG_ManualRelay_pt;
 
-int APP_CONFIG_manual_relay_init(app_config_manual_relay_pt message);
-int APP_CONFIG_manual_relay_write(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message);
-int APP_CONFIG_manual_relay_read(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message);
-int APP_CONFIG_manual_relay_load(void);
-int APP_CONFIG_manual_relay_recovery(void);
-int APP_CONFIG_manual_relay_write_enable(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message, uint8_t enable);
-int APP_CONFIG_manual_relay_write_time(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message, uint8_t has_config, uint8_t enable, uint8_t type, app_config_time_t start, app_config_time_t end);
+int APP_CONFIG_ManualRelayInit(APP_CONFIG_ManualRelay_pt message);
+int APP_CONFIG_ManualRelayWrite(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message);
+int APP_CONFIG_ManualRelayRead(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message);
+int APP_CONFIG_ManualRelayLoad(void);
+int APP_CONFIG_ManualRelayRecovery(void);
+int APP_CONFIG_ManualRelayWriteEnable(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message, uint8_t enable);
+int APP_CONFIG_ManualRelayWriteTime(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message, uint8_t hasConfig, uint8_t enable, uint8_t type, APP_CONFIG_Time_t start, APP_CONFIG_Time_t end);
 
 
-int APP_CONFIG_eeprom_load_all(void);
-int APP_CONFIG_eeprom_recovery_all(void);
+int APP_CONFIG_EepromLoadAll(void);
+int APP_CONFIG_EepromRecoveryAll(void);
 
 
 typedef struct
 {
-		uint8_t has_config;       /* 是否有配置 */
+		uint8_t hasConfig;       /* 是否有配置 */
 		uint8_t release;       //泄气时间
-		uint8_t read_wait;     //入水后多长时间允许读取数据（传感器在水中等待时长）
+		uint8_t readWait;     //入水后多长时间允许读取数据（传感器在水中等待时长）
 		uint8_t read;          //读取数据持续时间
 		uint8_t charge;        //充气时间
-		uint8_t charge_wait;   //气吹自动等待时长(传感器在空气中时长)
-} app_config_l6_t, *app_config_l6_pt;
+		uint8_t chargeWait;   //气吹自动等待时长(传感器在空气中时长)
+} APP_CONFIG_L6_t, *APP_CONFIG_L6_pt;
 
-int APP_CONFIG_l6_init(app_config_l6_pt message);
-int APP_CONFIG_l6_write(uint8_t probe_id,app_config_l6_pt message);
-int APP_CONFIG_l6_read(uint8_t probe_id,app_config_l6_pt message);
-int APP_CONFIG_l6_load(void);
-int APP_CONFIG_l6_recovery(void);
+int APP_CONFIG_L6Init(APP_CONFIG_L6_pt message);
+int APP_CONFIG_L6Write(uint8_t probeID,APP_CONFIG_L6_pt message);
+int APP_CONFIG_L6Read(uint8_t probeID,APP_CONFIG_L6_pt message);
+int APP_CONFIG_L6Load(void);
+int APP_CONFIG_L6Recovery(void);
 
 
-#define APP_CONFIG_FIRMWARE_SETTING_INFO		(0)
-#define APP_CONFIG_FIRMWARE_SETTING_INFO_BACK	(1)
+#define APP_FIRMWARE_INFO		(0)
+#define DOWNLOAD_FIRMWARE_INFO	(1)
 
 #define DEFAULT_CRC16_VALUE		(0xFFFF)
 #define DEFAULT_CRC32_VALUE		(0xFFFFFFFF)
 typedef struct
 {
-	uint8_t  device_type;		// 目标设备类型
-	uint8_t  version_h;			// 版本号 H
-	uint8_t  version_m;			// 版本号 M
-	uint8_t  version_l;			// 版本号 L
-	uint32_t file_len;			// 文件的总长度
-	uint32_t file_crc;			// 文件 CRC32 的值
-}app_config_firmware_info_t, *app_config_firmware_info_pt;
+	uint8_t  deviceType;		// 目标设备类型
+	uint8_t  versionH;			// 版本号 H
+	uint8_t  versionM;			// 版本号 M
+	uint8_t  versionL;			// 版本号 L
+	uint32_t fileLen;			// 文件的总长度
+	uint32_t fileCrc;			// 文件 CRC32 的值
+}FirmwareInfo_t, *FirmwareInfo_pt;
 
 
 typedef struct 
 {
-	uint32_t download_len;	// 已 download 的数据长度
-	uint8_t reserved[4];	// 保留 reserved[0]:update_result
-	app_config_firmware_info_t firmware_info;	
-}app_config_firmware_setting_info_t, *app_config_firmware_setting_info_pt;
+	uint32_t downloadLen;	// 已 download 的数据长度
+    uint8_t updateResult;   // IAP 升级结果 
+	uint8_t reserved[2];	// 保留 
+    uint8_t firmwareType;   // 固件类型 
+	FirmwareInfo_t firmwareInfo;	
+}APP_CONFIG_FirmwareInfo_t, *APP_CONFIG_FirmwareInfo_pt;
 
-int APP_CONFIG_firmware_setting_info_init(app_config_firmware_setting_info_pt message);
-int APP_CONFIG_firmware_setting_info_read(uint8_t infotype, app_config_firmware_setting_info_pt message);
-int APP_CONFIG_firmware_setting_info_write(uint8_t infotype, app_config_firmware_setting_info_pt message);
-int APP_CONFIG_firmware_setting_info_load(void);
-int APP_CONFIG_firmware_setting_info_recovery(void);
+int APP_CONFIG_FirmwareInfoInit(APP_CONFIG_FirmwareInfo_pt message);
+int APP_CONFIG_FirmwareInfoRead(uint8_t infotype, APP_CONFIG_FirmwareInfo_pt message);
+int APP_CONFIG_FirmwareInfoWrite(uint8_t infotype, APP_CONFIG_FirmwareInfo_pt message);
+int APP_CONFIG_FirmwareInfoLoad(void);
+int APP_CONFIG_AllFirmwareInfoRecovery(void);
 
 
 #define APP_RELAY_PROTECT_DISABLE   (0)
@@ -311,20 +313,20 @@ enum
 typedef struct 
 {
     uint8_t enable;
-    uint8_t phase_config;
+    uint8_t phaseConfig;
     uint8_t power;  // 有功功率之和(合相功率)*0.1kW 
-    uint8_t loss_phase_protect_enable;
-    uint8_t overload_protect_enable;
-    uint8_t ouv_protect_enable;
-    uint8_t loader_type;    // 负载类型  0:普通负载设备, 1:变频负载设备 
-}app_relay_power_config_t, *app_relay_power_config_pt;
+    uint8_t lossPhaseProtectEnable;
+    uint8_t overloadProtectEnable;
+    uint8_t ouvProtectEnable;
+    uint8_t loaderType;    // 负载类型  0:普通负载设备, 1:变频负载设备 
+}APP_RELAY_PowerConfig_t, *APP_RELAY_PowerConfig_pt;
 
 typedef struct 
 {
-    app_config_time_t msg_time;
-    uint8_t msg_type;
-    uint8_t msg_status;
-}app_config_diagnosis_message_t, *app_config_diagnosis_message_pt;
+    APP_CONFIG_Time_t msgTime;
+    uint8_t msgType;
+    uint8_t msgStatus;
+}APP_CONFIG_DiagnosisMessage_t, *APP_CONFIG_DiagnosisMessage_pt;
 
 
 enum 
@@ -341,23 +343,52 @@ enum
     APP_DEVICE_WARNNING_DISCONNECTED,   // 设备与继电器板失联 
 };
 
-extern app_config_system_t app_config_system;
-extern app_config_device_enable_t app_config_device_enable;
-extern app_config_device_connect_t app_config_device_connect;
-extern app_config_probe_enable_t app_config_probe_enable[PROBE_SIZE];
-extern app_config_pump_status_t app_config_pump_status[PROBE_SIZE];
-extern app_config_sensor_t app_config_sensor[PROBE_SIZE][PROBE_SENSOR_SIZE];
-extern app_config_compensation_t app_config_compensation[PROBE_SIZE][INDICATOR_SIZE];
-extern app_config_indicator_alert_t app_config_indicator_alert[PROBE_SIZE][INDICATOR_SIZE];
-extern app_config_limit_t app_config_limit[PROBE_SIZE][INDICATOR_SIZE][APP_CONFIG_MAX_LIMIT_TASK];
-extern app_config_relay_t app_config_relay[RELAY_SIZE];
-extern app_config_times_enable_t app_config_times_enable[RELAY_SIZE];
-extern app_config_times_t app_config_times[RELAY_SIZE][APP_CONFIG_MAX_TIMES_TASK];
-extern app_config_manual_relay_t app_config_manual_relay[RELAY_SIZE][RELAY_CHANNEL_SIZE];
-extern app_config_l6_t app_config_l6;
-extern app_config_firmware_setting_info_t firmware_setting_info1;
-extern app_config_firmware_setting_info_t firmware_setting_info2;
-extern app_relay_power_config_t app_relay_power_config[RELAY_SIZE][RELAY_CHANNEL_SIZE];
+typedef enum
+{
+	UNKONW_DEV = 0x0,			// 未知设备
+	MASTER_CONTROL_DEV = 0x1,	// 主控设备
+	COM_MODULE_DEV = 0x2,		// 通信模块设备
+	DO_SENSOR_DEV = 0x11,		// 溶氧传感器设备
+	PH_SENSOR_DEV = 0x21,		// pH传感器设备 
+	RELAY_CONTROL_DEV = 0x31	// 继电器设备 
+}DEVICE_TYPE_e;
+
+typedef enum
+{
+    IAP_UPDATE_UNKNOW = 0,
+    IAP_UPDATE_DOWNLOAD,    // 下载完成 
+	IAP_UPDATE_FAIL,		// 升级失败 
+	IAP_UPDATE_SUCESS,		// 升级成功 
+}UPDATE_RESULT_e;
+
+typedef enum
+{
+	MCU_BOOT_FIRMWARE = 0,		// 主控板 BOOT 固件
+	MCU_APP_FIRMWARE,			// 主控板 APP 固件
+	MCU_CFG_FIRMWARE,			// 主控板 CFG 固件
+    MCU_FACTORY_FIRMWARE,		// 主控板 Factory 固件
+    GPRS_MDL_FIRMWARE,			// GPRS 模块固件
+	RELAY_APP_FIRMWARE, 	    // RELAY APP 固件 
+	UNKONW_FIRMWARE = 255,		// 未知固件类型
+}FILE_TYPE_e;
+
+extern APP_CONFIG_System_t g_appConfigSystem;
+extern APP_CONFIG_DeviceEnable_t g_appConfigDeviceEnable;
+extern APP_CONFIG_DeviceConnect_t g_appConfigDeviceConnect;
+extern APP_CONFIG_ProbeEnable_t g_appConfigProbeEnable[PROBE_SIZE];
+extern APP_CONFIG_PumpStatus_t g_appConfigPumpStatus[PROBE_SIZE];
+extern APP_CONFIG_Sensor_t g_appConfigSensor[PROBE_SIZE][PROBE_SENSOR_SIZE];
+extern APP_CONFIG_Compensation_t g_appConfigCompensation[PROBE_SIZE][INDICATOR_SIZE];
+extern APP_CONFIG_IndicatorAlert_t g_appConfigIndicatorAlert[PROBE_SIZE][INDICATOR_SIZE];
+extern APP_CONFIG_Limit_t g_appConfigLimit[PROBE_SIZE][INDICATOR_SIZE][APP_CONFIG_MAX_LIMIT_TASK];
+extern APP_CONFIG_Relay_t g_appConfigRelay[RELAY_SIZE];
+extern APP_CONFIG_TimeEnable_t g_appConfigTimesEnable[RELAY_SIZE];
+extern APP_CONFIG_Times_t g_appConfigTimes[RELAY_SIZE][APP_CONFIG_MAX_TIMES_TASK];
+extern APP_CONFIG_ManualRelay_t g_appConfigManualRelay[RELAY_SIZE][RELAY_CHANNEL_SIZE];
+extern APP_CONFIG_L6_t g_appConfigL6;
+extern APP_CONFIG_FirmwareInfo_t g_appFirmwareInfo;
+extern APP_CONFIG_FirmwareInfo_t g_downloadFirmwareInfo;
+extern APP_RELAY_PowerConfig_t g_appRelayPowerConfig[RELAY_SIZE][RELAY_CHANNEL_SIZE];
 
 
 #ifdef __cplusplus

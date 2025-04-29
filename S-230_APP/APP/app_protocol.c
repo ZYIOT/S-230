@@ -16,15 +16,15 @@
         return PROTOCOL_ERROR;                    \
     }
 
-#define CHECK_PROTOCOL_PROBE_ID_MESSAGE(probe_id) \
-    if (probe_id > PROBE_SIZE || probe_id < 1)    \
+#define CHECK_PROTOCOL_PROBE_ID_MESSAGE(probeID) \
+    if (probeID > PROBE_SIZE || probeID < 1)    \
     {                                             \
         BSP_PROTOCOL_send_error_response(packet); \
         return PROTOCOL_ERROR;                    \
     }
 
-#define CHECK_PROTOCOL_RELAY_ID_MESSAGE(relay_id) \
-    if (relay_id > RELAY_SIZE || relay_id < 1)    \
+#define CHECK_PROTOCOL_RELAY_ID_MESSAGE(relayID) \
+    if (relayID > RELAY_SIZE || relayID < 1)    \
     {                                             \
         BSP_PROTOCOL_send_error_response(packet); \
         return PROTOCOL_ERROR;                    \
@@ -51,23 +51,23 @@
         return PROTOCOL_ERROR;                    \
     }
 
-#define CHECK_PROTOCOL_PROBE_SENSOR_MESSAGE(indicator_id)     \
-    if (indicator_id > PROBE_SENSOR_SIZE || indicator_id < 1) \
+#define CHECK_PROTOCOL_PROBE_SENSOR_MESSAGE(indicatorID)     \
+    if (indicatorID > PROBE_SENSOR_SIZE || indicatorID < 1) \
     {                                                         \
         BSP_PROTOCOL_send_error_response(packet);             \
         return PROTOCOL_ERROR;                                \
     }
 
 
-#define CHECK_PROTOCOL_INDICATOR_ID_MESSAGE(indicator_id)     \
-    if (indicator_id > INDICATOR_SIZE || indicator_id < 1)    \
+#define CHECK_PROTOCOL_INDICATOR_ID_MESSAGE(indicatorID)     \
+    if (indicatorID > INDICATOR_SIZE || indicatorID < 1)    \
     {                                                         \
         BSP_PROTOCOL_send_error_response(packet);             \
         return PROTOCOL_ERROR;                                \
     }
 
 #define CHECK_PROTOCOL_ID_RANGE_MESSAGE(min, max) \
-    if (indicator_id > max || min < 1)            \
+    if (indicatorID > max || min < 1)            \
     {                                             \
         BSP_PROTOCOL_send_error_response(packet); \
         return PROTOCOL_ERROR;                    \
@@ -88,7 +88,7 @@
 #include "app_protocol/unused.h"
 #include "app_protocol/l6.h"
 
-int APP_PROTOCOL_init(void)
+int APP_PROTOCOL_Init(void)
 {
     return APP_OK;
 }
@@ -106,7 +106,7 @@ void APP_PROTOCOL_task_run(void *argument)
         if (rc == PROTOCOL_OK)
         {
             recvCnt += 1;
-            APP_LOG_debug("PROTOCOL recv cnt = %d\r\n", recvCnt);
+            // APP_LOG_Debug("PROTOCOL recv cnt = %d\r\n", recvCnt);
             if (G2_SERVER_receive_packet(&packet) == PROTOCOL_NOT_SUPPORT)
             {
                 BSP_PROTOCOL_send_error_response(&packet);

@@ -66,12 +66,12 @@ _____________________________________________________
 #define APP_CONFIG_EEPROM_DOWNLOAD_FIRMWARE_INFO_PAGE	0x7FF
 
 
-// app_config_system_t 中各个元素的偏移地址 
+// APP_CONFIG_System_t 中各个元素的偏移地址 
 #define APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET               0
 #define APP_CONFIG_EEPROM_SYSTEM_SN_OFFSET                      4
 #define APP_CONFIG_EEPROM_SYSTEM_HARDWARE_OFFSET                9
 
-// app_config_firmware_info_t 中各个元素的偏移地址(注意每 30Bytes 增加 2Bytes 的偏移量)
+// firmwareInfo_t 中各个元素的偏移地址(注意每 30Bytes 增加 2Bytes 的偏移量)
 #define APP_CONFIG_EEPROM_FIRMWARE_INFO_DOWNLOAD_LEN_OFFSET		0
 #define APP_CONFIG_EEPROM_FIRMWARE_INFO_UPDATE_RESULT_OFFSET    4
 #define APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET			5

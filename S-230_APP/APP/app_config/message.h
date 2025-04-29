@@ -5,92 +5,92 @@ extern "C"
 {
 #endif
 
-int APP_CONFIG_system_init(app_config_system_pt message)
+int APP_CONFIG_SystemInit(APP_CONFIG_System_pt message)
 {
-    message->device_id = 1;
+    message->deviceID = 1;
     memset(message->SN, 0, 5);
     memset(message->hardware, 0, 3);
     message->hardware[0]= APP_HARDWARE_MAJOR;
     message->hardware[1]= APP_HARDWARE_MINOR;
     message->hardware[2]= APP_HARDWARE_REVISION;
-    message->log_level = BSP_LOG_DEFAULT_LEVEL; 
+    message->logLevel = BSP_LOG_DEFAULT_LEVEL; 
     return APP_OK;
 }
 
-static void _system_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_system_pt message)
+static void SystemSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_System_pt message)
 {
-    write_uint32_t(message->device_id, &bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]); 
+    write_uint32_t(message->deviceID, &bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]); 
     memcpy(&bytes[APP_CONFIG_EEPROM_SYSTEM_SN_OFFSET], message->SN, 5); 
     memcpy(&bytes[APP_CONFIG_EEPROM_SYSTEM_HARDWARE_OFFSET], message->hardware, 3); 
 }
 
-app_config_system_t app_config_system;
-int APP_CONFIG_system_read( app_config_system_pt message)
+APP_CONFIG_System_t g_appConfigSystem;
+int APP_CONFIG_SystemRead( APP_CONFIG_System_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
     APP_CHECK_RC(rc)
-    message->device_id = read_uint32_t(&bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]);
+    message->deviceID = read_uint32_t(&bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]);
     memcpy(message->SN, &bytes[APP_CONFIG_EEPROM_SYSTEM_SN_OFFSET], 5);
     memcpy(message->hardware, &bytes[APP_CONFIG_EEPROM_SYSTEM_HARDWARE_OFFSET], 3);
     return APP_OK;
 }
 
-int APP_CONFIG_system_write( app_config_system_pt message)
+int APP_CONFIG_SystemWrite( APP_CONFIG_System_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _system_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
+    SystemSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
 }
 
-int APP_CONFIG_system_write_device_id( app_config_system_pt message, uint32_t device_id)
+int APP_CONFIG_SystemWriteDeviceID( APP_CONFIG_System_pt message, uint32_t deviceID)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _system_serialize(bytes, message);
-    write_uint32_t(device_id, &bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
+    SystemSerialize(bytes, message);
+    write_uint32_t(deviceID, &bytes[APP_CONFIG_EEPROM_SYSTEM_DEVICE_ID_OFFSET]);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
     APP_CHECK_RC(rc)
-    message->device_id = device_id; 
+    message->deviceID = deviceID; 
     return APP_OK;
 }
 
-int APP_CONFIG_system_write_sn( app_config_system_pt message, uint8_t SN[5], uint8_t hardware[3])
+int APP_CONFIG_SystemWriteSN( APP_CONFIG_System_pt message, uint8_t SN[5], uint8_t hardware[3])
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _system_serialize(bytes, message);
+    SystemSerialize(bytes, message);
     memcpy(&bytes[APP_CONFIG_EEPROM_SYSTEM_SN_OFFSET], SN, 5);
     memcpy(&bytes[APP_CONFIG_EEPROM_SYSTEM_HARDWARE_OFFSET], hardware, 3);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_SYSTEM_PAGE, bytes);
     APP_CHECK_RC(rc)
     memcpy(message->SN, SN, 5); 
     memcpy(message->hardware, hardware, 3); 
     return APP_OK;
 }
 
-int APP_CONFIG_system_load(void)
+int APP_CONFIG_SystemLoad(void)
 {
     int rc = 0;
 
-    APP_CONFIG_system_init(&app_config_system);
-    rc = APP_CONFIG_system_read( &app_config_system);
+    APP_CONFIG_SystemInit(&g_appConfigSystem);
+    rc = APP_CONFIG_SystemRead( &g_appConfigSystem);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
-int APP_CONFIG_system_recovery(void)
+int APP_CONFIG_SystemRecovery(void)
 {
     int rc = 0;
     
-    APP_CONFIG_system_init(&app_config_system);
-    rc = APP_CONFIG_system_write( &app_config_system);
+    APP_CONFIG_SystemInit(&g_appConfigSystem);
+    rc = APP_CONFIG_SystemWrite( &g_appConfigSystem);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
-int APP_CONFIG_time_init(app_config_time_pt message)
+int APP_CONFIG_TimeInit(APP_CONFIG_Time_pt message)
 {
     message->year = 0;
     message->month = 0;
@@ -101,7 +101,7 @@ int APP_CONFIG_time_init(app_config_time_pt message)
     return APP_OK;
 }
 
-static void _time_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_time_pt message)
+static void TimeSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Time_pt message)
 {
     write_uint8_t(message->year, &bytes[APP_CONFIG_EEPROM_TIME_YEAR_OFFSET]); 
     write_uint8_t(message->month, &bytes[APP_CONFIG_EEPROM_TIME_MONTH_OFFSET]); 
@@ -111,7 +111,7 @@ static void _time_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_time_pt
     write_uint8_t(message->second, &bytes[APP_CONFIG_EEPROM_TIME_SECOND_OFFSET]); 
 }
 
-static int _time_deserialize(uint8_t *bytes, app_config_time_pt message)
+static int TimeDeserialize(uint8_t *bytes, APP_CONFIG_Time_pt message)
 {
     message->year = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIME_YEAR_OFFSET]); 
     message->month = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIME_MONTH_OFFSET]); 
@@ -122,7 +122,7 @@ static int _time_deserialize(uint8_t *bytes, app_config_time_pt message)
     return APP_OK;
 }
 
-static void _time_copy( app_config_time_pt dist, app_config_time_pt from)
+static void TimeCopy( APP_CONFIG_Time_pt dist, APP_CONFIG_Time_pt from)
 {
     dist->year = from->year; 
     dist->month = from->month; 
@@ -132,324 +132,324 @@ static void _time_copy( app_config_time_pt dist, app_config_time_pt from)
     dist->second = from->second; 
 }
 
-int APP_CONFIG_device_enable_init(app_config_device_enable_pt message)
+int APP_CONFIG_DeviceEnableInit(APP_CONFIG_DeviceEnable_pt message)
 {
     message->enable = APP_ENABLE;
-    APP_CONFIG_time_init(&message->record_error_at);
+    APP_CONFIG_TimeInit(&message->recordErrorAt);
     return APP_OK;
 }
 
-static void _device_enable_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_device_enable_pt message)
+static void DeviceEnableSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_DeviceEnable_pt message)
 {
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_ENABLE_OFFSET]); 
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &message->record_error_at); 
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &message->recordErrorAt); 
 }
 
-app_config_device_enable_t app_config_device_enable;
-int APP_CONFIG_device_enable_read( app_config_device_enable_pt message)
+APP_CONFIG_DeviceEnable_t g_appConfigDeviceEnable;
+int APP_CONFIG_DeviceEnableRead( APP_CONFIG_DeviceEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
     APP_CHECK_RC(rc)
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_ENABLE_OFFSET]);
-    _time_deserialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &message->record_error_at);
+    TimeDeserialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &message->recordErrorAt);
     return APP_OK;
 }
 
-int APP_CONFIG_device_enable_write( app_config_device_enable_pt message)
+int APP_CONFIG_DeviceEnableWrite( APP_CONFIG_DeviceEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _device_enable_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
+    DeviceEnableSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
 }
 
-int APP_CONFIG_device_enable_write_enable( app_config_device_enable_pt message, uint8_t enable)
+int APP_CONFIG_DeviceEnableWriteEnable( APP_CONFIG_DeviceEnable_pt message, uint8_t enable)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _device_enable_serialize(bytes, message);
+    DeviceEnableSerialize(bytes, message);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_ENABLE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
     APP_CHECK_RC(rc)
     message->enable = enable; 
     return APP_OK;
 }
 
-int APP_CONFIG_device_enable_write_record_error_at( app_config_device_enable_pt message, app_config_time_t record_error_at)
+int APP_CONFIG_DeviceEnableWriteRecordErrorAt( APP_CONFIG_DeviceEnable_pt message, APP_CONFIG_Time_t recordErrorAt)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _device_enable_serialize(bytes, message);
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &record_error_at);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
+    DeviceEnableSerialize(bytes, message);
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_DEVICE_ENABLE_RECORD_ERROR_AT_OFFSET], &recordErrorAt);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_DEVICE_ENABLE_PAGE, bytes);
     APP_CHECK_RC(rc)
-    _time_copy(&message->record_error_at, &record_error_at); 
+    TimeCopy(&message->recordErrorAt, &recordErrorAt); 
     return APP_OK;
 }
 
-int APP_CONFIG_device_enable_load(void)
+int APP_CONFIG_DeviceEnableLoad(void)
 {
     int rc = 0;
 
-    APP_CONFIG_device_enable_init(&app_config_device_enable);
-    rc = APP_CONFIG_device_enable_read( &app_config_device_enable);
+    APP_CONFIG_DeviceEnableInit(&g_appConfigDeviceEnable);
+    rc = APP_CONFIG_DeviceEnableRead( &g_appConfigDeviceEnable);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
-int APP_CONFIG_device_enable_recovery(void)
+int APP_CONFIG_DeviceEnableRecovery(void)
 {
     int rc = 0;
 
-    APP_CONFIG_device_enable_init(&app_config_device_enable);
-    rc = APP_CONFIG_device_enable_write( &app_config_device_enable);
+    APP_CONFIG_DeviceEnableInit(&g_appConfigDeviceEnable);
+    rc = APP_CONFIG_DeviceEnableWrite( &g_appConfigDeviceEnable);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
-int APP_CONFIG_device_connect_init(app_config_device_connect_pt message)
+int APP_CONFIG_DeviceConnectInit(APP_CONFIG_DeviceConnect_pt message)
 {
     message->reason = 0;
     return APP_OK;
 }
 
-static void _device_connect_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_device_connect_pt message)
+static void DeviceConnectSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_DeviceConnect_pt message)
 {
     write_uint8_t(message->reason, &bytes[APP_CONFIG_EEPROM_DEVICE_CONNECT_REASON_OFFSET]); 
 }
 
-app_config_device_connect_t app_config_device_connect;
-int APP_CONFIG_device_connect_read( app_config_device_connect_pt message)
+APP_CONFIG_DeviceConnect_t g_appConfigDeviceConnect;
+int APP_CONFIG_DeviceConnectRead( APP_CONFIG_DeviceConnect_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
     APP_CHECK_RC(rc)
     message->reason = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DEVICE_CONNECT_REASON_OFFSET]);
     return APP_OK;
 }
 
-int APP_CONFIG_device_connect_write( app_config_device_connect_pt message)
+int APP_CONFIG_DeviceConnectWrite( APP_CONFIG_DeviceConnect_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _device_connect_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
+    DeviceConnectSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
 }
 
-int APP_CONFIG_device_connect_write_reason( app_config_device_connect_pt message, uint8_t reason)
+int APP_CONFIG_DeviceConnectWriteReason( APP_CONFIG_DeviceConnect_pt message, uint8_t reason)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
     
-    _device_connect_serialize(bytes, message);
+    DeviceConnectSerialize(bytes, message);
     write_uint8_t(reason, &bytes[APP_CONFIG_EEPROM_DEVICE_CONNECT_REASON_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_DEVICE_CONNECT_PAGE, bytes);
     APP_CHECK_RC(rc)
     message->reason = reason; 
     return APP_OK;
 }
 
-int APP_CONFIG_device_connect_load(void)
+int APP_CONFIG_DeviceConnectLoad(void)
 {
     int rc = 0;
 
-    APP_CONFIG_device_connect_init(&app_config_device_connect);
-    rc = APP_CONFIG_device_connect_read( &app_config_device_connect);
+    APP_CONFIG_DeviceConnectInit(&g_appConfigDeviceConnect);
+    rc = APP_CONFIG_DeviceConnectRead( &g_appConfigDeviceConnect);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
-int APP_CONFIG_device_connect_recovery(void)
+int APP_CONFIG_DeviceConnectRecovery(void)
 {
     int rc = 0;
 
-    APP_CONFIG_device_connect_init(&app_config_device_connect);
-    rc = APP_CONFIG_device_connect_write( &app_config_device_connect);
+    APP_CONFIG_DeviceConnectInit(&g_appConfigDeviceConnect);
+    rc = APP_CONFIG_DeviceConnectWrite( &g_appConfigDeviceConnect);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
-int APP_CONFIG_probe_enable_init(app_config_probe_enable_pt message)
+int APP_CONFIG_ProbeEnableInit(APP_CONFIG_ProbeEnable_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     message->warning = 0;
     return APP_OK;
 }
 
-static void _probe_enable_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_probe_enable_pt message)
+static void ProbeEnableSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_ProbeEnable_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_ENABLE_OFFSET]); 
     write_uint8_t(message->warning, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_WARNING_OFFSET]); 
 }
 
-app_config_probe_enable_t app_config_probe_enable[PROBE_SIZE];
-int APP_CONFIG_probe_enable_read(uint8_t probe_id,  app_config_probe_enable_pt message)
+APP_CONFIG_ProbeEnable_t g_appConfigProbeEnable[PROBE_SIZE];
+int APP_CONFIG_ProbeEnableRead(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probe_id, bytes);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_ENABLE_OFFSET]);
     message->warning = read_uint8_t(&bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_WARNING_OFFSET]);
     return APP_OK;
 }
 
-int APP_CONFIG_probe_enable_write(uint8_t probe_id,  app_config_probe_enable_pt message)
+int APP_CONFIG_ProbeEnableWrite(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _probe_enable_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probe_id, bytes);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    ProbeEnableSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probeID, bytes);
 }
 
-int APP_CONFIG_probe_enable_write_has_config(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t has_config)
+int APP_CONFIG_ProbeEnableWriteHasConfig(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t hasConfig)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _probe_enable_serialize(bytes, message);
-    write_uint8_t(has_config, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probe_id, bytes);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    ProbeEnableSerialize(bytes, message);
+    write_uint8_t(hasConfig, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_HAS_CONFIG_OFFSET]);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = has_config; 
+    message->hasConfig = hasConfig; 
     return APP_OK;
 }
 
-int APP_CONFIG_probe_enable_write_enable(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t enable)
+int APP_CONFIG_ProbeEnableWriteEnable(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t enable)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _probe_enable_serialize(bytes, message);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    ProbeEnableSerialize(bytes, message);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_ENABLE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probe_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
     message->enable = enable; 
     return APP_OK;
 }
 
-int APP_CONFIG_probe_enable_write_warning(uint8_t probe_id,  app_config_probe_enable_pt message, uint8_t warning)
+int APP_CONFIG_ProbeEnableWriteWarnning(uint8_t probeID,  APP_CONFIG_ProbeEnable_pt message, uint8_t warning)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _probe_enable_serialize(bytes, message);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    ProbeEnableSerialize(bytes, message);
     write_uint8_t(warning, &bytes[APP_CONFIG_EEPROM_PROBE_ENABLE_WARNING_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probe_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_PROBE_ENABLE_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
     message->warning = warning; 
     return APP_OK;
 }
 
-int APP_CONFIG_probe_enable_load(void)
+int APP_CONFIG_ProbeEnableLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
+    uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        APP_CONFIG_probe_enable_init(&app_config_probe_enable[probe_id]);
-        rc = APP_CONFIG_probe_enable_read(probe_id, &app_config_probe_enable[probe_id]);
+        APP_CONFIG_ProbeEnableInit(&g_appConfigProbeEnable[probeID]);
+        rc = APP_CONFIG_ProbeEnableRead(probeID, &g_appConfigProbeEnable[probeID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_probe_enable_recovery(void)
+int APP_CONFIG_ProbeEnableRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
+    uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        APP_CONFIG_probe_enable_init(&app_config_probe_enable[probe_id]);
-        rc = APP_CONFIG_probe_enable_write(probe_id, &app_config_probe_enable[probe_id]);
+        APP_CONFIG_ProbeEnableInit(&g_appConfigProbeEnable[probeID]);
+        rc = APP_CONFIG_ProbeEnableWrite(probeID, &g_appConfigProbeEnable[probeID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_pump_status_init(app_config_pump_status_pt message)
+int APP_CONFIG_PumpStatusInit(APP_CONFIG_PumpStatus_pt message)
 {
     memset(message->status, 0, 16);
     return APP_OK;
 }
 
-static void _pump_status_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_pump_status_pt message)
+static void PumpStatusSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_PumpStatus_pt message)
 {
     memcpy(&bytes[APP_CONFIG_EEPROM_PUMP_STATUS_STATUS_OFFSET], message->status, 16); 
 }
 
-app_config_pump_status_t app_config_pump_status[PROBE_SIZE];
-int APP_CONFIG_pump_status_read(uint8_t probe_id,  app_config_pump_status_pt message)
+APP_CONFIG_PumpStatus_t g_appConfigPumpStatus[PROBE_SIZE];
+int APP_CONFIG_PumpStatusRead(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probe_id, bytes);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
     memcpy(message->status, &bytes[APP_CONFIG_EEPROM_PUMP_STATUS_STATUS_OFFSET], 16);
     return APP_OK;
 }
 
-int APP_CONFIG_pump_status_write(uint8_t probe_id,  app_config_pump_status_pt message)
+int APP_CONFIG_PumpStatusWrite(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _pump_status_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probe_id, bytes);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    PumpStatusSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probeID, bytes);
 }
 
-int APP_CONFIG_pump_status_write_status(uint8_t probe_id,  app_config_pump_status_pt message, uint8_t status_index, uint8_t status)
+int APP_CONFIG_PumpStatusWriteStatus(uint8_t probeID,  APP_CONFIG_PumpStatus_pt message, uint8_t status_index, uint8_t status)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-    _pump_status_serialize(bytes, message);
+    if((probeID > PROBE_SIZE)){return APP_ERROR;}
+    PumpStatusSerialize(bytes, message);
     write_uint8_t(status, &bytes[APP_CONFIG_EEPROM_PUMP_STATUS_STATUS_OFFSET + 1 * status_index]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probe_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_PUMP_STATUS_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
     message->status[status_index] = status; 
     return APP_OK;
 }
 
-int APP_CONFIG_pump_status_load(void)
+int APP_CONFIG_PumpStatusLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
+    uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        APP_CONFIG_pump_status_init(&app_config_pump_status[probe_id]);
-        rc = APP_CONFIG_pump_status_read(probe_id, &app_config_pump_status[probe_id]);
+        APP_CONFIG_PumpStatusInit(&g_appConfigPumpStatus[probeID]);
+        rc = APP_CONFIG_PumpStatusRead(probeID, &g_appConfigPumpStatus[probeID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_pump_status_recovery(void)
+int APP_CONFIG_PumpStatusRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
+    uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        APP_CONFIG_pump_status_init(&app_config_pump_status[probe_id]);
-        rc = APP_CONFIG_pump_status_write(probe_id, &app_config_pump_status[probe_id]);
+        APP_CONFIG_PumpStatusInit(&g_appConfigPumpStatus[probeID]);
+        rc = APP_CONFIG_PumpStatusWrite(probeID, &g_appConfigPumpStatus[probeID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_sensor_init(app_config_sensor_pt message)
+int APP_CONFIG_SensorInit(APP_CONFIG_Sensor_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     message->warning = 0;
     message->manufacturer = 0;
@@ -458,9 +458,9 @@ int APP_CONFIG_sensor_init(app_config_sensor_pt message)
     return APP_OK;
 }
 
-static void _sensor_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_sensor_pt message)
+static void SensorSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Sensor_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_SENSOR_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_SENSOR_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_SENSOR_ENABLE_OFFSET]); 
     write_uint8_t(message->warning, &bytes[APP_CONFIG_EEPROM_SENSOR_WARNING_OFFSET]); 
     write_uint8_t(message->manufacturer, &bytes[APP_CONFIG_EEPROM_SENSOR_MANUFACTURER_OFFSET]); 
@@ -468,15 +468,15 @@ static void _sensor_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_senso
     write_uint8_t(message->protocol, &bytes[APP_CONFIG_EEPROM_SENSOR_PROTOCOL_OFFSET]); 
 }
 
-app_config_sensor_t app_config_sensor[PROBE_SIZE][PROBE_SENSOR_SIZE];
-int APP_CONFIG_sensor_read(uint8_t probe_id, uint8_t sensor_id,  app_config_sensor_pt message)
+APP_CONFIG_Sensor_t g_appConfigSensor[PROBE_SIZE][PROBE_SENSOR_SIZE];
+int APP_CONFIG_SensorRead(uint8_t probeID, uint8_t sensorID,  APP_CONFIG_Sensor_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (sensor_id > PROBE_SENSOR_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_SENSOR_PAGE + (probe_id * 16) + sensor_id, bytes);
+    if((probeID > PROBE_SIZE) || (sensorID > PROBE_SENSOR_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_SENSOR_PAGE + (probeID * 16) + sensorID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_SENSOR_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_SENSOR_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_SENSOR_ENABLE_OFFSET]);
     message->warning = read_uint8_t(&bytes[APP_CONFIG_EEPROM_SENSOR_WARNING_OFFSET]);
     message->manufacturer = read_uint8_t(&bytes[APP_CONFIG_EEPROM_SENSOR_MANUFACTURER_OFFSET]);
@@ -485,138 +485,138 @@ int APP_CONFIG_sensor_read(uint8_t probe_id, uint8_t sensor_id,  app_config_sens
     return APP_OK;
 }
 
-int APP_CONFIG_sensor_write(uint8_t probe_id, uint8_t sensor_id,  app_config_sensor_pt message)
+int APP_CONFIG_SensorWrite(uint8_t probeID, uint8_t sensorID,  APP_CONFIG_Sensor_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (sensor_id > PROBE_SENSOR_SIZE)){return APP_ERROR;}
-    _sensor_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_SENSOR_PAGE + (probe_id * 16) + sensor_id, bytes);
+    if((probeID > PROBE_SIZE) || (sensorID > PROBE_SENSOR_SIZE)){return APP_ERROR;}
+    SensorSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_SENSOR_PAGE + (probeID * 16) + sensorID, bytes);
 }
 
-int APP_CONFIG_sensor_load(void)
+int APP_CONFIG_SensorLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t sensor_id;
+    uint8_t probeID;
+    uint8_t sensorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(sensor_id = 0; sensor_id < PROBE_SENSOR_SIZE; sensor_id++ ) 
+        for(sensorID = 0; sensorID < PROBE_SENSOR_SIZE; sensorID++ ) 
         {
-            APP_CONFIG_sensor_init(&app_config_sensor[probe_id][sensor_id]);
-            rc = APP_CONFIG_sensor_read(probe_id,sensor_id, &app_config_sensor[probe_id][sensor_id]);
+            APP_CONFIG_SensorInit(&g_appConfigSensor[probeID][sensorID]);
+            rc = APP_CONFIG_SensorRead(probeID,sensorID, &g_appConfigSensor[probeID][sensorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_sensor_recovery(void)
+int APP_CONFIG_SensorRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t sensor_id;
+    uint8_t probeID;
+    uint8_t sensorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(sensor_id = 0; sensor_id < PROBE_SENSOR_SIZE; sensor_id++ ) 
+        for(sensorID = 0; sensorID < PROBE_SENSOR_SIZE; sensorID++ ) 
         {
-            APP_CONFIG_sensor_init(&app_config_sensor[probe_id][sensor_id]);
-            rc = APP_CONFIG_sensor_write(probe_id,sensor_id, &app_config_sensor[probe_id][sensor_id]);
+            APP_CONFIG_SensorInit(&g_appConfigSensor[probeID][sensorID]);
+            rc = APP_CONFIG_SensorWrite(probeID,sensorID, &g_appConfigSensor[probeID][sensorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
-int APP_CONFIG_compensation_init(app_config_compensation_pt message)
+int APP_CONFIG_CompensationInit(APP_CONFIG_Compensation_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->value = 0;
     return APP_OK;
 }
 
-static void _compensation_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_compensation_pt message)
+static void CompensationSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Compensation_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]); 
     write_uint16_t(message->value, &bytes[APP_CONFIG_EEPROM_COMPENSATION_VALUE_OFFSET]); 
 }
 
-app_config_compensation_t app_config_compensation[PROBE_SIZE][INDICATOR_SIZE];
-int APP_CONFIG_compensation_read(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message)
+APP_CONFIG_Compensation_t g_appConfigCompensation[PROBE_SIZE][INDICATOR_SIZE];
+int APP_CONFIG_CompensationRead(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probe_id * 16) + indicator_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probeID * 16) + indicatorID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]);
     message->value = read_uint16_t(&bytes[APP_CONFIG_EEPROM_COMPENSATION_VALUE_OFFSET]);
     return APP_OK;
 }
 
-int APP_CONFIG_compensation_write(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message)
+int APP_CONFIG_CompensationWrite(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE)){return APP_ERROR;}
-    _compensation_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probe_id * 16) + indicator_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE)){return APP_ERROR;}
+    CompensationSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probeID * 16) + indicatorID, bytes);
 }
 
-int APP_CONFIG_compensation_write_data(uint8_t probe_id, uint8_t indicator_id,  app_config_compensation_pt message, uint8_t has_config, uint16_t value)
+int APP_CONFIG_CompensationWriteData(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_Compensation_pt message, uint8_t hasConfig, uint16_t value)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE)){return APP_ERROR;}
-    _compensation_serialize(bytes, message);
-    write_uint8_t(has_config, &bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE)){return APP_ERROR;}
+    CompensationSerialize(bytes, message);
+    write_uint8_t(hasConfig, &bytes[APP_CONFIG_EEPROM_COMPENSATION_HAS_CONFIG_OFFSET]);
     write_uint16_t(value, &bytes[APP_CONFIG_EEPROM_COMPENSATION_VALUE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probe_id * 16) + indicator_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_COMPENSATION_PAGE + (probeID * 16) + indicatorID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = has_config; 
+    message->hasConfig = hasConfig; 
     message->value = value; 
     return APP_OK;
 }
 
-int APP_CONFIG_compensation_load(void)
+int APP_CONFIG_CompensationLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            APP_CONFIG_compensation_init(&app_config_compensation[probe_id][indicator_id]);
-            rc = APP_CONFIG_compensation_read(probe_id,indicator_id, &app_config_compensation[probe_id][indicator_id]);
+            APP_CONFIG_CompensationInit(&g_appConfigCompensation[probeID][indicatorID]);
+            rc = APP_CONFIG_CompensationRead(probeID,indicatorID, &g_appConfigCompensation[probeID][indicatorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_compensation_recovery(void)
+int APP_CONFIG_CompensationRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            APP_CONFIG_compensation_init(&app_config_compensation[probe_id][indicator_id]);
-            rc = APP_CONFIG_compensation_write(probe_id,indicator_id, &app_config_compensation[probe_id][indicator_id]);
+            APP_CONFIG_CompensationInit(&g_appConfigCompensation[probeID][indicatorID]);
+            rc = APP_CONFIG_CompensationWrite(probeID,indicatorID, &g_appConfigCompensation[probeID][indicatorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
-int APP_CONFIG_indicator_alert_init(app_config_indicator_alert_pt message)
+int APP_CONFIG_IndicatorAlertInit(APP_CONFIG_IndicatorAlert_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     message->max = 0;
     message->min = 0;
@@ -624,24 +624,24 @@ int APP_CONFIG_indicator_alert_init(app_config_indicator_alert_pt message)
     return APP_OK;
 }
 
-static void _indicator_alert_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_indicator_alert_pt message)
+static void IndicatorAlertSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_IndicatorAlert_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_ENABLE_OFFSET]); 
     write_uint16_t(message->max, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_MAX_OFFSET]); 
     write_uint16_t(message->min, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_MIN_OFFSET]); 
     write_uint16_t(message->threshold, &bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_THRESHOLD_OFFSET]); 
 }
 
-app_config_indicator_alert_t app_config_indicator_alert[PROBE_SIZE][INDICATOR_SIZE];
-int APP_CONFIG_indicator_alert_read(uint8_t probe_id, uint8_t indicator_id,  app_config_indicator_alert_pt message)
+APP_CONFIG_IndicatorAlert_t g_appConfigIndicatorAlert[PROBE_SIZE][INDICATOR_SIZE];
+int APP_CONFIG_IndicatorAlertRead(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_IndicatorAlert_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_INDICATOR_ALERT_PAGE + (probe_id * 16) + indicator_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_INDICATOR_ALERT_PAGE + (probeID * 16) + indicatorID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_ENABLE_OFFSET]);
     message->max = read_uint16_t(&bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_MAX_OFFSET]);
     message->min = read_uint16_t(&bytes[APP_CONFIG_EEPROM_INDICATOR_ALERT_MIN_OFFSET]);
@@ -649,156 +649,156 @@ int APP_CONFIG_indicator_alert_read(uint8_t probe_id, uint8_t indicator_id,  app
     return APP_OK;
 }
 
-int APP_CONFIG_indicator_alert_write(uint8_t probe_id, uint8_t indicator_id,  app_config_indicator_alert_pt message)
+int APP_CONFIG_IndicatorAlertWrite(uint8_t probeID, uint8_t indicatorID,  APP_CONFIG_IndicatorAlert_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE)){return APP_ERROR;}
-    _indicator_alert_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_INDICATOR_ALERT_PAGE + (probe_id * 16) + indicator_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE)){return APP_ERROR;}
+    IndicatorAlertSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_INDICATOR_ALERT_PAGE + (probeID * 16) + indicatorID, bytes);
 }
 
-int APP_CONFIG_indicator_alert_load(void)
+int APP_CONFIG_IndicatorAlertLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            APP_CONFIG_indicator_alert_init(&app_config_indicator_alert[probe_id][indicator_id]);
-            rc = APP_CONFIG_indicator_alert_read(probe_id,indicator_id, &app_config_indicator_alert[probe_id][indicator_id]);
+            APP_CONFIG_IndicatorAlertInit(&g_appConfigIndicatorAlert[probeID][indicatorID]);
+            rc = APP_CONFIG_IndicatorAlertRead(probeID,indicatorID, &g_appConfigIndicatorAlert[probeID][indicatorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_indicator_alert_recovery(void)
+int APP_CONFIG_IndicatorAlertRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            APP_CONFIG_indicator_alert_init(&app_config_indicator_alert[probe_id][indicator_id]);
-            rc = APP_CONFIG_indicator_alert_write(probe_id,indicator_id, &app_config_indicator_alert[probe_id][indicator_id]);
+            APP_CONFIG_IndicatorAlertInit(&g_appConfigIndicatorAlert[probeID][indicatorID]);
+            rc = APP_CONFIG_IndicatorAlertWrite(probeID,indicatorID, &g_appConfigIndicatorAlert[probeID][indicatorID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
-int APP_CONFIG_config_enable_init(app_config_config_enable_pt message)
+int APP_CONFIG_ConfigEnableInit(APP_CONFIG_ConfigEnable_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     return APP_OK;
 }
 
-static void _config_enable_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_config_enable_pt message)
+static void ConfigEnableSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_ConfigEnable_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_ENABLE_OFFSET]); 
 }
 
-static int _config_enable_deserialize(uint8_t *bytes, app_config_config_enable_pt message)
+static int ConfigEnableDeserialize(uint8_t *bytes, APP_CONFIG_ConfigEnable_pt message)
 {
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_HAS_CONFIG_OFFSET]); 
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_HAS_CONFIG_OFFSET]); 
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_CONFIG_ENABLE_ENABLE_OFFSET]); 
     return APP_OK;
 }
 
-static void _config_enable_copy( app_config_config_enable_pt dist, app_config_config_enable_pt from)
+static void ConfigEnableCopy( APP_CONFIG_ConfigEnable_pt dist, APP_CONFIG_ConfigEnable_pt from)
 {
-    dist->has_config = from->has_config; 
+    dist->hasConfig = from->hasConfig; 
     dist->enable = from->enable; 
 }
 
-int APP_CONFIG_limit_init(app_config_limit_pt message)
+int APP_CONFIG_LimitInit(APP_CONFIG_Limit_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
-    message->relay_id = 0;
+    message->relayID = 0;
     message->channel = 0;
     message->type = 0;
-    message->up_limit = 0;
-    message->down_limit = 0;
+    message->upLimit = 0;
+    message->downLimit = 0;
     return APP_OK;
 }
 
-static void _limit_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_limit_pt message)
+static void LimitSerialeze(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Limit_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_LIMIT_ENABLE_OFFSET]); 
-    write_uint8_t(message->relay_id, &bytes[APP_CONFIG_EEPROM_LIMIT_RELAY_ID_OFFSET]); 
+    write_uint8_t(message->relayID, &bytes[APP_CONFIG_EEPROM_LIMIT_RELAY_ID_OFFSET]); 
     write_uint16_t(message->channel, &bytes[APP_CONFIG_EEPROM_LIMIT_CHANNEL_OFFSET]); 
     write_uint8_t(message->type, &bytes[APP_CONFIG_EEPROM_LIMIT_TYPE_OFFSET]); 
-    write_uint16_t(message->up_limit, &bytes[APP_CONFIG_EEPROM_LIMIT_UP_LIMIT_OFFSET]); 
-    write_uint16_t(message->down_limit, &bytes[APP_CONFIG_EEPROM_LIMIT_DOWN_LIMIT_OFFSET]); 
+    write_uint16_t(message->upLimit, &bytes[APP_CONFIG_EEPROM_LIMIT_UP_LIMIT_OFFSET]); 
+    write_uint16_t(message->downLimit, &bytes[APP_CONFIG_EEPROM_LIMIT_DOWN_LIMIT_OFFSET]); 
 }
 
-app_config_limit_t app_config_limit[PROBE_SIZE][INDICATOR_SIZE][APP_CONFIG_MAX_LIMIT_TASK];
-int APP_CONFIG_limit_read(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message)
+APP_CONFIG_Limit_t g_appConfigLimit[PROBE_SIZE][INDICATOR_SIZE][APP_CONFIG_MAX_LIMIT_TASK];
+int APP_CONFIG_LimitRead(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE) || (task_id > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_LIMIT_PAGE + (probe_id * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicator_id * APP_CONFIG_MAX_LIMIT_TASK) + task_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE) || (taskID > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_LIMIT_PAGE + (probeID * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicatorID * APP_CONFIG_MAX_LIMIT_TASK) + taskID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_ENABLE_OFFSET]);
-    message->relay_id = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_RELAY_ID_OFFSET]);
+    message->relayID = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_RELAY_ID_OFFSET]);
     message->channel = read_uint16_t(&bytes[APP_CONFIG_EEPROM_LIMIT_CHANNEL_OFFSET]);
     message->type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_LIMIT_TYPE_OFFSET]);
-    message->up_limit = read_uint16_t(&bytes[APP_CONFIG_EEPROM_LIMIT_UP_LIMIT_OFFSET]);
-    message->down_limit = read_uint16_t(&bytes[APP_CONFIG_EEPROM_LIMIT_DOWN_LIMIT_OFFSET]);
+    message->upLimit = read_uint16_t(&bytes[APP_CONFIG_EEPROM_LIMIT_UP_LIMIT_OFFSET]);
+    message->downLimit = read_uint16_t(&bytes[APP_CONFIG_EEPROM_LIMIT_DOWN_LIMIT_OFFSET]);
     return APP_OK;
 }
 
-int APP_CONFIG_limit_write(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message)
+int APP_CONFIG_LimitWrite(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE) || (task_id > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
-    _limit_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_LIMIT_PAGE + (probe_id * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicator_id * APP_CONFIG_MAX_LIMIT_TASK) + task_id, bytes);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE) || (taskID > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
+    LimitSerialeze(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_LIMIT_PAGE + (probeID * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicatorID * APP_CONFIG_MAX_LIMIT_TASK) + taskID, bytes);
 }
 
-int APP_CONFIG_limit_write_enable(uint8_t probe_id, uint8_t indicator_id, uint8_t task_id,  app_config_limit_pt message, uint8_t has_config, uint8_t enable)
+int APP_CONFIG_LimitWriteEnable(uint8_t probeID, uint8_t indicatorID, uint8_t taskID,  APP_CONFIG_Limit_pt message, uint8_t hasConfig, uint8_t enable)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((probe_id > PROBE_SIZE) || (indicator_id > INDICATOR_SIZE) || (task_id > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
-    _limit_serialize(bytes, message);
-    write_uint8_t(has_config, &bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]);
+    if((probeID > PROBE_SIZE) || (indicatorID > INDICATOR_SIZE) || (taskID > APP_CONFIG_MAX_LIMIT_TASK)){return APP_ERROR;}
+    LimitSerialeze(bytes, message);
+    write_uint8_t(hasConfig, &bytes[APP_CONFIG_EEPROM_LIMIT_HAS_CONFIG_OFFSET]);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_LIMIT_ENABLE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_LIMIT_PAGE + (probe_id * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicator_id * APP_CONFIG_MAX_LIMIT_TASK) + task_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_LIMIT_PAGE + (probeID * 16 * APP_CONFIG_MAX_LIMIT_TASK) + (indicatorID * APP_CONFIG_MAX_LIMIT_TASK) + taskID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = has_config; 
+    message->hasConfig = hasConfig; 
     message->enable = enable; 
     return APP_OK;
 }
 
-int APP_CONFIG_limit_load(void)
+int APP_CONFIG_LimitLoad(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
-    uint8_t task_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
+    uint8_t taskID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            for(task_id = 0; task_id < APP_CONFIG_MAX_LIMIT_TASK; task_id++ ) 
+            for(taskID = 0; taskID < APP_CONFIG_MAX_LIMIT_TASK; taskID++ ) 
             {
-                APP_CONFIG_limit_init(&app_config_limit[probe_id][indicator_id][task_id]);
-                rc = APP_CONFIG_limit_read(probe_id,indicator_id,task_id, &app_config_limit[probe_id][indicator_id][task_id]);
+                APP_CONFIG_LimitInit(&g_appConfigLimit[probeID][indicatorID][taskID]);
+                rc = APP_CONFIG_LimitRead(probeID,indicatorID,taskID, &g_appConfigLimit[probeID][indicatorID][taskID]);
                 APP_CHECK_RC(rc)
             } 
         } 
@@ -806,21 +806,21 @@ int APP_CONFIG_limit_load(void)
     return APP_OK;
 }
 
-int APP_CONFIG_limit_recovery(void)
+int APP_CONFIG_LimitRecovery(void)
 {
     int rc = 0;
-    uint8_t probe_id;
-    uint8_t indicator_id;
-    uint8_t task_id;
+    uint8_t probeID;
+    uint8_t indicatorID;
+    uint8_t taskID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
     {
-        for(indicator_id = 0; indicator_id < INDICATOR_SIZE; indicator_id++ ) 
+        for(indicatorID = 0; indicatorID < INDICATOR_SIZE; indicatorID++ ) 
         {
-            for(task_id = 0; task_id < APP_CONFIG_MAX_LIMIT_TASK; task_id++ ) 
+            for(taskID = 0; taskID < APP_CONFIG_MAX_LIMIT_TASK; taskID++ ) 
             {
-                APP_CONFIG_limit_init(&app_config_limit[probe_id][indicator_id][task_id]);
-                rc = APP_CONFIG_limit_write(probe_id,indicator_id,task_id, &app_config_limit[probe_id][indicator_id][task_id]);
+                APP_CONFIG_LimitInit(&g_appConfigLimit[probeID][indicatorID][taskID]);
+                rc = APP_CONFIG_LimitWrite(probeID,indicatorID,taskID, &g_appConfigLimit[probeID][indicatorID][taskID]);
                 APP_CHECK_RC(rc)
             } 
         } 
@@ -828,522 +828,522 @@ int APP_CONFIG_limit_recovery(void)
     return APP_OK;
 }
 
-int APP_CONFIG_relay_init(app_config_relay_pt message)
+int APP_CONFIG_RelayInit(APP_CONFIG_Relay_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     message->warning = 0;
     return APP_OK;
 }
 
-static void _relay_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_relay_pt message)
+static void RelaySerialeze(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Relay_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_RELAY_ENABLE_OFFSET]); 
     write_uint8_t(message->warning, &bytes[APP_CONFIG_EEPROM_RELAY_WARNING_OFFSET]); 
 }
 
-app_config_relay_t app_config_relay[RELAY_SIZE];
-int APP_CONFIG_relay_read(uint8_t relay_id,  app_config_relay_pt message)
+APP_CONFIG_Relay_t g_appConfigRelay[RELAY_SIZE];
+int APP_CONFIG_RelayRead(uint8_t relayID,  APP_CONFIG_Relay_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_RELAY_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_RELAY_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_ENABLE_OFFSET]);
     message->warning = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_WARNING_OFFSET]);
     return APP_OK;
 }
 
-int APP_CONFIG_relay_write(uint8_t relay_id,  app_config_relay_pt message)
+int APP_CONFIG_RelayWrite(uint8_t relayID,  APP_CONFIG_Relay_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _relay_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_RELAY_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    RelaySerialeze(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_RELAY_PAGE + relayID, bytes);
 }
 
-int APP_CONFIG_relay_write_has_config(uint8_t relay_id,  app_config_relay_pt message, uint8_t has_config)
+int APP_CONFIG_RelayWriteHasConfig(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t hasConfig)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _relay_serialize(bytes, message);
-    write_uint8_t(has_config, &bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_RELAY_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    RelaySerialeze(bytes, message);
+    write_uint8_t(hasConfig, &bytes[APP_CONFIG_EEPROM_RELAY_HAS_CONFIG_OFFSET]);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_RELAY_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = has_config; 
+    message->hasConfig = hasConfig; 
     return APP_OK;
 }
 
-int APP_CONFIG_relay_write_enable(uint8_t relay_id,  app_config_relay_pt message, uint8_t enable)
+int APP_CONFIG_RelayWriteEnable(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t enable)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _relay_serialize(bytes, message);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    RelaySerialeze(bytes, message);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_RELAY_ENABLE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_RELAY_PAGE + relay_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_RELAY_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
     message->enable = enable; 
     return APP_OK;
 }
 
-int APP_CONFIG_relay_write_warning(uint8_t relay_id,  app_config_relay_pt message, uint8_t warning)
+int APP_CONFIG_RelayWriteWarnning(uint8_t relayID,  APP_CONFIG_Relay_pt message, uint8_t warning)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _relay_serialize(bytes, message);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    RelaySerialeze(bytes, message);
     write_uint8_t(warning, &bytes[APP_CONFIG_EEPROM_RELAY_WARNING_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_RELAY_PAGE + relay_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_RELAY_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
     message->warning = warning; 
     return APP_OK;
 }
 
-int APP_CONFIG_relay_load(void)
+int APP_CONFIG_RelayLoad(void)
 {
     int rc = 0;
-    uint8_t relay_id;
+    uint8_t relayID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        APP_CONFIG_relay_init(&app_config_relay[relay_id]);
-        rc = APP_CONFIG_relay_read(relay_id, &app_config_relay[relay_id]);
+        APP_CONFIG_RelayInit(&g_appConfigRelay[relayID]);
+        rc = APP_CONFIG_RelayRead(relayID, &g_appConfigRelay[relayID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_relay_recovery(void)
+int APP_CONFIG_RelayRecovery(void)
 {
     int rc = 0;
-    uint8_t relay_id;
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    uint8_t relayID;
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        APP_CONFIG_relay_init(&app_config_relay[relay_id]);
-        rc = APP_CONFIG_relay_write(relay_id, &app_config_relay[relay_id]);
+        APP_CONFIG_RelayInit(&g_appConfigRelay[relayID]);
+        rc = APP_CONFIG_RelayWrite(relayID, &g_appConfigRelay[relayID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
-int APP_CONFIG_times_enable_init(app_config_times_enable_pt message)
+int APP_CONFIG_TimesEnableInit(APP_CONFIG_TimeEnable_pt message)
 {
-    APP_CONFIG_config_enable_init(&message->task[0]);
-    APP_CONFIG_config_enable_init(&message->task[1]);
-    APP_CONFIG_config_enable_init(&message->task[2]);
-    APP_CONFIG_config_enable_init(&message->task[3]);
-    APP_CONFIG_config_enable_init(&message->task[4]);
-    APP_CONFIG_config_enable_init(&message->task[5]);
-    APP_CONFIG_config_enable_init(&message->task[6]);
-    APP_CONFIG_config_enable_init(&message->task[7]);
+    APP_CONFIG_ConfigEnableInit(&message->task[0]);
+    APP_CONFIG_ConfigEnableInit(&message->task[1]);
+    APP_CONFIG_ConfigEnableInit(&message->task[2]);
+    APP_CONFIG_ConfigEnableInit(&message->task[3]);
+    APP_CONFIG_ConfigEnableInit(&message->task[4]);
+    APP_CONFIG_ConfigEnableInit(&message->task[5]);
+    APP_CONFIG_ConfigEnableInit(&message->task[6]);
+    APP_CONFIG_ConfigEnableInit(&message->task[7]);
     return APP_OK;
 }
 
-static void _times_enable_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_times_enable_pt message)
+static void TimesEnableSerialeze(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_TimeEnable_pt message)
 {
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 0], &message->task[0]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2], &message->task[1]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 4], &message->task[2]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 6], &message->task[3]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 8], &message->task[4]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 10], &message->task[5]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 12], &message->task[6]);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 14], &message->task[7]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 0], &message->task[0]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2], &message->task[1]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 4], &message->task[2]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 6], &message->task[3]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 8], &message->task[4]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 10], &message->task[5]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 12], &message->task[6]);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 14], &message->task[7]);
 }
 
-app_config_times_enable_t app_config_times_enable[RELAY_SIZE];
-int APP_CONFIG_times_enable_read(uint8_t relay_id,  app_config_times_enable_pt message)
+APP_CONFIG_TimeEnable_t g_appConfigTimesEnable[RELAY_SIZE];
+int APP_CONFIG_TimesEnableRead(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 0], &message->task[0]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2], &message->task[1]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 4], &message->task[2]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 6], &message->task[3]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 8], &message->task[4]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 10], &message->task[5]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 12], &message->task[6]);
-    _config_enable_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 14], &message->task[7]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 0], &message->task[0]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2], &message->task[1]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 4], &message->task[2]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 6], &message->task[3]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 8], &message->task[4]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 10], &message->task[5]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 12], &message->task[6]);
+    ConfigEnableDeserialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 14], &message->task[7]);
     return APP_OK;
 }
 
-int APP_CONFIG_times_enable_write(uint8_t relay_id,  app_config_times_enable_pt message)
+int APP_CONFIG_TimesEnableWrite(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _times_enable_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    TimesEnableSerialeze(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relayID, bytes);
 }
 
-int APP_CONFIG_times_enable_write_config_enable(uint8_t relay_id,  app_config_times_enable_pt message, uint8_t task_index, app_config_config_enable_t task)
+int APP_CONFIG_TimesEnableWriteConfigEnable(uint8_t relayID,  APP_CONFIG_TimeEnable_pt message, uint8_t taskIndex, APP_CONFIG_ConfigEnable_t task)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE)){return APP_ERROR;}
-    _times_enable_serialize(bytes, message);
-    _config_enable_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2 * task_index], &task);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relay_id, bytes);
+    if((relayID > RELAY_SIZE)){return APP_ERROR;}
+    TimesEnableSerialeze(bytes, message);
+    ConfigEnableSerialize(&bytes[APP_CONFIG_EEPROM_TIMES_ENABLE_TASK_OFFSET + 2 * taskIndex], &task);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_TIMES_ENABLE_PAGE + relayID, bytes);
     APP_CHECK_RC(rc)
-    _config_enable_copy(&message->task[task_index], &task); 
+    ConfigEnableCopy(&message->task[taskIndex], &task); 
     return APP_OK;
 }
 
-int APP_CONFIG_times_enable_load(void)
+int APP_CONFIG_TimesEnableLoad(void)
 {
     int rc = 0;
-    uint8_t relay_id;
+    uint8_t relayID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        APP_CONFIG_times_enable_init(&app_config_times_enable[relay_id]);
-        rc = APP_CONFIG_times_enable_read(relay_id, &app_config_times_enable[relay_id]);
+        APP_CONFIG_TimesEnableInit(&g_appConfigTimesEnable[relayID]);
+        rc = APP_CONFIG_TimesEnableRead(relayID, &g_appConfigTimesEnable[relayID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_times_enable_recovery(void)
+int APP_CONFIG_TimesEnableRecovery(void)
 {
     int rc = 0;
-    uint8_t relay_id;
+    uint8_t relayID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        APP_CONFIG_times_enable_init(&app_config_times_enable[relay_id]);
-        rc = APP_CONFIG_times_enable_write(relay_id, &app_config_times_enable[relay_id]);
+        APP_CONFIG_TimesEnableInit(&g_appConfigTimesEnable[relayID]);
+        rc = APP_CONFIG_TimesEnableWrite(relayID, &g_appConfigTimesEnable[relayID]);
         APP_CHECK_RC(rc)
     } 
     return APP_OK;
 }
-int APP_CONFIG_times_job_init(app_config_times_job_pt message)
+int APP_CONFIG_TimesJobInit(APP_CONFIG_TimesJob_pt message)
 {
     message->type = 0;
-    message->start_hour = 0;
-    message->start_minute = 0;
-    message->end_hour = 0;
-    message->end_minute = 0;
+    message->startHour = 0;
+    message->startMinute = 0;
+    message->endHour = 0;
+    message->endMinute = 0;
     return APP_OK;
 }
 
-static void _times_job_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_times_job_pt message)
+static void TimesJobSerialeze(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_TimesJob_pt message)
 {
     write_uint8_t(message->type, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_TYPE_OFFSET]); 
-    write_uint8_t(message->start_hour, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_HOUR_OFFSET]); 
-    write_uint8_t(message->start_minute, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_MINUTE_OFFSET]); 
-    write_uint8_t(message->end_hour, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_HOUR_OFFSET]); 
-    write_uint8_t(message->end_minute, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_MINUTE_OFFSET]); 
+    write_uint8_t(message->startHour, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_HOUR_OFFSET]); 
+    write_uint8_t(message->startMinute, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_MINUTE_OFFSET]); 
+    write_uint8_t(message->endHour, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_HOUR_OFFSET]); 
+    write_uint8_t(message->endMinute, &bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_MINUTE_OFFSET]); 
 }
 
-static int _times_job_deserialize(uint8_t *bytes, app_config_times_job_pt message)
+static int TimesJobDeserialeze(uint8_t *bytes, APP_CONFIG_TimesJob_pt message)
 {
     message->type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_TYPE_OFFSET]); 
-    message->start_hour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_HOUR_OFFSET]); 
-    message->start_minute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_MINUTE_OFFSET]); 
-    message->end_hour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_HOUR_OFFSET]); 
-    message->end_minute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_MINUTE_OFFSET]); 
+    message->startHour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_HOUR_OFFSET]); 
+    message->startMinute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_START_MINUTE_OFFSET]); 
+    message->endHour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_HOUR_OFFSET]); 
+    message->endMinute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_JOB_END_MINUTE_OFFSET]); 
     return APP_OK;
 }
 
-static void _times_job_copy( app_config_times_job_pt dist, app_config_times_job_pt from)
+static void TimesJobCopy( APP_CONFIG_TimesJob_pt dist, APP_CONFIG_TimesJob_pt from)
 {
     dist->type = from->type; 
-    dist->start_hour = from->start_hour; 
-    dist->start_minute = from->start_minute; 
-    dist->end_hour = from->end_hour; 
-    dist->end_minute = from->end_minute; 
+    dist->startHour = from->startHour; 
+    dist->startMinute = from->startMinute; 
+    dist->endHour = from->endHour; 
+    dist->endMinute = from->endMinute; 
 }
 
-int APP_CONFIG_times_init(app_config_times_pt message)
+int APP_CONFIG_TimesInit(APP_CONFIG_Times_pt message)
 {
-    message->has_limit = 0;
+    message->hasLimit = 0;
     message->channel = 0;
-    message->probe_id = 0;
-    message->indicator_id = 0;
+    message->probeID = 0;
+    message->indicatorID = 0;
     message->value = 0;
     message->threshold = 0;
-    message->execute_type = 0;
-    APP_CONFIG_times_job_init(&message->times[0]);
-    APP_CONFIG_times_job_init(&message->times[1]);
-    APP_CONFIG_times_job_init(&message->times[2]);
-    APP_CONFIG_times_job_init(&message->times[3]);
+    message->executeType = 0;
+    APP_CONFIG_TimesJobInit(&message->times[0]);
+    APP_CONFIG_TimesJobInit(&message->times[1]);
+    APP_CONFIG_TimesJobInit(&message->times[2]);
+    APP_CONFIG_TimesJobInit(&message->times[3]);
     return APP_OK;
 }
 
-static void _times_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_times_pt message)
+static void TimesSerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_Times_pt message)
 {
-    write_uint8_t(message->has_limit, &bytes[APP_CONFIG_EEPROM_TIMES_HAS_LIMIT_OFFSET]); 
+    write_uint8_t(message->hasLimit, &bytes[APP_CONFIG_EEPROM_TIMES_HAS_LIMIT_OFFSET]); 
     write_uint16_t(message->channel, &bytes[APP_CONFIG_EEPROM_TIMES_CHANNEL_OFFSET]); 
-    write_uint8_t(message->probe_id, &bytes[APP_CONFIG_EEPROM_TIMES_PROBE_ID_OFFSET]); 
-    write_uint8_t(message->indicator_id, &bytes[APP_CONFIG_EEPROM_TIMES_INDICATOR_ID_OFFSET]); 
+    write_uint8_t(message->probeID, &bytes[APP_CONFIG_EEPROM_TIMES_PROBE_ID_OFFSET]); 
+    write_uint8_t(message->indicatorID, &bytes[APP_CONFIG_EEPROM_TIMES_INDICATOR_ID_OFFSET]); 
     write_uint16_t(message->value, &bytes[APP_CONFIG_EEPROM_TIMES_VALUE_OFFSET]); 
     write_uint16_t(message->threshold, &bytes[APP_CONFIG_EEPROM_TIMES_THRESHOLD_OFFSET]); 
-    write_uint8_t(message->execute_type, &bytes[APP_CONFIG_EEPROM_TIMES_EXECUTE_TYPE_OFFSET]); 
-    _times_job_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 0], &message->times[0]);
-    _times_job_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 5], &message->times[1]);
-    _times_job_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 10], &message->times[2]);
-    _times_job_serialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 15], &message->times[3]);
+    write_uint8_t(message->executeType, &bytes[APP_CONFIG_EEPROM_TIMES_EXECUTE_TYPE_OFFSET]); 
+    TimesJobSerialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 0], &message->times[0]);
+    TimesJobSerialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 5], &message->times[1]);
+    TimesJobSerialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 10], &message->times[2]);
+    TimesJobSerialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 15], &message->times[3]);
 }
 
-app_config_times_t app_config_times[RELAY_SIZE][APP_CONFIG_MAX_TIMES_TASK];
-int APP_CONFIG_times_read(uint8_t relay_id, uint8_t task_id,  app_config_times_pt message)
+APP_CONFIG_Times_t g_appConfigTimes[RELAY_SIZE][APP_CONFIG_MAX_TIMES_TASK];
+int APP_CONFIG_TimesRead(uint8_t relayID, uint8_t taskID,  APP_CONFIG_Times_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (task_id > APP_CONFIG_MAX_TIMES_TASK)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_TIMES_PAGE + (relay_id * APP_CONFIG_MAX_TIMES_TASK) + task_id, bytes);
+    if((relayID > RELAY_SIZE) || (taskID > APP_CONFIG_MAX_TIMES_TASK)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_TIMES_PAGE + (relayID * APP_CONFIG_MAX_TIMES_TASK) + taskID, bytes);
     APP_CHECK_RC(rc)
-    message->has_limit = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_HAS_LIMIT_OFFSET]);
+    message->hasLimit = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_HAS_LIMIT_OFFSET]);
     message->channel = read_uint16_t(&bytes[APP_CONFIG_EEPROM_TIMES_CHANNEL_OFFSET]);
-    message->probe_id = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_PROBE_ID_OFFSET]);
-    message->indicator_id = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_INDICATOR_ID_OFFSET]);
+    message->probeID = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_PROBE_ID_OFFSET]);
+    message->indicatorID = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_INDICATOR_ID_OFFSET]);
     message->value = read_uint16_t(&bytes[APP_CONFIG_EEPROM_TIMES_VALUE_OFFSET]);
     message->threshold = read_uint16_t(&bytes[APP_CONFIG_EEPROM_TIMES_THRESHOLD_OFFSET]);
-    message->execute_type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_EXECUTE_TYPE_OFFSET]);
-    _times_job_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 0], &message->times[0]);
-    _times_job_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 5], &message->times[1]);
-    _times_job_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 10], &message->times[2]);
-    _times_job_deserialize(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 15], &message->times[3]);
+    message->executeType = read_uint8_t(&bytes[APP_CONFIG_EEPROM_TIMES_EXECUTE_TYPE_OFFSET]);
+    TimesJobDeserialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 0], &message->times[0]);
+    TimesJobDeserialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 5], &message->times[1]);
+    TimesJobDeserialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 10], &message->times[2]);
+    TimesJobDeserialeze(&bytes[APP_CONFIG_EEPROM_TIMES_TIMES_OFFSET + 15], &message->times[3]);
     return APP_OK;
 }
 
-int APP_CONFIG_times_write(uint8_t relay_id, uint8_t task_id,  app_config_times_pt message)
+int APP_CONFIG_TimesWrite(uint8_t relayID, uint8_t taskID,  APP_CONFIG_Times_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (task_id > APP_CONFIG_MAX_TIMES_TASK)){return APP_ERROR;}
-    _times_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_TIMES_PAGE + (relay_id * APP_CONFIG_MAX_TIMES_TASK) + task_id, bytes);
+    if((relayID > RELAY_SIZE) || (taskID > APP_CONFIG_MAX_TIMES_TASK)){return APP_ERROR;}
+    TimesSerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_TIMES_PAGE + (relayID * APP_CONFIG_MAX_TIMES_TASK) + taskID, bytes);
 }
 
-int APP_CONFIG_times_load(void)
+int APP_CONFIG_TimesLoad(void)
 {
     int rc = 0;
-    uint8_t relay_id;
-    uint8_t task_id;
+    uint8_t relayID;
+    uint8_t taskID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        for(task_id = 0; task_id < APP_CONFIG_MAX_TIMES_TASK; task_id++ ) 
+        for(taskID = 0; taskID < APP_CONFIG_MAX_TIMES_TASK; taskID++ ) 
         {
-            APP_CONFIG_times_init(&app_config_times[relay_id][task_id]);
-            rc = APP_CONFIG_times_read(relay_id,task_id, &app_config_times[relay_id][task_id]);
+            APP_CONFIG_TimesInit(&g_appConfigTimes[relayID][taskID]);
+            rc = APP_CONFIG_TimesRead(relayID,taskID, &g_appConfigTimes[relayID][taskID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_times_recovery(void)
+int APP_CONFIG_TimesRecovery(void)
 {
     int rc = 0;
-    uint8_t relay_id;
-    uint8_t task_id;
+    uint8_t relayID;
+    uint8_t taskID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        for(task_id = 0; task_id < APP_CONFIG_MAX_TIMES_TASK; task_id++ ) 
+        for(taskID = 0; taskID < APP_CONFIG_MAX_TIMES_TASK; taskID++ ) 
         {
-            APP_CONFIG_times_init(&app_config_times[relay_id][task_id]);
-            rc = APP_CONFIG_times_write(relay_id,task_id, &app_config_times[relay_id][task_id]);
+            APP_CONFIG_TimesInit(&g_appConfigTimes[relayID][taskID]);
+            rc = APP_CONFIG_TimesWrite(relayID,taskID, &g_appConfigTimes[relayID][taskID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
-int APP_CONFIG_manual_relay_init(app_config_manual_relay_pt message)
+int APP_CONFIG_ManualRelayInit(APP_CONFIG_ManualRelay_pt message)
 {
-    message->has_config = 0;
+    message->hasConfig = 0;
     message->enable = 0;
     message->type = 0;
-    APP_CONFIG_time_init(&message->start);
-    APP_CONFIG_time_init(&message->end);
+    APP_CONFIG_TimeInit(&message->start);
+    APP_CONFIG_TimeInit(&message->end);
     return APP_OK;
 }
 
-static void _manual_relay_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_manual_relay_pt message)
+static void ManualRelaySerialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_ManualRelay_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_ENABLE_OFFSET]); 
     write_uint8_t(message->type, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_TYPE_OFFSET]); 
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &message->start); 
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &message->end); 
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &message->start); 
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &message->end); 
 }
 
-app_config_manual_relay_t app_config_manual_relay[RELAY_SIZE][RELAY_CHANNEL_SIZE];
-int APP_CONFIG_manual_relay_read(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message)
+APP_CONFIG_ManualRelay_t g_appConfigManualRelay[RELAY_SIZE][RELAY_CHANNEL_SIZE];
+int APP_CONFIG_ManualRelayRead(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (channel_id > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relay_id * 16) + channel_id, bytes);
+    if((relayID > RELAY_SIZE) || (channelID > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relayID * 16) + channelID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]);
+    message->hasConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]);
     message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_ENABLE_OFFSET]);
     message->type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_TYPE_OFFSET]);
-    _time_deserialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &message->start);
-    _time_deserialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &message->end);
+    TimeDeserialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &message->start);
+    TimeDeserialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &message->end);
     return APP_OK;
 }
 
-int APP_CONFIG_manual_relay_write(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message)
+int APP_CONFIG_ManualRelayWrite(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (channel_id > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
-    _manual_relay_serialize(bytes, message);
-    return epprom_write_block(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relay_id * 16) + channel_id, bytes);
+    if((relayID > RELAY_SIZE) || (channelID > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
+    ManualRelaySerialize(bytes, message);
+    return EEPROM_WriteBlock(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relayID * 16) + channelID, bytes);
 }
 
-int APP_CONFIG_manual_relay_write_enable(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message, uint8_t enable)
+int APP_CONFIG_ManualRelayWriteEnable(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message, uint8_t enable)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (channel_id > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
-    _manual_relay_serialize(bytes, message);
+    if((relayID > RELAY_SIZE) || (channelID > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
+    ManualRelaySerialize(bytes, message);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_ENABLE_OFFSET]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relay_id * 16) + channel_id, bytes);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relayID * 16) + channelID, bytes);
     APP_CHECK_RC(rc)
     message->enable = enable; 
     return APP_OK;
 }
 
-int APP_CONFIG_manual_relay_write_time(uint8_t relay_id, uint8_t channel_id,  app_config_manual_relay_pt message, uint8_t has_config, uint8_t enable, uint8_t type, app_config_time_t start, app_config_time_t end)
+int APP_CONFIG_ManualRelayWriteTime(uint8_t relayID, uint8_t channelID,  APP_CONFIG_ManualRelay_pt message, uint8_t hasConfig, uint8_t enable, uint8_t type, APP_CONFIG_Time_t start, APP_CONFIG_Time_t end)
 {
     uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if((relay_id > RELAY_SIZE) || (channel_id > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
-    _manual_relay_serialize(bytes, message);
-    write_uint8_t(has_config, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]);
+    if((relayID > RELAY_SIZE) || (channelID > RELAY_CHANNEL_SIZE)){return APP_ERROR;}
+    ManualRelaySerialize(bytes, message);
+    write_uint8_t(hasConfig, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_HAS_CONFIG_OFFSET]);
     write_uint8_t(enable, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_ENABLE_OFFSET]);
     write_uint8_t(type, &bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_TYPE_OFFSET]);
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &start);
-    _time_serialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &end);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relay_id * 16) + channel_id, bytes);
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_START_OFFSET], &start);
+    TimeSerialize(&bytes[APP_CONFIG_EEPROM_MANUAL_RELAY_END_OFFSET], &end);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_MANUAL_RELAY_PAGE + (relayID * 16) + channelID, bytes);
     APP_CHECK_RC(rc)
-    message->has_config = has_config; 
+    message->hasConfig = hasConfig; 
     message->enable = enable; 
     message->type = type; 
-    _time_copy(&message->start, &start); 
-    _time_copy(&message->end, &end); 
+    TimeCopy(&message->start, &start); 
+    TimeCopy(&message->end, &end); 
     return APP_OK;
 }
 
-int APP_CONFIG_manual_relay_load(void)
+int APP_CONFIG_ManualRelayLoad(void)
 {
     int rc = 0;
-    uint8_t relay_id;
-    uint8_t channel_id;
+    uint8_t relayID;
+    uint8_t channelID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        for(channel_id = 0; channel_id < RELAY_CHANNEL_SIZE; channel_id++ ) 
+        for(channelID = 0; channelID < RELAY_CHANNEL_SIZE; channelID++ ) 
         {
-            APP_CONFIG_manual_relay_init(&app_config_manual_relay[relay_id][channel_id]);
-            rc = APP_CONFIG_manual_relay_read(relay_id,channel_id, &app_config_manual_relay[relay_id][channel_id]);
+            APP_CONFIG_ManualRelayInit(&g_appConfigManualRelay[relayID][channelID]);
+            rc = APP_CONFIG_ManualRelayRead(relayID,channelID, &g_appConfigManualRelay[relayID][channelID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
 
-int APP_CONFIG_manual_relay_recovery(void)
+int APP_CONFIG_ManualRelayRecovery(void)
 {
     int rc = 0;
-    uint8_t relay_id;
-    uint8_t channel_id;
+    uint8_t relayID;
+    uint8_t channelID;
 
-    for(relay_id = 0; relay_id < RELAY_SIZE; relay_id++ ) 
+    for(relayID = 0; relayID < RELAY_SIZE; relayID++ ) 
     {
-        for(channel_id = 0; channel_id < RELAY_CHANNEL_SIZE; channel_id++ ) 
+        for(channelID = 0; channelID < RELAY_CHANNEL_SIZE; channelID++ ) 
         {
-            APP_CONFIG_manual_relay_init(&app_config_manual_relay[relay_id][channel_id]);
-            rc = APP_CONFIG_manual_relay_write(relay_id,channel_id, &app_config_manual_relay[relay_id][channel_id]);
+            APP_CONFIG_ManualRelayInit(&g_appConfigManualRelay[relayID][channelID]);
+            rc = APP_CONFIG_ManualRelayWrite(relayID,channelID, &g_appConfigManualRelay[relayID][channelID]);
             APP_CHECK_RC(rc)
         } 
     } 
     return APP_OK;
 }
-app_config_l6_t app_config_l6;
-int APP_CONFIG_l6_init(app_config_l6_pt message)
+APP_CONFIG_L6_t g_appConfigL6;
+int APP_CONFIG_L6Init(APP_CONFIG_L6_pt message)
 {
-	message->has_config=0XF8;
+	message->hasConfig=0XF8;
 	message->release=20;
-	message->read_wait=95;
+	message->readWait=95;
 	message->read=50;
 	message->charge=15;
-	message->charge_wait=7;
+	message->chargeWait=7;
 	return APP_OK;
 }
 
-static void _l6_serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], app_config_l6_pt message)
+static void L6Serialize(uint8_t bytes[EEPROM_BLOCK_SIZE], APP_CONFIG_L6_pt message)
 {
-    write_uint8_t(message->has_config, &bytes[APP_CONFIG_EEPROM_L6_HAS_CONFIG_OFFSET]); 
+    write_uint8_t(message->hasConfig, &bytes[APP_CONFIG_EEPROM_L6_HAS_CONFIG_OFFSET]); 
     write_uint8_t(message->release, &bytes[APP_CONFIG_EEPROM_L6_REALEASE_OFFSET]); 
-    write_uint8_t(message->read_wait, &bytes[APP_CONFIG_EEPROM_L6_READ_WAIT_OFFSET]); 
+    write_uint8_t(message->readWait, &bytes[APP_CONFIG_EEPROM_L6_READ_WAIT_OFFSET]); 
     write_uint8_t(message->read, &bytes[APP_CONFIG_EEPROM_L6_READ_OFFSET]); 
     write_uint8_t(message->charge, &bytes[APP_CONFIG_EEPROM_L6_CHARGE_OFFSET]); 
-    write_uint8_t(message->charge_wait, &bytes[APP_CONFIG_EEPROM_L6_CHARGE_WAIT_OFFSET]); 
+    write_uint8_t(message->chargeWait, &bytes[APP_CONFIG_EEPROM_L6_CHARGE_WAIT_OFFSET]); 
 
 }
 
-int APP_CONFIG_l6_write(uint8_t probe_id,app_config_l6_pt message)
+int APP_CONFIG_L6Write(uint8_t probeID,APP_CONFIG_L6_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-	if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-	_l6_serialize(bytes, message);
-	int rc = epprom_write_block(APP_CONFIG_EEPROM_L6_PAGE + probe_id, bytes);
+	if((probeID > PROBE_SIZE)){return APP_ERROR;}
+	L6Serialize(bytes, message);
+	int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_L6_PAGE + probeID, bytes);
     APP_CHECK_RC(rc)
 	return APP_OK;
 }
 
-int APP_CONFIG_l6_read(uint8_t probe_id,app_config_l6_pt message)
+int APP_CONFIG_L6Read(uint8_t probeID,APP_CONFIG_L6_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-	if((probe_id > PROBE_SIZE)){return APP_ERROR;}
-	int rc=epprom_read_block(APP_CONFIG_EEPROM_L6_PAGE + probe_id, bytes);
+	if((probeID > PROBE_SIZE)){return APP_ERROR;}
+	int rc=EEPROM_ReadBlock(APP_CONFIG_EEPROM_L6_PAGE + probeID, bytes);
 	APP_CHECK_RC(rc)
-	message->has_config=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_HAS_CONFIG_OFFSET]);
+	message->hasConfig=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_HAS_CONFIG_OFFSET]);
 	message->release=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_REALEASE_OFFSET]);
-	message->read_wait=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_READ_WAIT_OFFSET]);
+	message->readWait=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_READ_WAIT_OFFSET]);
 	message->read=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_READ_OFFSET]);
 	message->charge=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_CHARGE_OFFSET]);
-	message->charge_wait=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_CHARGE_WAIT_OFFSET]);
+	message->chargeWait=read_uint8_t(&bytes[APP_CONFIG_EEPROM_L6_CHARGE_WAIT_OFFSET]);
 	return APP_OK;
 }
 
-int APP_CONFIG_l6_load(void)
+int APP_CONFIG_L6Load(void)
 {
-	uint8_t probe_id;
+	uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
 	{
-        APP_CONFIG_l6_init(&app_config_l6);
-        int rc=APP_CONFIG_l6_read(probe_id, &app_config_l6);
+        APP_CONFIG_L6Init(&g_appConfigL6);
+        int rc=APP_CONFIG_L6Read(probeID, &g_appConfigL6);
         APP_CHECK_RC(rc)
 	}
 	return APP_OK;
 }
 
-int APP_CONFIG_l6_recovery(void)
+int APP_CONFIG_L6Recovery(void)
 {
 	int rc=0;
-    uint8_t probe_id;
+    uint8_t probeID;
 
-    for(probe_id = 0; probe_id < PROBE_SIZE; probe_id++ ) 
+    for(probeID = 0; probeID < PROBE_SIZE; probeID++ ) 
 	{
-        APP_CONFIG_l6_init(&app_config_l6);
-        rc=APP_CONFIG_l6_write(probe_id, &app_config_l6);
+        APP_CONFIG_L6Init(&g_appConfigL6);
+        rc=APP_CONFIG_L6Write(probeID, &g_appConfigL6);
         APP_CHECK_RC(rc)
 	}
 	return APP_OK;
@@ -1352,68 +1352,66 @@ int APP_CONFIG_l6_recovery(void)
 
 
 
-app_config_firmware_setting_info_t firmware_setting_info1 = {0};
-app_config_firmware_setting_info_t firmware_setting_info2 = {0};
-static int _firmware_info_init(app_config_firmware_info_pt message)
+APP_CONFIG_FirmwareInfo_t g_appFirmwareInfo = {0};
+APP_CONFIG_FirmwareInfo_t g_downloadFirmwareInfo = {0};
+static int FirmwareInfoInit(FirmwareInfo_pt message)
 {
-	message->device_type = 0;
-	message->version_h = 0;
-	message->version_m = 0;
-	message->version_l = 0;
-	message->file_len = 0;
-	message->file_crc = 0;
-	
-	return APP_OK;
-}
-
-static int _firmware_info_deserialize(uint8_t *bytes, app_config_firmware_info_pt message)
-{
-	message->device_type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DEVICE_TYPE_OFFSET]); 
-	message->version_h = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_H_OFFSET]); 
-	message->version_m = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_M_OFFSET]); 
-	message->version_l = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_L_OFFSET]);
-	message->file_len = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_LEN_OFFSET]); 
-	message->file_crc = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_CRC_OFFSET]);
+	message->deviceType = 0;
+	message->versionH = 0;
+	message->versionM = 0;
+	message->versionL = 0;
+	message->fileLen = 0;
+	message->fileCrc = 0;
 	
 	return APP_OK;
 }
 
 
-
-static int _firmware_info_serialize(uint8_t *bytes, app_config_firmware_info_pt message)
+static int FirmwareInfoSerialize(uint8_t *bytes, FirmwareInfo_pt message)
 {
-	write_uint8_t(message->device_type, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DEVICE_TYPE_OFFSET]); 
-	write_uint8_t(message->version_h, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_H_OFFSET]); 
-	write_uint8_t(message->version_m, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_M_OFFSET]); 
-	write_uint8_t(message->version_l, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_L_OFFSET]);
-	write_uint32_t(message->file_len, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_LEN_OFFSET]); 
-	write_uint32_t(message->file_crc, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_CRC_OFFSET]); 
+	write_uint8_t(message->deviceType, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DEVICE_TYPE_OFFSET]); 
+	write_uint8_t(message->versionH, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_H_OFFSET]); 
+	write_uint8_t(message->versionM, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_M_OFFSET]); 
+	write_uint8_t(message->versionL, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_L_OFFSET]);
+	write_uint32_t(message->fileLen, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_LEN_OFFSET]); 
+	write_uint32_t(message->fileCrc, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_CRC_OFFSET]); 
 
 	return APP_OK;
 }
 
-
-
-int APP_CONFIG_firmware_setting_info_init(app_config_firmware_setting_info_pt message)
+static int FirmwareInfoDeserialize(uint8_t *bytes, FirmwareInfo_pt message)
 {
-	message->download_len = 0;
-	firmware_setting_info2.reserved[0] = 0;
-	firmware_setting_info2.reserved[1] = 0;
-	firmware_setting_info2.reserved[2] = 0;
-	firmware_setting_info2.reserved[3] = 0;
-	_firmware_info_init(&message->firmware_info);
+	message->deviceType = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DEVICE_TYPE_OFFSET]); 
+	message->versionH = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_H_OFFSET]); 
+	message->versionM = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_M_OFFSET]); 
+	message->versionL = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_VERSION_L_OFFSET]);
+	message->fileLen = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_LEN_OFFSET]); 
+	message->fileCrc = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FILE_CRC_OFFSET]);
 	
 	return APP_OK;
 }
 
 
-int APP_CONFIG_firmware_setting_info_read(uint8_t infotype, app_config_firmware_setting_info_pt message)
+int APP_CONFIG_FirmwareInfoInit(APP_CONFIG_FirmwareInfo_pt message)
+{
+	message->downloadLen = 0;
+    message->updateResult = IAP_UPDATE_UNKNOW;
+    message->reserved[0] = 0;
+    message->reserved[1] = 0;
+    message->firmwareType = UNKONW_FIRMWARE;
+	FirmwareInfoInit(&message->firmwareInfo);
+	
+	return APP_OK;
+}
+
+
+int APP_CONFIG_FirmwareInfoRead(uint8_t infotype, APP_CONFIG_FirmwareInfo_pt message)
 {
 	int rc = 0;
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 	uint16_t page = 0;
 		
-	if(APP_CONFIG_FIRMWARE_SETTING_INFO == infotype)
+	if(APP_FIRMWARE_INFO == infotype)
 	{
 		page = APP_CONFIG_EEPROM_FIRMWARE_SETTING_INFO_PAGE;
 	}
@@ -1422,25 +1420,25 @@ int APP_CONFIG_firmware_setting_info_read(uint8_t infotype, app_config_firmware_
 		page = APP_CONFIG_EEPROM_FIRMWARE_SETTING_INFO_BACK_PAGE;
 	}
 
-	rc = epprom_read_block(page, bytes);
+	rc = EEPROM_ReadBlock(page, bytes);
 	APP_CHECK_RC(rc)
-	message->download_len = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DOWNLOAD_LEN_OFFSET]);
-    message->reserved[0] = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET]);
+	message->downloadLen = read_uint32_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DOWNLOAD_LEN_OFFSET]);
+    message->updateResult = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_UPDATE_RESULT_OFFSET]);
+	message->reserved[0] = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET]);
 	message->reserved[1] = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+1]);
-	message->reserved[2] = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+2]);
-	message->reserved[3] = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+3]);
-	_firmware_info_deserialize(bytes, &message->firmware_info);
+	message->firmwareType = read_uint8_t(&bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FIRMWARE_TYPE_OFFSET]);
+	FirmwareInfoDeserialize(bytes, &message->firmwareInfo);
 	
 	return APP_OK;
 }
 
 
-int APP_CONFIG_firmware_setting_info_write(uint8_t infotype, app_config_firmware_setting_info_pt message)
+int APP_CONFIG_FirmwareInfoWrite(uint8_t infotype, APP_CONFIG_FirmwareInfo_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 	uint16_t page = 0;
 	
-	if(APP_CONFIG_FIRMWARE_SETTING_INFO == infotype)
+	if(APP_FIRMWARE_INFO == infotype)
 	{
 		page = APP_CONFIG_EEPROM_FIRMWARE_SETTING_INFO_PAGE;
 	}
@@ -1448,469 +1446,471 @@ int APP_CONFIG_firmware_setting_info_write(uint8_t infotype, app_config_firmware
 	{
 		page = APP_CONFIG_EEPROM_FIRMWARE_SETTING_INFO_BACK_PAGE;
 	}
-	write_uint32_t(message->download_len, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DOWNLOAD_LEN_OFFSET]);
+	write_uint32_t(message->downloadLen, &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_DOWNLOAD_LEN_OFFSET]);
+    write_uint8_t(message->updateResult,  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_UPDATE_RESULT_OFFSET]);
     write_uint8_t(message->reserved[0],  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET]);
 	write_uint8_t(message->reserved[1],  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+1]);
-	write_uint8_t(message->reserved[2],  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+2]);
-	write_uint8_t(message->reserved[3],  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_RESERVED_OFFSET+3]);
-	_firmware_info_serialize(bytes, &message->firmware_info);
-	return epprom_write_block(page, bytes);
+	write_uint8_t(message->firmwareType,  &bytes[APP_CONFIG_EEPROM_FIRMWARE_INFO_FIRMWARE_TYPE_OFFSET]);
+	FirmwareInfoSerialize(bytes, &message->firmwareInfo);
+	return EEPROM_WriteBlock(page, bytes);
 }
 
 
-int APP_CONFIG_firmware_setting_info_overwrite(void)
+int APP_CONFIG_FirmwareSettingInfoOverwrite(void)
 {
 	int rc = 0;
-
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
+	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
 	APP_CHECK_RC(rc)
-	memcpy((uint8_t *)&firmware_setting_info1, (uint8_t *)&firmware_setting_info2, sizeof(app_config_firmware_setting_info_t));
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO, &firmware_setting_info1);
+	memcpy((uint8_t *)&g_appFirmwareInfo, (uint8_t *)&g_downloadFirmwareInfo, sizeof(APP_CONFIG_FirmwareInfo_t));
+	rc = APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, &g_appFirmwareInfo);
 	APP_CHECK_RC(rc)
-
 	return APP_OK;
 }
 
 // int APP_CONFIG_firmware_setting_info_recoverywrite(void)
 // {
 // 	int rc = 0;
-// 	memcpy((uint8_t *)&firmware_setting_info2, (uint8_t *)&firmware_setting_info1, sizeof(app_config_firmware_setting_info_t));
-// 	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
+// 	memcpy((uint8_t *)&g_downloadFirmwareInfo, (uint8_t *)&g_appFirmwareInfo, sizeof(APP_CONFIG_FirmwareInfo_t));
+// 	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
 // 	APP_CHECK_RC(rc)
 // }
 
 // int APP_CONFIG_firmware_setting_info_overwrite1(void)
 // {
 // 	int rc = 0;
-// 	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
+// 	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
 // 	APP_CHECK_RC(rc)
 // }
 
 
-int APP_CONFIG_firmware_setting_info_load(void)
+int APP_CONFIG_FirmwareInfoLoad(void)
 {
 	int rc = 0;
-
-	APP_CONFIG_firmware_setting_info_init(&firmware_setting_info1);
-	APP_CONFIG_firmware_setting_info_init(&firmware_setting_info2);
-	rc = APP_CONFIG_firmware_setting_info_read(APP_CONFIG_FIRMWARE_SETTING_INFO, &firmware_setting_info1);
+	APP_CONFIG_FirmwareInfoInit(&g_appFirmwareInfo);
+	APP_CONFIG_FirmwareInfoInit(&g_downloadFirmwareInfo);
+	rc = APP_CONFIG_FirmwareInfoRead(APP_FIRMWARE_INFO, &g_appFirmwareInfo);
 	APP_CHECK_RC(rc)
-	rc = APP_CONFIG_firmware_setting_info_read(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
+	rc = APP_CONFIG_FirmwareInfoRead(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
 	APP_CHECK_RC(rc)
-
 	return APP_OK;
 }
 
-int APP_CONFIG_firmware_setting_info1_clear_result(void)
+int APP_CONFIG_AppFirmwareInfoClearResult(void)
 {
 	int rc = 0;
-
-	firmware_setting_info1.reserved[0] = 0;
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO, &firmware_setting_info1);
+	g_appFirmwareInfo.updateResult = IAP_UPDATE_UNKNOW;
+	rc = APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, &g_appFirmwareInfo);
 	APP_CHECK_RC(rc)
-
 	return APP_OK;
 }
 
 
-int APP_CONFIG_firmware_setting_info2_clear_result(void)
+int APP_CONFIG_DownloadFirmwareInfoClearResult(void)
 {
 	int rc = 0;
-	firmware_setting_info2.reserved[0] = 0;
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
+	g_downloadFirmwareInfo.updateResult = IAP_UPDATE_UNKNOW;
+    g_downloadFirmwareInfo.firmwareType = MCU_APP_FIRMWARE;
+	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
 	APP_CHECK_RC(rc)
-
 	return APP_OK;
 }
 
-int APP_CONFIG_firmware_setting_info1_recovery(void)
+int APP_CONFIG_AppFirmwareInfoRecovery(void)
 {
 	int rc = 0;
-	
-	firmware_setting_info1.download_len = 0;
-	firmware_setting_info1.reserved[0] = 0;
-	firmware_setting_info1.reserved[1] = 0;
-	firmware_setting_info1.reserved[2] = 0;
-	firmware_setting_info1.reserved[3] = 0;
-	firmware_setting_info1.firmware_info.device_type = 1;
-	firmware_setting_info1.firmware_info.version_h = APP_FIRMWARE_MAJOR_DEFAULT;
-	firmware_setting_info1.firmware_info.version_m = APP_FIRMWARE_MINOR_DEFAULT;	
-	firmware_setting_info1.firmware_info.version_l = APP_FIRMWARE_REVISION_DEFAULT;
-	firmware_setting_info1.firmware_info.file_len = (0x20000);
-	firmware_setting_info1.firmware_info.file_crc = DEFAULT_CRC32_VALUE;
-	
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO, &firmware_setting_info1);
+	APP_CONFIG_FirmwareInfo_pt info = &g_appFirmwareInfo;
+	info->downloadLen = 0;
+    info->updateResult = IAP_UPDATE_UNKNOW;
+	info->reserved[0] = 0;
+	info->reserved[1] = 0;
+    info->firmwareType = MCU_APP_FIRMWARE;
+	info->firmwareInfo.deviceType = MASTER_CONTROL_DEV;
+	info->firmwareInfo.versionH = APP_FIRMWARE_MAJOR_DEFAULT;
+	info->firmwareInfo.versionM = APP_FIRMWARE_MINOR_DEFAULT;	
+	info->firmwareInfo.versionL = APP_FIRMWARE_REVISION_DEFAULT;
+	info->firmwareInfo.fileLen = (0x20000);
+	info->firmwareInfo.fileCrc = DEFAULT_CRC32_VALUE;
+	rc = APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, info);
 	APP_CHECK_RC(rc)
-
-	return APP_OK;
-}
-
-
-int APP_CONFIG_firmware_setting_info2_recovery(void)
-{
-	int rc = 0;
-	
-	firmware_setting_info2.download_len = 0;
-	firmware_setting_info2.reserved[0] = 0;
-	firmware_setting_info2.reserved[1] = 0;
-	firmware_setting_info2.reserved[2] = 0;
-	firmware_setting_info2.reserved[3] = 0;
-	firmware_setting_info2.firmware_info.device_type = 1;
-	firmware_setting_info2.firmware_info.version_h = APP_FIRMWARE_MAJOR_DEFAULT;
-	firmware_setting_info2.firmware_info.version_m = APP_FIRMWARE_MINOR_DEFAULT;	
-	firmware_setting_info2.firmware_info.version_l = APP_FIRMWARE_REVISION_DEFAULT;
-	firmware_setting_info2.firmware_info.file_len = (0x20000);
-	firmware_setting_info2.firmware_info.file_crc = DEFAULT_CRC32_VALUE;
-	
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
-	APP_CHECK_RC(rc)
-
 	return APP_OK;
 }
 
 
-int APP_CONFIG_firmware_setting_info_recovery(void)
+int APP_CONFIG_DownloadFirmwareInfoRecovery(void)
 {
 	int rc = 0;
-	
-	firmware_setting_info2.download_len = 0;
-	firmware_setting_info2.reserved[0] = 0;
-	firmware_setting_info2.reserved[1] = 0;
-	firmware_setting_info2.reserved[2] = 0;
-	firmware_setting_info2.reserved[3] = 0;
-	firmware_setting_info2.firmware_info.file_crc = DEFAULT_CRC32_VALUE;
-	firmware_setting_info2.firmware_info.file_len = (0x20000);
-	firmware_setting_info2.firmware_info.device_type = 1;
-	firmware_setting_info2.firmware_info.version_h = APP_FIRMWARE_MAJOR_DEFAULT;
-	firmware_setting_info2.firmware_info.version_m = APP_FIRMWARE_MINOR_DEFAULT;	
-	firmware_setting_info2.firmware_info.version_l = APP_FIRMWARE_REVISION_DEFAULT;
-	memcpy((uint8_t *)&firmware_setting_info1, (uint8_t *)&firmware_setting_info2, sizeof(app_config_firmware_setting_info_t));
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO, &firmware_setting_info1);
+	APP_CONFIG_FirmwareInfo_pt info = &g_downloadFirmwareInfo;
+	info->downloadLen = 0;
+    info->updateResult = IAP_UPDATE_UNKNOW;
+	info->reserved[0] = 0;
+	info->reserved[1] = 0;
+    info->firmwareType = UNKONW_FIRMWARE;
+	info->firmwareInfo.deviceType = UNKONW_DEV;
+	info->firmwareInfo.versionH = APP_FIRMWARE_MAJOR_DEFAULT;
+	info->firmwareInfo.versionM = APP_FIRMWARE_MINOR_DEFAULT;	
+	info->firmwareInfo.versionL = APP_FIRMWARE_REVISION_DEFAULT;
+	info->firmwareInfo.fileLen = (0x20000);
+	info->firmwareInfo.fileCrc = DEFAULT_CRC32_VALUE;
+	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, info);
 	APP_CHECK_RC(rc)
-	rc = APP_CONFIG_firmware_setting_info_write(APP_CONFIG_FIRMWARE_SETTING_INFO_BACK, &firmware_setting_info2);
-	APP_CHECK_RC(rc)
-
 	return APP_OK;
+}
+
+
+int APP_CONFIG_AllFirmwareInfoRecovery(void)
+{
+	int rc = 0;
+	APP_CONFIG_FirmwareInfo_pt info = &g_appFirmwareInfo;
+	info->downloadLen = 0;
+    info->updateResult = IAP_UPDATE_UNKNOW;
+	info->reserved[0] = 0;
+	info->reserved[1] = 0;
+    info->firmwareType = MCU_APP_FIRMWARE;
+	info->firmwareInfo.deviceType = MASTER_CONTROL_DEV;
+	info->firmwareInfo.versionH = APP_FIRMWARE_MAJOR_DEFAULT;
+	info->firmwareInfo.versionM = APP_FIRMWARE_MINOR_DEFAULT;	
+	info->firmwareInfo.versionL = APP_FIRMWARE_REVISION_DEFAULT;
+	info->firmwareInfo.fileLen = (0x20000);
+	info->firmwareInfo.fileCrc = DEFAULT_CRC32_VALUE;
+	rc = APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, &g_appFirmwareInfo);
+	APP_CHECK_RC(rc)
+	memcpy((uint8_t *)&g_downloadFirmwareInfo, (uint8_t *)&g_appFirmwareInfo, sizeof(APP_CONFIG_FirmwareInfo_t));
+    info = &g_downloadFirmwareInfo;
+    info->firmwareType = UNKONW_FIRMWARE;
+    info->firmwareInfo.deviceType = UNKONW_DEV;
+	rc = APP_CONFIG_FirmwareInfoWrite(DOWNLOAD_FIRMWARE_INFO, &g_downloadFirmwareInfo);
+	APP_CHECK_RC(rc)
+	return APP_OK;
+}
+
+// info 区的数据是否有效 
+int APP_CONFIG_FirmwareCheckInfoValid(APP_CONFIG_FirmwareInfo_pt info)
+{
+    if((0 == info->downloadLen) || (UNKONW_FIRMWARE == info->firmwareType) || (DEFAULT_CRC32_VALUE == info->firmwareInfo.fileCrc))
+    {
+        return APP_ERROR;
+    }
+    return APP_OK;
 }
 
 /* 继电器通道接线、功率、故障使能配置相关 */
-app_relay_power_config_t app_relay_power_config[RELAY_SIZE][RELAY_CHANNEL_SIZE];
-static int _relay_power_config_deserialize(uint8_t *bytes, app_relay_power_config_pt message)
-{
-	message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_ENABLE_OFFSET]); 
-	message->phase_config = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PHASE_OFFSET]); 
-	message->power = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_POWER_OFFSET]); 
-	message->loss_phase_protect_enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOSSPHASE_PROTECT_ENABLE_OFFSET]); 
-	message->overload_protect_enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OVERLOAD_PROTECT_ENABLE_OFFSET]);
-	message->ouv_protect_enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OUV_PROTECT_ENABLE_OFFSET]); 
-	message->loader_type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOADER_TYPE]); 
-	return APP_OK;
-}
-
-static int _relay_power_config_serialize(uint8_t *bytes, app_relay_power_config_pt message)
+static int RelayPowerConfigSerialize(uint8_t *bytes, APP_RELAY_PowerConfig_pt message)
 {
 	write_uint8_t(message->enable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_ENABLE_OFFSET]); 
-	write_uint8_t(message->phase_config, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PHASE_OFFSET]); 
+	write_uint8_t(message->phaseConfig, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PHASE_OFFSET]); 
 	write_uint8_t(message->power, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_POWER_OFFSET]); 
-	write_uint8_t(message->loss_phase_protect_enable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOSSPHASE_PROTECT_ENABLE_OFFSET]); 
-	write_uint8_t(message->overload_protect_enable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OVERLOAD_PROTECT_ENABLE_OFFSET]); 
-	write_uint8_t(message->ouv_protect_enable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OUV_PROTECT_ENABLE_OFFSET]); 
-	write_uint8_t(message->loader_type, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOADER_TYPE]); 
+	write_uint8_t(message->lossPhaseProtectEnable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOSSPHASE_PROTECT_ENABLE_OFFSET]); 
+	write_uint8_t(message->overloadProtectEnable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OVERLOAD_PROTECT_ENABLE_OFFSET]); 
+	write_uint8_t(message->ouvProtectEnable, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OUV_PROTECT_ENABLE_OFFSET]); 
+	write_uint8_t(message->loaderType, &bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOADER_TYPE]); 
 
 	return APP_OK;
 }
 
-int APP_CONFIG_relay_power_config_init(uint8_t channel_id, app_relay_power_config_pt message)
+APP_RELAY_PowerConfig_t g_appRelayPowerConfig[RELAY_SIZE][RELAY_CHANNEL_SIZE];
+static int RelayPowerConfigDeserialize(uint8_t *bytes, APP_RELAY_PowerConfig_pt message)
+{
+	message->enable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_ENABLE_OFFSET]); 
+	message->phaseConfig = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PHASE_OFFSET]); 
+	message->power = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_POWER_OFFSET]); 
+	message->lossPhaseProtectEnable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOSSPHASE_PROTECT_ENABLE_OFFSET]); 
+	message->overloadProtectEnable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OVERLOAD_PROTECT_ENABLE_OFFSET]);
+	message->ouvProtectEnable = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_OUV_PROTECT_ENABLE_OFFSET]); 
+	message->loaderType = read_uint8_t(&bytes[APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_LOADER_TYPE]); 
+	return APP_OK;
+}
+
+
+int APP_CONFIG_RelayPowerConfigInit(uint8_t channelID, APP_RELAY_PowerConfig_pt message)
 {
     message->enable = ENABLE;
-    if(4 != channel_id)
+    if(4 != channelID)
     {
-        message->phase_config = APP_RELAY_PHASE_3V3;
+        message->phaseConfig = APP_RELAY_PHASE_3V3;
         message->power = 30;
     }
 	else
     {
-        message->phase_config = APP_RELAY_PHASE_1V1;
+        message->phaseConfig = APP_RELAY_PHASE_1V1;
         message->power = 10;
     }
-	message->loss_phase_protect_enable = APP_RELAY_PROTECT_DISABLE;
-	message->overload_protect_enable = APP_RELAY_PROTECT_DISABLE;
-	message->ouv_protect_enable = APP_RELAY_PROTECT_DISABLE;
-    message->loader_type = APP_RELAY_LOADER_TYPE_AERATOR;
+	message->lossPhaseProtectEnable = APP_RELAY_PROTECT_DISABLE;
+	message->overloadProtectEnable = APP_RELAY_PROTECT_DISABLE;
+	message->ouvProtectEnable = APP_RELAY_PROTECT_DISABLE;
+    message->loaderType = APP_RELAY_LOADER_TYPE_AERATOR;
 	
 	return APP_OK;
 }
 
 
-int APP_CONFIG_relay_power_config_write(uint8_t channel_id, app_relay_power_config_pt message)
+int APP_CONFIG_RelayPowerConfigWrite(uint8_t channelID, APP_RELAY_PowerConfig_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-	if(channel_id > RELAY_CHANNEL_SIZE)
+	if(channelID > RELAY_CHANNEL_SIZE)
     {
         return APP_ERROR;
     }
-    _relay_power_config_serialize(bytes, message);
-	int rc = epprom_write_block(APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PAGE + channel_id, bytes);
+    RelayPowerConfigSerialize(bytes, message);
+	int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PAGE + channelID, bytes);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
 
-int APP_CONFIG_relay_power_config_read(uint8_t channel_id, app_relay_power_config_pt message)
+int APP_CONFIG_RelayPowerConfigRead(uint8_t channelID, APP_RELAY_PowerConfig_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
 
-    if(channel_id > RELAY_CHANNEL_SIZE)
+    if(channelID > RELAY_CHANNEL_SIZE)
     {
         return APP_ERROR;
     }
-	int rc = epprom_read_block(APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PAGE + channel_id, bytes);
+	int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_RELAY_POWER_CONFIG_PAGE + channelID, bytes);
     APP_CHECK_RC(rc)
-    _relay_power_config_deserialize(bytes, message);
+    RelayPowerConfigDeserialize(bytes, message);
     return APP_OK;
 }
 
-int APP_CONFIG_relay_power_config_check(uint8_t channel_id, app_relay_power_config_pt message)
+int APP_CONFIG_RelayPowerConfigCheck(uint8_t channelID, APP_RELAY_PowerConfig_pt message)
 {
     if(ENABLE != message->enable)
     {
-        APP_CONFIG_relay_power_config_init(channel_id, message);
-        APP_CONFIG_relay_power_config_write(channel_id, message);
+        APP_CONFIG_RelayPowerConfigInit(channelID, message);
+        APP_CONFIG_RelayPowerConfigWrite(channelID, message);
         return APP_ERROR;
     }
 #if 0
-    if((APP_RELAY_PHASE_1V1 != message->phase_config) && (APP_RELAY_PHASE_3V3 != message->phase_config))   message->phase_config = APP_RELAY_PHASE_UNKNOW;
-    if(APP_RELAY_PROTECT_ENABLE != message->loss_phase_protect_enable)  message->loss_phase_protect_enable = APP_RELAY_PROTECT_DISABLE;
-    if(APP_RELAY_PROTECT_ENABLE != message->overload_protect_enable)  message->overload_protect_enable = APP_RELAY_PROTECT_DISABLE;
-    if(APP_RELAY_PROTECT_ENABLE != message->ouv_protect_enable)  message->ouv_protect_enable = APP_RELAY_PROTECT_DISABLE;
+    if((APP_RELAY_PHASE_1V1 != message->phaseConfig) && (APP_RELAY_PHASE_3V3 != message->phaseConfig))   message->phaseConfig = APP_RELAY_PHASE_UNKNOW;
+    if(APP_RELAY_PROTECT_ENABLE != message->lossPhaseProtectEnable)  message->lossPhaseProtectEnable = APP_RELAY_PROTECT_DISABLE;
+    if(APP_RELAY_PROTECT_ENABLE != message->overloadProtectEnable)  message->overloadProtectEnable = APP_RELAY_PROTECT_DISABLE;
+    if(APP_RELAY_PROTECT_ENABLE != message->ouvProtectEnable)  message->ouvProtectEnable = APP_RELAY_PROTECT_DISABLE;
 #endif
 }
 
-int APP_CONFIG_relay_power_config_load(void)
+int APP_CONFIG_RelayPowerConfigLoad(void)
 {
 	int rc = APP_OK;
-    uint8_t channel_id;
-    app_relay_power_config_pt pconfig = NULL;
+    uint8_t channelID;
+    APP_RELAY_PowerConfig_pt pconfig = NULL;
     
-    for(channel_id = 0; channel_id < RELAY_CHANNEL_SIZE; channel_id++) 
+    for(channelID = 0; channelID < RELAY_CHANNEL_SIZE; channelID++) 
     {
-        pconfig = &app_relay_power_config[0][channel_id];
-        rc = APP_CONFIG_relay_power_config_read(channel_id, pconfig);
-        APP_CONFIG_relay_power_config_check(channel_id, pconfig);
+        pconfig = &g_appRelayPowerConfig[0][channelID];
+        rc = APP_CONFIG_RelayPowerConfigRead(channelID, pconfig);
+        APP_CONFIG_RelayPowerConfigCheck(channelID, pconfig);
         APP_CHECK_RC(rc)
     }
     return APP_OK;
 }
 
-int APP_CONFIG_relay_power_config_recovery(void)
+int APP_CONFIG_RelayPowerConfigRecovery(void)
 {
     int rc = 0;
-    uint8_t channel_id;
-    app_relay_power_config_pt pconfig = NULL;
+    uint8_t channelID;
+    APP_RELAY_PowerConfig_pt pconfig = NULL;
 
-    for(channel_id = 0; channel_id < RELAY_CHANNEL_SIZE; channel_id++) 
+    for(channelID = 0; channelID < RELAY_CHANNEL_SIZE; channelID++) 
     {
-        pconfig = &app_relay_power_config[0][channel_id];
-        APP_CONFIG_relay_power_config_init(channel_id, pconfig);
-        rc = APP_CONFIG_relay_power_config_write(channel_id, pconfig);
+        pconfig = &g_appRelayPowerConfig[0][channelID];
+        APP_CONFIG_RelayPowerConfigInit(channelID, pconfig);
+        rc = APP_CONFIG_RelayPowerConfigWrite(channelID, pconfig);
         APP_CHECK_RC(rc)
     }
     return APP_OK;
 }
 
-app_config_diagnosis_message_t diagnosis_msg;
+APP_CONFIG_DiagnosisMessage_t g_diagnosisMsg;
 
-int APP_CONFIG_diagnosis_message_init(app_config_diagnosis_message_pt message)
+int APP_CONFIG_DiagnosisMessageInit(APP_CONFIG_DiagnosisMessage_pt message)
 {
-    message->msg_time.year = 0;
-    message->msg_time.month = 1;
-    message->msg_time.day = 1;
-    message->msg_time.hour = 0;
-    message->msg_time.minute = 0;
-    message->msg_time.second = 0;
-    message->msg_type = 0;
-    message->msg_status = 0;
+    message->msgTime.year = 0;
+    message->msgTime.month = 1;
+    message->msgTime.day = 1;
+    message->msgTime.hour = 0;
+    message->msgTime.minute = 0;
+    message->msgTime.second = 0;
+    message->msgType = 0;
+    message->msgStatus = 0;
 }
 
-int APP_CONFIG_diagnosis_message_read(app_config_diagnosis_message_pt message)
+int APP_CONFIG_DiagnosisMessageRead(APP_CONFIG_DiagnosisMessage_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
-    int rc = epprom_read_block(APP_CONFIG_EEPROM_DIAGNOSIS_MESSAGE_PAGE, bytes);
+    int rc = EEPROM_ReadBlock(APP_CONFIG_EEPROM_DIAGNOSIS_MESSAGE_PAGE, bytes);
     APP_CHECK_RC(rc)
-    message->msg_time.year = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_YEAR_OFFSET]);
-    message->msg_time.month = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MONTH_OFFSET]);
-    message->msg_time.day = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_DAY_OFFSET]);
-    message->msg_time.hour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_HOUR_OFFSET]);
-    message->msg_time.minute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MINUTE_OFFSET]);
-    message->msg_time.second = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_SECOND_OFFSET]);
-    message->msg_type = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TYPE]);
-    message->msg_status = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_STATUS]);
+    message->msgTime.year = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_YEAR_OFFSET]);
+    message->msgTime.month = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MONTH_OFFSET]);
+    message->msgTime.day = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_DAY_OFFSET]);
+    message->msgTime.hour = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_HOUR_OFFSET]);
+    message->msgTime.minute = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MINUTE_OFFSET]);
+    message->msgTime.second = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_SECOND_OFFSET]);
+    message->msgType = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TYPE]);
+    message->msgStatus = read_uint8_t(&bytes[APP_CONFIG_EEPROM_DIAGNOSIS_STATUS]);
     return APP_OK;
 }
 
-int APP_CONFIG_diagnosis_message_write(app_config_diagnosis_message_pt message)
+int APP_CONFIG_DiagnosisMessageWrite(APP_CONFIG_DiagnosisMessage_pt message)
 {
 	uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
-    write_uint8_t(message->msg_time.year,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_YEAR_OFFSET]);
-    write_uint8_t(message->msg_time.month,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MONTH_OFFSET]);
-    write_uint8_t(message->msg_time.day,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_DAY_OFFSET]);
-    write_uint8_t(message->msg_time.hour,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_HOUR_OFFSET]);
-    write_uint8_t(message->msg_time.minute,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MINUTE_OFFSET]);
-    write_uint8_t(message->msg_time.second,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_SECOND_OFFSET]);
-    write_uint8_t(message->msg_type,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TYPE]);
-    write_uint8_t(message->msg_status,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_STATUS]);
-    int rc = epprom_write_block(APP_CONFIG_EEPROM_DIAGNOSIS_MESSAGE_PAGE, bytes);
+    write_uint8_t(message->msgTime.year,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_YEAR_OFFSET]);
+    write_uint8_t(message->msgTime.month,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MONTH_OFFSET]);
+    write_uint8_t(message->msgTime.day,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_DAY_OFFSET]);
+    write_uint8_t(message->msgTime.hour,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_HOUR_OFFSET]);
+    write_uint8_t(message->msgTime.minute,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_MINUTE_OFFSET]);
+    write_uint8_t(message->msgTime.second,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TIME_SECOND_OFFSET]);
+    write_uint8_t(message->msgType,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_TYPE]);
+    write_uint8_t(message->msgStatus,  &bytes[APP_CONFIG_EEPROM_DIAGNOSIS_STATUS]);
+    int rc = EEPROM_WriteBlock(APP_CONFIG_EEPROM_DIAGNOSIS_MESSAGE_PAGE, bytes);
 }
 
-int APP_CONFIG_diagnosis_message_load(void)
+int APP_CONFIG_DiagnosisMessageLoad(void)
 {
     int rc = 0;
-    APP_CONFIG_diagnosis_message_init(&diagnosis_msg);
-    APP_CONFIG_diagnosis_message_read(&diagnosis_msg);
-    if((0 == diagnosis_msg.msg_time.year) && (0 == diagnosis_msg.msg_time.month) && (0 == diagnosis_msg.msg_time.day))
+    APP_CONFIG_DiagnosisMessageInit(&g_diagnosisMsg);
+    APP_CONFIG_DiagnosisMessageRead(&g_diagnosisMsg);
+    if((0 == g_diagnosisMsg.msgTime.year) && (0 == g_diagnosisMsg.msgTime.month) && (0 == g_diagnosisMsg.msgTime.day))
     {   // 用于处理之前没有使用该BLOCK区，整片格式化时全部赋值为0的情况，重新将数据校正  
-        APP_CONFIG_diagnosis_message_recovery(&diagnosis_msg);
+        APP_CONFIG_DiagnosisMessageRecovery(&g_diagnosisMsg);
     }
     return APP_OK;
 }
 
-int APP_CONFIG_diagnosis_message_recovery(void)
+int APP_CONFIG_DiagnosisMessageRecovery(void)
 {
     int rc = 0;
-    APP_CONFIG_diagnosis_message_init(&diagnosis_msg);
-    APP_CONFIG_diagnosis_message_write(&diagnosis_msg);
+    APP_CONFIG_DiagnosisMessageInit(&g_diagnosisMsg);
+    APP_CONFIG_DiagnosisMessageWrite(&g_diagnosisMsg);
     return APP_OK;
 }
 
-int APP_CONFIG_eeprom_load_all(void)
+int APP_CONFIG_EepromLoadAll(void)
 {
     int rc = 0;
 
-    rc = eeprom_read_id();
+    rc = EEPROM_ReadID();
     BSP_LOG_trace("eeprom_id read rc = %d\r\n", rc);
-    APP_CHECK_RC(rc)
 
-    rc = APP_CONFIG_system_load();
+    rc = APP_CONFIG_SystemLoad();
     BSP_LOG_trace("system load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_device_enable_load();
+    rc = APP_CONFIG_DeviceEnableLoad();
     BSP_LOG_trace("device_enable load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_device_connect_load();
+    rc = APP_CONFIG_DeviceConnectLoad();
     BSP_LOG_trace("device_connect load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_probe_enable_load();
+    rc = APP_CONFIG_ProbeEnableLoad();
     BSP_LOG_trace("probe_enable load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_pump_status_load();
+    rc = APP_CONFIG_PumpStatusLoad();
     BSP_LOG_trace("pump_status load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_sensor_load();
+    rc = APP_CONFIG_SensorLoad();
     BSP_LOG_trace("sensor load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_compensation_load();
+    rc = APP_CONFIG_CompensationLoad();
     BSP_LOG_trace("compensation load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_indicator_alert_load();
+    rc = APP_CONFIG_IndicatorAlertLoad();
     BSP_LOG_trace("indicator_alert load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     BSP_WDG_feed();
-    rc = APP_CONFIG_limit_load();
+    rc = APP_CONFIG_LimitLoad();
     BSP_LOG_trace("limit load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     BSP_WDG_feed();
-    rc = APP_CONFIG_relay_load();
+    rc = APP_CONFIG_RelayLoad();
     BSP_LOG_trace("relay load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_times_enable_load();
+    rc = APP_CONFIG_TimesEnableLoad();
     BSP_LOG_trace("times_enable load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_times_load();
+    rc = APP_CONFIG_TimesLoad();
     BSP_LOG_trace("times load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_manual_relay_load();
+    rc = APP_CONFIG_ManualRelayLoad();
     BSP_LOG_trace("manual_relay load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
 #ifdef SUPPORT_L6_ENABLE
-    rc = APP_CONFIG_l6_load();
+    rc = APP_CONFIG_L6Load();
     BSP_LOG_trace("l6 load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
 #endif
-    rc = APP_CONFIG_relay_power_config_load();
+    rc = APP_CONFIG_RelayPowerConfigLoad();
     BSP_LOG_trace("relay power config load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_diagnosis_message_load();
+    rc = APP_CONFIG_DiagnosisMessageLoad();
     BSP_LOG_trace("diagnosis message load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_firmware_setting_info_load();
+    rc = APP_CONFIG_FirmwareInfoLoad();
     BSP_LOG_trace("firmware info load rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
 // SGM706 的看门狗复位周期为 1.6s，此函数耗时较长，需插入喂狗操作
-int APP_CONFIG_eeprom_recovery_all(void)
+int APP_CONFIG_EepromRecoveryAll(void)
 {
     int rc = 0;
 
-    rc = APP_CONFIG_device_enable_recovery();
+    rc = APP_CONFIG_DeviceEnableRecovery();
     BSP_LOG_trace("device_enable recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_device_connect_recovery();
+    rc = APP_CONFIG_DeviceConnectRecovery();
     BSP_LOG_trace("device_connect recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_probe_enable_recovery();
+    rc = APP_CONFIG_ProbeEnableRecovery();
     BSP_LOG_trace("probe_enable recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_pump_status_recovery();
+    rc = APP_CONFIG_PumpStatusRecovery();
     BSP_LOG_trace("pump_status recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_sensor_recovery();
+    rc = APP_CONFIG_SensorRecovery();
     BSP_LOG_trace("sensor recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_compensation_recovery();
+    rc = APP_CONFIG_CompensationRecovery();
     BSP_LOG_trace("compensation recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_indicator_alert_recovery();
+    rc = APP_CONFIG_IndicatorAlertRecovery();
     BSP_LOG_trace("indicator_alert recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     BSP_WDG_feed();
-    rc = APP_CONFIG_limit_recovery();
+    rc = APP_CONFIG_LimitRecovery();
     BSP_LOG_trace("limit recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     BSP_WDG_feed();
-    rc = APP_CONFIG_relay_recovery();
+    rc = APP_CONFIG_RelayRecovery();
     BSP_LOG_trace("relay recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_times_enable_recovery();
+    rc = APP_CONFIG_TimesEnableRecovery();
     BSP_LOG_trace("times_enable recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_times_recovery();
+    rc = APP_CONFIG_TimesRecovery();
     BSP_LOG_trace("times recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_manual_relay_recovery();
+    rc = APP_CONFIG_ManualRelayRecovery();
     BSP_LOG_trace("manual_relay recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
 #ifdef SUPPORT_L6_ENABLE
-    rc = APP_CONFIG_l6_recovery();
+    rc = APP_CONFIG_L6Recovery();
     BSP_LOG_trace("l6 recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
 #endif
-    rc = APP_CONFIG_relay_power_config_recovery();
+    rc = APP_CONFIG_RelayPowerConfigRecovery();
     BSP_LOG_trace("relay power config rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_diagnosis_message_recovery();
+    rc = APP_CONFIG_DiagnosisMessageRecovery();
     BSP_LOG_trace("diagnosis message recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
-    rc = APP_CONFIG_firmware_setting_info_recovery();
+    rc = APP_CONFIG_AllFirmwareInfoRecovery();
     BSP_LOG_trace("firmware info recovery rc: %d\r\n", rc);
     APP_CHECK_RC(rc)
     return APP_OK;
 }
 
 
-int APP_CONFIG_eeprom_recovery_free_page(void)
+int APP_CONFIG_EepromRecoveryFreePage(void)
 {
   uint32_t page = 0;
   uint8_t bytes[EEPROM_BLOCK_SIZE] = {0};
@@ -1922,7 +1922,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1932,7 +1932,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1942,7 +1942,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1952,7 +1952,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1962,7 +1962,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1972,7 +1972,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1982,7 +1982,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -1992,7 +1992,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2002,7 +2002,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2012,7 +2012,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2022,7 +2022,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2032,7 +2032,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2042,7 +2042,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2052,7 +2052,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();
@@ -2062,7 +2062,7 @@ int APP_CONFIG_eeprom_recovery_free_page(void)
     {
       BSP_WDG_feed();
     }
-    rc = epprom_write_block(page, bytes);
+    rc = EEPROM_WriteBlock(page, bytes);
     APP_CHECK_RC(rc)
   }
   BSP_WDG_feed();

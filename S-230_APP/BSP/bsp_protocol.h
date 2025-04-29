@@ -109,8 +109,8 @@ int BSP_USER_PROTOCOL_init(void);
     USER_PROTOCOL_send_read_sim_iccid_message(&user_protocol_port, packet)
 #define BSP_USER_PROTOCOL_send_read_sim_manufaturer_message(packet) \
     USER_PROTOCOL_send_read_sim_manufaturer_message(&user_protocol_port, packet)
-#define BSP_USER_PROTOCOL_send_write_device_id_message(packet, device_id) \
-    USER_PROTOCOL_send_write_device_id_message(&user_protocol_port, packet, device_id) 
+#define BSP_USER_PROTOCOL_send_write_device_id_message(packet, deviceID) \
+    USER_PROTOCOL_send_write_device_id_message(&user_protocol_port, packet, deviceID) 
     
 #ifdef __cplusplus
 }

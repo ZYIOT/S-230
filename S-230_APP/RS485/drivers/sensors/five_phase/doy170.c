@@ -4,8 +4,8 @@
 // static int _write_calibrate(rs485_sensor_t *rs485, uint8_t type, void *params);
 static int _read_value1(rs485_sensor_pt rs485, rs485_sensor_indicator_pt indicator);
 static int _read_info(rs485_sensor_pt rs485);
-// static int _read_compensation(rs485_sensor_s_t *rs485, uint8_t indicator_id, float *value);
-// static int _write_compensation(rs485_sensor_s_t *rs485, uint8_t indicator_id, float value);
+// static int _read_compensation(rs485_sensor_s_t *rs485, uint8_t indicatorID, float *value);
+// static int _write_compensation(rs485_sensor_s_t *rs485, uint8_t indicatorID, float value);
 static int _check_sensor_compatible(rs485_sensor_pt rs485, rs485_sensor_driver_pt sd);
 static int _check_sensor_doy170(rs485_sensor_pt rs485, rs485_sensor_driver_pt sd);
 static int _match_pn_name(rs485_sensor_pt rs485, void *params);
@@ -110,9 +110,9 @@ static int _check_sensor_doy170(rs485_sensor_pt rs485, rs485_sensor_driver_pt sd
     return _check_sensor_compatible(rs485, sd);
 }
 
-// static int _read_compensation(rs485_sensor_s_t *rs485, uint8_t indicator_id, float *value)
+// static int _read_compensation(rs485_sensor_s_t *rs485, uint8_t indicatorID, float *value)
 // {
-//     if (indicator_id != WATER_INDICATOR_SALINITY)
+//     if (indicatorID != WATER_INDICATOR_SALINITY)
 //     {
 //         return RS485_ERROR;
 //     }
@@ -122,9 +122,9 @@ static int _check_sensor_doy170(rs485_sensor_pt rs485, rs485_sensor_driver_pt sd
 //     return RS485_OK;
 // }
 
-// static int _write_compensation(rs485_sensor_s_t *rs485, uint8_t indicator_id, float value)
+// static int _write_compensation(rs485_sensor_s_t *rs485, uint8_t indicatorID, float value)
 // {
-//     if (indicator_id != WATER_INDICATOR_SALINITY)
+//     if (indicatorID != WATER_INDICATOR_SALINITY)
 //     {
 //         return RS485_ERROR;
 //     }

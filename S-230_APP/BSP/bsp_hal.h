@@ -9,7 +9,7 @@ extern "C"
 #include "board_config.h"
 
 int BSP_HAL_init(void);
-extern void APP_TASK_run_per_second_ISR(void);
+extern void APP_TASK_RunPerSecondIsr(void);
 #ifdef __cplusplus
 }
 #endif

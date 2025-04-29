@@ -131,7 +131,7 @@ static int _find_header(modbus_port_pt port, modbus_packet_pt packet)
   }
 
   int len = port->length();
-  // APP_LOG_debug("Rlen=%d\r\n", len);
+  // APP_LOG_Debug("Rlen=%d\r\n", len);
   // if (len < 1 || (new_header == 0 && (len < MODBUS_HEADER_SIZE)))
   // {
   //   return MODBUS_READ_ERROR;

@@ -33,7 +33,7 @@
         .priority = (osPriority_t)_priority,                                                      \
         .stack_size = _stack};                                                                    \
     _##_name##_task_handle = osThreadNew(APP_##_name##_task_run, NULL, &_name##_task_attributes); \
-    APP_LOG_show("* "#_name " handle %x\r\n", _##_name##_task_handle);                            \
+    APP_LOG_Show("* "#_name " handle %x\r\n", _##_name##_task_handle);                            \
     HAL_Delay(10);
 
 
@@ -49,25 +49,7 @@
 #define _PAUSE_TASK(_name)  \
     vTaskSuspend(_##_name##_task_handle)
 
-// 网络监测任务
-void APP_CHECK_NET_task_run(void *argument)
-{
-    for (;;)
-    {
-        if (APP_SERVER_CONNECTED())
-        {
-            // 从 eeprom 中读取 update_firmware_monitor 信息
-            int rc = APP_UPDATE_FIRMWARE_sync_firmware_setting_back_to_monitor();
-            APP_LOG_trace("firmware info load rc: %d\r\n", rc);
-            vTaskDelete(osThreadGetId());
-            HARDWARE_OS_DELAY_MS(100);
-            // 创建继续升级任务，执行断网续传
-            // APP_TASK_create_update_continue_task();
-        }
-        HARDWARE_OS_DELAY_MS(3000);
-    }
-    
-}
+
 
 __DEF_TASK(NETWORK)
 __DEF_TASK(PROTOCOL)
@@ -80,8 +62,6 @@ __DEF_TASK(STATUS)
 // __DEF_TASK(RELAY)
 #endif
 __DEF_TASK(GPRS)
-// __DEF_TASK(CAN_tx)
-// __DEF_TASK(CAN_rx)
 #ifdef SUPPORT_L6_ENABLE
 __DEF_TASK(L6)
 #endif
@@ -103,8 +83,8 @@ int APP_TASK_init(void)
     4、注意 DMA 相关的 buffer 不要分配到 CCM 中。
     */
     osKernelInitialize();
-    APP_LOG_show("APP TASK CONFIG INFO\r\n");
-    APP_LOG_show("*********************\r\n");
+    APP_LOG_Show("APP TASK CONFIG INFO\r\n");
+    APP_LOG_Show("*********************\r\n");
     __RUN_TASK(PROTOCOL, osPriorityHigh, 0x1C00);
     __RUN_TASK(SENSORS, osPriorityHigh, 0x1C00);
     __RUN_TASK(NETWORK, osPriorityAboveNormal, 0x1C00);
@@ -125,7 +105,7 @@ int APP_TASK_init(void)
 #ifdef SUPPORT_IRED
     __RUN_TASK(IRED, osPriorityAboveNormal, 0x400);
 #endif
-    APP_LOG_show("*********************\r\n");
+    APP_LOG_Show("*********************\r\n");
     return APP_OK;
 }
 
@@ -143,7 +123,7 @@ osThreadId_t APP_TASK_get_status_handle(void)
 }
 
 // timer2 的1s定时中断处理
-void APP_TASK_run_per_second_ISR()
+void APP_TASK_RunPerSecondIsr()
 {
 #ifdef SUPPORT_PUMP
     BSP_PUMP_check_frequency();
@@ -151,7 +131,7 @@ void APP_TASK_run_per_second_ISR()
 }
 
 // 创建升级结束任务
-void APP_TASK_create_update_finish_task(void)
+void APP_TASK_CreateUpdateFinishTask(void)
 {
 	__DEF_TASK(UPDATE_FINISH)
 	__RUN_TASK(UPDATE_FINISH, osPriorityLow, 0x800);
@@ -164,10 +144,3 @@ void APP_TASK_create_update_continue_task(void)
 	__RUN_TASK(UPDATE_CONTINUE, osPriorityNormal, 0x600);
 }
 
-
-// 创建网络监测任务
-void APP_TASK_create_check_net_task(void)
-{
-    __DEF_TASK(CHECK_NET)
-	__RUN_TASK(CHECK_NET, osPriorityNormal, 0x200);
-}

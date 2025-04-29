@@ -6,8 +6,8 @@ extern "C"
 {
 #endif
 
-    int APP_STATUS_init(void);
-    void APP_STATUS_task_run(void *argument);
+int APP_STATUS_Init(void);
+void APP_STATUS_task_run(void *argument);
 
     
 #ifdef __cplusplus

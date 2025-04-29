@@ -3,7 +3,7 @@
 #include "app_logo.h"
 
 // 显示公司 Logo 
-void APP_LOGO_show(void)
+void APP_LOGO_Show(void)
 {
     char *logo = "\r\n\
  _______   _____    _____ \r\n\
@@ -14,5 +14,5 @@ void APP_LOGO_show(void)
 \r\n\
 http://www.zytdwl.cn\
 \r\n\r\n";
-    APP_LOG_show(logo);
+    APP_LOG_Show(logo);
 }

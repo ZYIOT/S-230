@@ -33,33 +33,33 @@ static void APP_FILEINFO_SHOW(void)
 {
     uint8_t *app_version_str = (uint8_t *)&app_file_name_str;
     uint32_t infoAddr = (uint32_t)&app_file_name_str;
-	APP_LOG_show("device <%s> at %08x\r\n", app_version_str, infoAddr);
-    APP_LOG_show("compiler at <%s>\r\n", compiler_time);
+	APP_LOG_Show("device <%s> at %08x\r\n", app_version_str, infoAddr);
+    APP_LOG_Show("compiler at <%s>\r\n", compiler_time);
 }
 
 static void APP_LOGINFO_SHOW(void)
 {
-    APP_LOG_show("APP LOG CONFIG INFO\r\n");
-    APP_LOG_show("*********************\r\n");
+    APP_LOG_Show("APP LOG CONFIG INFO\r\n");
+    APP_LOG_Show("*********************\r\n");
 #ifdef SHOW_RS485_DATA
-    APP_LOG_show("* show [RS485 DATA]\r\n");
+    APP_LOG_Show("* show [RS485 DATA]\r\n");
 #endif
 #ifdef SHOW_PROTOCOL_DATA
-    APP_LOG_show("* show [PROTOCOL DATA]\r\n");
+    APP_LOG_Show("* show [PROTOCOL DATA]\r\n");
 #endif
 #ifdef SHOW_GPRS_DATA
-    APP_LOG_show("* show [GPRS DATA]\r\n");
+    APP_LOG_Show("* show [GPRS DATA]\r\n");
 #endif
 #ifdef SHOW_DEVICE_TIME
-    APP_LOG_show("* show [DEVICE TIME]\r\n");
+    APP_LOG_Show("* show [DEVICE TIME]\r\n");
 #endif
 #ifdef SHOW_LCD_SENSOR_STATUS
-    APP_LOG_show("* show [LCD SENSOR STATUS]\r\n");
+    APP_LOG_Show("* show [LCD SENSOR STATUS]\r\n");
 #endif
 #ifdef SHOW_PUMP_STATUS
-    APP_LOG_show("* show [PUMP STATUS]\r\n");
+    APP_LOG_Show("* show [PUMP STATUS]\r\n");
 #endif
-    APP_LOG_show("*********************\r\n");
+    APP_LOG_Show("*********************\r\n");
 }
 
 static int _app_init(void)
@@ -68,27 +68,25 @@ static int _app_init(void)
     POWER_GPRS_ON();
     POWER_SENSOR_ON();
     BSP_AT24CM1_init();
-    APP_CONFIG_init();
+    APP_CONFIG_Init();
 #ifdef SUPPORT_PUMP
     BSP_PUMP_off();
-    APP_PUMP_init();
+    APP_PUMP_Init();
 #endif
 #ifdef BOARD_HAS_RELAY
     APP_RELAY_init();
 #endif
-    APP_UPDATE_FIRMWARE_compare_app_firmware_setting_info();
+    APP_UPDATE_FIRMWARE_CheckFirmwareInfo();
     return APP_OK;
 }
 
 int main(void)
 {
-    // __HAL_RCC_HSI_ENABLE();
-    // __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
     BSP_HAL_init();
     BSP_UART_init();
-    APP_LOG_init();
-    APP_LOG_level_show();
-    APP_LOGO_show();
+    APP_LOG_Init();
+    APP_LOG_LevelShow();
+    APP_LOGO_Show();
 	APP_FILEINFO_SHOW();
     APP_LOGINFO_SHOW();
     _app_init();

@@ -74,7 +74,7 @@ static int _parse_value(uint8_t buffer[RS485_BUFFER_MAX_SIZE], size_t len, void 
     rs485_sensor_indicator_pt indicator = (rs485_sensor_indicator_pt)ret;
     int16_t value = read_int16_t_BE(&buffer[0]);
     uint16_t dotcnt = read_uint16_t_BE(&buffer[2]);
-    static float value1 = 0.00;
+    float value1 = 0.00;
 
     indicator->status = RS485_OK;
     if(0 == dotcnt)
@@ -98,40 +98,27 @@ static int _parse_value(uint8_t buffer[RS485_BUFFER_MAX_SIZE], size_t len, void 
         indicator->status = RS485_ERROR;
     }
     // 以下是根据原始数据进行相应修改(变换)后的数值 
-#if 0  
-    static uint8_t cnt = 0;
-    float tempMax = 14.00, tempMin = 0.00;
+#if 1
+    float tempMax = 14.00, tempMin = 0.01;
     float temp = ((float)rand() / RAND_MAX) * (tempMax - tempMin) + tempMin;
-    if(0 == cnt)
-    {
-        value1 = temp;
-        indicator->vm1 = (int16_t)(value1 * 100);
-    }
-    cnt += 1;
-    if(cnt >= SENSOR_NGN_RAND_CNT_DEBUG)
-    {
-        cnt = 0;
-    }
+    value1 = temp;
+    indicator->vm1 = (int16_t)(value1 * 100);
 #endif
     if(value1 < 3.00)
     {
+        indicator->value1 = 0.00;
+    }
+    else if(value1 < 7.00)
+    {
         indicator->value1 = 0.10;
     }
-    else if(value1 < 6.00)
+    else if(value1 < 10.00)
     {
         indicator->value1 = 0.20;
     }
-    else if(value1 < 9.00)
-    {
-        indicator->value1 = 0.30;
-    }
-    else if(value1 < 12.00)
-    {
-        indicator->value1 = 0.40;
-    }
     else
     {
-        indicator->value1 = 0.50;
+        indicator->value1 = 0.30;
     }
     indicator->error_code = 0;
     return RS485_OK;
@@ -186,22 +173,7 @@ static int _read_value1(rs485_sensor_pt rs485, rs485_sensor_indicator_pt indicat
     }
 #else
     // 以下是根据原始数据进行相应修改(变换)后的数值 
-#if 1
-    static float value1 = 0.00;
-    static uint8_t cnt = 0;
-    float tempMax = 9.99, tempMin = 3.00;
-    float temp = ((float)rand() / RAND_MAX) * (tempMax - tempMin) + tempMin;
-    if(0 == cnt)
-    {
-        value1 = temp;
-        indicator->vm1 = (int16_t)(value1 * 100);
-    }
-    cnt += 1;
-    if(cnt >= SENSOR_NGN_RAND_CNT_DEBUG)
-    {
-        cnt = 0;
-    }
-#endif
+    float value1 = 0.00;
     if(value1 < 3.00)
     {
         indicator->value1 = 0.00;

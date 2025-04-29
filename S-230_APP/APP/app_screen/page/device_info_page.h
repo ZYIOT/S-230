@@ -7,7 +7,7 @@ char *get_device_firmware()
 
 char *get_device_hardware()
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%d.%d.%d", app_config_system.hardware[0], app_config_system.hardware[1], app_config_system.hardware[2]);
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%d.%d.%d", g_appConfigSystem.hardware[0], g_appConfigSystem.hardware[1], g_appConfigSystem.hardware[2]);
     return app_screen_msg;
 }
 
@@ -20,16 +20,16 @@ char *get_device_SN()
 {
     snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%04u%07u%02u%02u%04u",
              SN_CODE,
-             APP_CONFIG_device_id(),
-             app_config_system.SN[0],
-             app_config_system.SN[1],
-             read_uint16_t(&(app_config_system.SN[2])));
+             APP_CONFIG_DeviceID(),
+             g_appConfigSystem.SN[0],
+             g_appConfigSystem.SN[1],
+             read_uint16_t(&(g_appConfigSystem.SN[2])));
     return app_screen_msg;
 }
 
 char *get_device_ID()
 {
-    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%u", APP_CONFIG_device_id());
+    snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%u", APP_CONFIG_DeviceID());
     return app_screen_msg;
 }
 

@@ -79,11 +79,11 @@ int G2_SERVER_read_relay_config_message_process(g2_server_packet_pt packet)
 {
     CHECK_PROTOCOL_MESSAGE
     g2_server_relay_id_message_pt pmsg = (g2_server_relay_id_message_pt)packet->parsed;
-    CHECK_PROTOCOL_RELAY_ID_MESSAGE(pmsg->relay_id)
+    CHECK_PROTOCOL_RELAY_ID_MESSAGE(pmsg->relayID)
 
     g2_server_relay_config_message_t message = {0};
     G2_SERVER_relay_config_message_init(&message);
-    message.relay_id = pmsg->relay_id;
+    message.relayID = pmsg->relayID;
     message.channel_count = RELAY_CHANNEL_SIZE;
     BSP_PROTOCOL_send_read_relay_config_message(packet, &message);
     return PROTOCOL_OK;

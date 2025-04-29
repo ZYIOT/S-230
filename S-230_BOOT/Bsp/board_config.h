@@ -41,8 +41,10 @@ extern "C"
 #define ENABLE_EDIT_HARDWARE_VERSION  0
 
 // </h>
-
-
+// <o> 是否存在FACTORY固件  <0=> 不存在    <1=> 存在 
+#define HAS_FACTORY_SECTOR 0
+// <s> PN 
+#define PN_CODE "S-230"
 
 //*** <<< end of configuration section >>> ***
 

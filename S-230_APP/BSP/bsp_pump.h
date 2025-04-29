@@ -14,8 +14,8 @@ extern "C"
 #define BSP_PUMP_off() HARDWARE_GPIO_WRITE_PIN_H(PUMP_PWRKEY_GPIO_Port, PUMP_PWRKEY_Pin)
 #define BSP_PUMP_set(status) HARDWARE_GPIO_WRITE_PIN(PUMP_PWRKEY_GPIO_Port, PUMP_PWRKEY_Pin, status)
 #define BSP_PUMP_read_status() HARDWARE_GPIO_READ_PIN(PUMP_CHECK_GPIO_Port, PUMP_CHECK_Pin)
-    extern void APP_PUMP_set_check_frequency(uint16_t fq);
-#define BSP_PUMP_check_frequency() APP_PUMP_set_check_frequency(0)
+    extern void APP_PUMP_SetCheckFrequency(uint16_t fq);
+#define BSP_PUMP_check_frequency() APP_PUMP_SetCheckFrequency(0)
 #else
 #define BSP_PUMP_on()
 #define BSP_PUMP_off()

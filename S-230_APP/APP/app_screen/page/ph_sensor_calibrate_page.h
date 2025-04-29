@@ -110,17 +110,17 @@ void ph_sensor_calibrate_before_handler(app_screen_page_pt page, app_screen_page
 
 static int ph_calibration_4(void)
 {
-    return APP_SENSOR_calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 2, NULL);
+    return APP_SENSOR_Calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 2, NULL);
 }
 
 static int ph_calibration_7(void)
 {
-    return APP_SENSOR_calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 1, NULL);
+    return APP_SENSOR_Calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 1, NULL);
 }
 
 static int ph_calibration_10(void)
 {
-    return APP_SENSOR_calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 3, NULL);
+    return APP_SENSOR_Calibrate(0, RS485_DRIVER_SENSOR_ID_PH, 3, NULL);
 }
 
 static int set_ph_sensor_calibrate_type_4(app_screen_menu_node_t *node)

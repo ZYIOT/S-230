@@ -54,7 +54,7 @@ int BSP_LOG_init(void)
 
 void BSP_LOG_print(uint8_t level, const char *fmt, ...)
 {
-    if (level > app_config_system.log_level)
+    if (level > g_appConfigSystem.logLevel)
     {
         return;
     }
@@ -66,7 +66,7 @@ void BSP_LOG_print(uint8_t level, const char *fmt, ...)
 
 void BSP_LOG_print_hex(uint8_t level, uint8_t *buf, size_t len)
 {
-    if (level > app_config_system.log_level)
+    if (level > g_appConfigSystem.logLevel)
     {
         return;
     }
@@ -87,6 +87,6 @@ static char *log_levels[] = {
 // 显示 log 等级 
 void BSP_LOG_level_show(void)
 {
-    uint8_t l = (app_config_system.log_level > BSP_LOG_LEVEL_TRACE) ? BSP_LOG_LEVEL_TRACE : app_config_system.log_level;
+    uint8_t l = (g_appConfigSystem.logLevel > BSP_LOG_LEVEL_TRACE) ? BSP_LOG_LEVEL_TRACE : g_appConfigSystem.logLevel;
     BSP_LOG_show("Log level: %s\r\n", log_levels[l]);
 }

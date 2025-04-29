@@ -7,7 +7,7 @@ static int _on_receive_write_role_message(user_protocol_packet_pt packet)
     int rc = USER_PROTOCOL_role_message_deserialize(packet->buffer, &role);
     USER_PROTOCOL_CHECK_READ_RC_AND_RETURN
     packet->parsed = &role;
-    return USER_PROTOCOL_write_role_message_process(packet);
+    return USER_PROTOCOL_WriteRoleMessageProcess(packet);
 }
 
 static int _on_receive_read_sim_iccid_message(user_protocol_packet_pt packet)
@@ -16,7 +16,7 @@ static int _on_receive_read_sim_iccid_message(user_protocol_packet_pt packet)
     int rc = USER_PROTOCOL_sim_iccid_message_deserialize(packet->buffer, sim_ccid);
     USER_PROTOCOL_CHECK_READ_RC_AND_RETURN
     packet->parsed = sim_ccid;
-    return USER_PROTOCOL_read_sim_iccid_message_process(packet);
+    return USER_PROTOCOL_ReadSimIccidMessageProcess(packet);
 }
 
 static int _on_receive_read_sim_manufacturer_message(user_protocol_packet_pt packet)
@@ -25,14 +25,14 @@ static int _on_receive_read_sim_manufacturer_message(user_protocol_packet_pt pac
     int rc = USER_PROTOCOL_sim_manufacturer_message_deserialize(packet->buffer, &manufacturer);
     USER_PROTOCOL_CHECK_READ_RC_AND_RETURN
     packet->parsed = &manufacturer;
-    return USER_PROTOCOL_read_sim_manufacturer_message_process(packet);
+    return USER_PROTOCOL_ReadSimManufacturerMessageProcess(packet);
 }
 
 static int _on_receive_write_device_id_message(user_protocol_packet_pt packet)
 {
-    uint32_t device_id = APP_CONFIG_device_id();
+    uint32_t deviceID = APP_CONFIG_DeviceID();
     uint8_t id[4] = {0};
-    write_uint32_t_BE(device_id, id);
+    write_uint32_t_BE(deviceID, id);
     return BSP_USER_PROTOCOL_send_write_device_id_message(packet, id);
 }
 
@@ -83,9 +83,9 @@ int USER_PROTOCOL_send_read_sim_manufaturer_message(user_protocol_port_pt port, 
     return USER_PROTOCOL_PACKET_write(port, packet);
 }
 
-int USER_PROTOCOL_send_write_device_id_message(user_protocol_port_pt port, user_protocol_packet_pt packet, uint8_t *device_id)
+int USER_PROTOCOL_send_write_device_id_message(user_protocol_port_pt port, user_protocol_packet_pt packet, uint8_t *deviceID)
 {
-    packet->length = USER_PROTOCOL_device_id_message_serialize(packet->buffer, device_id);
+    packet->length = USER_PROTOCOL_device_id_message_serialize(packet->buffer, deviceID);
     packet->parsed = packet->buffer;
     packet->cmd = USER_PROTOCOL_MESSAGE_WRITE_DEVICE_ID;
     return USER_PROTOCOL_PACKET_write(port, packet);

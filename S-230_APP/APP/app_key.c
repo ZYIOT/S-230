@@ -1,7 +1,7 @@
 #include "app_key.h"
-volatile static uint8_t last_key = 0;
+volatile static uint8_t vs_lastKey = 0;
 
-int APP_KEY_get(void)
+int APP_KEY_Get(void)
 {
     uint8_t status = 0;
     uint32_t time = 0;
@@ -13,18 +13,18 @@ int APP_KEY_get(void)
         {
             if (status == 1)
             {
-                if (last_key == (i + 1))
+                if (vs_lastKey == (i + 1))
                 {
                     return -1;
                 }
                 else
                 {
-                    last_key = i + 1;
-                    return last_key;
+                    vs_lastKey = i + 1;
+                    return vs_lastKey;
                 }
             }
         }
     }
-    last_key = 0;
+    vs_lastKey = 0;
     return -1;
 }

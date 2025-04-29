@@ -10,66 +10,66 @@
 #include "app_config/common.h"
 #include "app_config/message.h"
 
-int eeprom_init_tip = 0;
-uint32_t APP_CONFIG_device_id(void)
+int g_eepromInitTip = 0;
+uint32_t APP_CONFIG_DeviceID(void)
 {
-    return app_config_system.device_id;
+    return g_appConfigSystem.deviceID;
 }
 
-static int _format_eeprom(void)
+static int FormatEeprom(void)
 {
     int rc = APP_OK;
     return rc;
-    rc = APP_CONFIG_system_load();
+    rc = APP_CONFIG_SystemLoad();
     BSP_WDG_feed();
     if (rc != APP_OK)
     {
-        rc = APP_CONFIG_system_recovery();
-        APP_LOG_trace("system recovery rc: %d\r\n", rc);
+        rc = APP_CONFIG_SystemRecovery();
+        APP_LOG_Trace("system recovery rc: %d\r\n", rc);
         APP_CHECK_RC_AND_RESET(rc);
-        eeprom_init_tip = EEPROM_INIT_TIP_FORMAT;
+        g_eepromInitTip = EEPROM_INIT_TIP_FORMAT;
     }
     else
     {
-        eeprom_init_tip = EEPROM_INIT_TIP_RECOVERY;
+        g_eepromInitTip = EEPROM_INIT_TIP_RECOVERY;
     }
     BSP_WDG_feed();
-    rc = APP_CONFIG_eeprom_recovery_all();
+    rc = APP_CONFIG_EepromRecoveryAll();
     BSP_WDG_feed();
-    APP_LOG_debug("config recovery rc: %d\r\n", rc);
+    APP_LOG_Debug("config recovery rc: %d\r\n", rc);
     APP_CHECK_RC_AND_RESET(rc);
     return APP_OK;
 }
 
-static int _recovery_eeprom(void)
+static int RecoveryEeprom(void)
 {
-    if (eeprom_init_tip != 0)
+    if (g_eepromInitTip != 0)
     {
         return APP_OK;
     }
     int rc = APP_OK;
     return rc;
     BSP_WDG_feed();
-    rc = APP_CONFIG_eeprom_recovery_all();
+    rc = APP_CONFIG_EepromRecoveryAll();
     BSP_WDG_feed();
-    APP_LOG_debug("config recovery rc: %d\r\n", rc);
+    APP_LOG_Debug("config recovery rc: %d\r\n", rc);
     APP_CHECK_RC_AND_RESET(rc);
-    eeprom_init_tip = EEPROM_INIT_TIP_RECOVERY;
+    g_eepromInitTip = EEPROM_INIT_TIP_RECOVERY;
     return APP_OK;
 }
 
-int APP_CONFIG_init(void)
+int APP_CONFIG_Init(void)
 {
-    APP_CONFIG_system_init(&app_config_system);
+    APP_CONFIG_SystemInit(&g_appConfigSystem);
     HARDWARE_HAL_DELAY_MS(10);
     BSP_WDG_feed();
-    _format_eeprom();
+    FormatEeprom();
     BSP_WDG_feed();
-    _recovery_eeprom();
+    RecoveryEeprom();
     BSP_WDG_feed();
-    int rc = APP_CONFIG_eeprom_load_all();
+    int rc = APP_CONFIG_EepromLoadAll();
     BSP_WDG_feed();
-    APP_LOG_debug("config init rc: %d\r\n", rc);
+    APP_LOG_Debug("config init rc: %d\r\n", rc);
     APP_CHECK_RC_AND_RESET(rc)
     return APP_OK;
 }

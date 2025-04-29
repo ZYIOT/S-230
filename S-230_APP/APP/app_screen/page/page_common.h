@@ -5,7 +5,7 @@
 static char app_screen_msg[APP_SCREEN_MSG_BUFFER_SIZE] = {0};
 #define GET_SENSOR(addr, _ret, check_field)          \
     rs485_sensor_pt sensor = NULL;                   \
-    int rc = APP_SENSORS_sensor_get(addr, &sensor);  \
+    int rc = APP_SENSORS_SensorGet(addr, &sensor);  \
     if (rc != APP_OK || sensor->check_field == NULL) \
     {                                                \
         return _ret;                                 \

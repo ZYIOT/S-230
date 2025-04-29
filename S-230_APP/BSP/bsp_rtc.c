@@ -4,8 +4,8 @@
 #include "bsp_wdg.h"
 #include "utils.h"
 
-extern int epprom_read_block(uint16_t page, uint8_t *buf);
-extern int epprom_write_block(uint16_t page, uint8_t *buf);
+extern int EEPROM_ReadBlock(uint16_t page, uint8_t *buf);
+extern int EEPROM_WriteBlock(uint16_t page, uint8_t *buf);
 #define EEPROM_BLOCK_SIZE 32
 #define RTC_TIME_PAGE 31
 
@@ -13,7 +13,7 @@ int BSP_RTC_load_from_backup(void)
 {
     datetime_t time = {0};
     uint8_t buf[EEPROM_BLOCK_SIZE] = {0};
-    int rc = epprom_read_block(RTC_TIME_PAGE, buf);
+    int rc = EEPROM_ReadBlock(RTC_TIME_PAGE, buf);
     APP_CHECK_RC(rc)
     if (buf[0] != 0xa5 || buf[1] != 0x5a || buf[2] < 20)
     {
@@ -46,7 +46,7 @@ int BSP_RTC_save_to_backup(datetime_pt datetime)
     buf[5] = datetime->hour;
     buf[6] = datetime->minute;
     buf[7] = datetime->second;
-    int rc = epprom_write_block(RTC_TIME_PAGE, buf);
+    int rc = EEPROM_WriteBlock(RTC_TIME_PAGE, buf);
     APP_CHECK_RC(rc)
     BSP_LOG_debug("BSP_RTC_save_to_backup OK");
     return APP_OK;

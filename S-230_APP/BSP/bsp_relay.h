@@ -10,8 +10,8 @@ extern "C"
 
 #ifdef BOARD_HAS_RELAY
     int BSP_RELAY_init(void);
-    int BSP_RELAY_read_channel(uint8_t relay_id, uint8_t channel_id);
-    int BSP_RELAY_set_channel(uint8_t relay_id, uint8_t channel_id, uint8_t status);
+    int BSP_RELAY_read_channel(uint8_t relayID, uint8_t channelID);
+    int BSP_RELAY_set_channel(uint8_t relayID, uint8_t channelID, uint8_t status);
 #endif
 
 #ifdef __cplusplus

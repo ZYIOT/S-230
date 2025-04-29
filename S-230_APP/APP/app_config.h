@@ -9,12 +9,12 @@ extern "C"
 #include "app.h"
 #include "config_bit.h"
 
-    extern int eeprom_init_tip;
+extern int g_eepromInitTip;
 
 #define EEPROM_INIT_TIP_FORMAT 1
 #define EEPROM_INIT_TIP_RECOVERY 2
 
-#define HAS_CONFIG_IS_VALID(_var) ((_var)->has_config == APP_CONFIG_HAS_CONFIG)
+#define HAS_CONFIG_IS_VALID(_var) ((_var)->hasConfig == APP_CONFIG_HAS_CONFIG)
 #define ENABLE_IS_VALID(_var) (HAS_CONFIG_IS_VALID(_var) && ((_var)->enable == APP_CONFIG_ENABLED))
 
 #define CHECK_ENABLE_IS_VALID(_var)               \
@@ -32,8 +32,8 @@ extern "C"
 
 #include "app_config/defines.h"
 
-    int APP_CONFIG_init(void);
-    uint32_t APP_CONFIG_device_id(void);
+    int APP_CONFIG_Init(void);
+    uint32_t APP_CONFIG_DeviceID(void);
 #ifdef __cplusplus
 }
 #endif

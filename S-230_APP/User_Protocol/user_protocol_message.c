@@ -68,20 +68,20 @@ uint16_t USER_PROTOCOL_sim_manufacturer_message_deserialize(uint8_t *buf, uint8_
 }
 
 
-int USER_PROTOCOL_device_id_message_init(uint8_t *device_id)
+int USER_PROTOCOL_device_id_message_init(uint8_t *deviceID)
 {
     return PROTOCOL_OK;
 }
 
-uint16_t USER_PROTOCOL_device_id_message_serialize(uint8_t *buf, uint8_t *device_id)
+uint16_t USER_PROTOCOL_device_id_message_serialize(uint8_t *buf, uint8_t *deviceID)
 {
     uint16_t pos = 0;
-    memcpy(buf, device_id, 4);
+    memcpy(buf, deviceID, 4);
     pos += 4;
     return pos;
 }
 
-uint16_t USER_PROTOCOL_device_id_message_deserialize(uint8_t *buf, uint8_t *device_id)
+uint16_t USER_PROTOCOL_device_id_message_deserialize(uint8_t *buf, uint8_t *deviceID)
 {
     return PROTOCOL_OK;
 }

@@ -22,7 +22,7 @@ typedef struct
 
 typedef struct 
 {
-    uint32_t device_id;  	/* 设备ID */
+    uint32_t deviceID;  	/* 设备ID */
     uint8_t code;  			/* 功能码 */ 
     uint8_t header;  		/* 帧头 */ 
     uint16_t cmd_id;  		/* 指令ID */ 

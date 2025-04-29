@@ -8,11 +8,10 @@
 #include "app_log.h"
 
 
-static uint8_t app_status_tick_cnt = 0;
-extern int8_t relay_board_error;
+static uint8_t s_appStatusTickCnt = 0;
 
 // 指示主控板+继电器控制板正常运行 
-static void _show_run_normal(uint8_t tick_cnt)
+static void ShowRunNormal(uint8_t tick_cnt)
 {
     if(5 == tick_cnt)
     {
@@ -25,7 +24,7 @@ static void _show_run_normal(uint8_t tick_cnt)
 }
 
 // 指示主控板正常运行，未检测到继电器控制板 
-static void _show_run_error1(uint8_t tick_cnt)
+static void ShowRunError(uint8_t tick_cnt)
 {
     if(2 == tick_cnt % 3)
     {
@@ -37,7 +36,7 @@ static void _show_run_error1(uint8_t tick_cnt)
     }
 }
 
-static void _judge_board_connect(size_t run_tick)
+static void JudgeBoardConnect(size_t run_tick)
 {
     int rc = 0;
     #if 0
@@ -62,59 +61,59 @@ static void _judge_board_connect(size_t run_tick)
 }
 
 // 指示主控板/继电器控制板的运行状态 
-static void _show_board_run_status(void)
+static void ShowBoardRunStatus(void)
 {
 #ifdef BOARD_HAS_RELAY
     if(IF_RELAY_BOARD_CHECK_ERROR())
     {
-        _show_run_error1(app_status_tick_cnt);
-        app_status_tick_cnt++;
-        if(app_status_tick_cnt >= 15)
+        ShowRunError(s_appStatusTickCnt);
+        s_appStatusTickCnt++;
+        if(s_appStatusTickCnt >= 15)
         {
-            app_status_tick_cnt = 0;
+            s_appStatusTickCnt = 0;
         }
     }
     else
     {
-        _show_run_normal(app_status_tick_cnt);
-        app_status_tick_cnt++;
-        if(app_status_tick_cnt >= 10)
+        ShowRunNormal(s_appStatusTickCnt);
+        s_appStatusTickCnt++;
+        if(s_appStatusTickCnt >= 10)
         {
-            app_status_tick_cnt = 0;
+            s_appStatusTickCnt = 0;
         }
     }
-    if(0 == app_status_tick_cnt % 10)
+    if(0 == s_appStatusTickCnt % 10)
     {
-        APP_LOG_debug("device:%u csq:%d net:%d server:%d, relay:%d\r\n", 
-                    APP_CONFIG_device_id(), 
-                    app_network.csq, app_network.network_status, app_network.connected_status, 
+        APP_LOG_Debug("device:%u csq:%d net:%d server:%d, relay:%d\r\n", 
+                    APP_CONFIG_DeviceID(), 
+                    g_appNetwork.csq, g_appNetwork.networkStatus, g_appNetwork.connectedStatus, 
                     GET_RELAY_BOARD_CHECK_RESULT());
     }
 #else
-    app_status_tick_cnt++;
-    if(0 == app_status_tick_cnt % 30)
+    s_appStatusTickCnt++;
+    if(0 == s_appStatusTickCnt % 30)
     {
-        APP_LOG_debug("device:%u csq:%d net:%d server:%d\r\n", 
-                    APP_CONFIG_device_id(), 
-                    app_network.csq, 
-                    app_network.network_status, 
-                    app_network.connected_status);
+        APP_LOG_Debug("device:%u csq:%d net:%d server:%d\r\n", 
+                    APP_CONFIG_DeviceID(), 
+                    g_appNetwork.csq, 
+                    g_appNetwork.networkStatus, 
+                    g_appNetwork.connectedStatus);
     }
 #endif
 
 }
 
 
-static void _feed_wdg(void)
+static void FeedWdg(void)
 {
-    if(0 == app_status_tick_cnt % 10)
+    if(0 == s_appStatusTickCnt % 10)
     {
         BSP_WDG_feed();
-        // APP_LOG_show("feed\r\n");
+        // APP_LOG_Show("feed\r\n");
     }
 }
 
-int APP_STATUS_init(void)
+int APP_STATUS_Init(void)
 {
     return APP_OK;
 }
@@ -129,9 +128,9 @@ void APP_STATUS_task_run(void *argument)
     run_tick = HARDWARE_GET_TICK();
     for (;;)
     {
-        _feed_wdg();
-        _judge_board_connect(run_tick);
-        _show_board_run_status();
+        FeedWdg();
+        JudgeBoardConnect(run_tick);
+        ShowBoardRunStatus();
         
         // HARDWARE_OS_DELAY_MS(100);
     }

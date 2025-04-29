@@ -389,7 +389,7 @@ static int _on_receive_write_firmware_start_message(g2_server_packet_pt packet)
     G2_SERVER_CHECK_READ_RC_AND_RETURN
     packet->parsed = &message;
 
-    return G2_SERVER_write_firmware_start_message_process(packet);
+    return G2_SERVER_WriteFirmwareStartMessageProcess(packet);
 }
 
 
@@ -402,7 +402,7 @@ static int _on_receive_write_firmware_data_message(g2_server_packet_pt packet)
     G2_SERVER_CHECK_READ_RC_AND_RETURN
     packet->parsed = &message;
 
-    return G2_SERVER_write_firmware_data_message_process(packet);
+    return G2_SERVER_WriteFirmwareDataMessageProcess(packet);
 }
 
 
@@ -508,7 +508,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_receive_packet(g2_server_packet_pt packet)
         case G2_SERVER_MESSAGE_ENVIRONMENT:
             return G2_SERVER_read_environment_message_process(packet);
         case G2_SERVER_MESSAGE_READ_ICCID:
-            return G2_SERVER_read_iccid_message_process(packet);
+            return G2_SERVER_ReadIccidMessageProcess(packet);
 #ifdef BOARD_HAS_RELAY
         case G2_SERVER_MESSAGE_RELAY_POWER_CONFIG:
             return _on_receive_read_relay_power_config_message(packet);  

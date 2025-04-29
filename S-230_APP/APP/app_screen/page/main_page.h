@@ -6,9 +6,9 @@
 #define SCREEN_INDICATOR_ERROR_TIMEOUT 150000
 #endif
 
-char *get_sensor_indicator_value_string(uint8_t sensor_id, char *format, get_sensor_indicator_value_fun fun)
+char *get_sensor_indicator_value_string(uint8_t sensorID, char *format, get_sensor_indicator_value_fun fun)
 {
-    GET_SENSOR(sensor_id, "--", indicator);
+    GET_SENSOR(sensorID, "--", indicator);
     if (sensor->indicator->status == RS485_OK)
     {
         snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, format, fun(sensor));
@@ -27,9 +27,9 @@ char *get_sensor_indicator_value_string(uint8_t sensor_id, char *format, get_sen
     return app_screen_msg;
 }
 
-char *get_sensor_indicator_vm_string(uint8_t sensor_id, char *format, get_sensor_indicator_vm_fun fun)
+char *get_sensor_indicator_vm_string(uint8_t sensorID, char *format, get_sensor_indicator_vm_fun fun)
 {
-    GET_SENSOR(sensor_id, "--", indicator);
+    GET_SENSOR(sensorID, "--", indicator);
     if (sensor->indicator->status == RS485_OK)
     {
         snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, format, fun(sensor));
@@ -48,30 +48,30 @@ char *get_sensor_indicator_vm_string(uint8_t sensor_id, char *format, get_sensor
     return app_screen_msg;
 }
 
-int get_water_indicator_value(uint8_t indicator_id, double *value, uint8_t *data_status)
+int get_water_indicator_value(uint8_t indicatorID, double *value, uint8_t *data_status)
 {
-    app_water_indicator_value_pt water_indicator;
-    int rc = APP_SENSORS_water_indicator_get(indicator_id, &water_indicator);
+    APP_WATER_IndicatorValue_pt water_indicator;
+    int rc = APP_SENSORS_WaterIndicatorGet(indicatorID, &water_indicator);
     if (rc != APP_OK || water_indicator->sensor == NULL)
     {
         return APP_ERROR;
     }
     uint16_t u_value = 0;
     int rc1 = mean_filter_get(&water_indicator->filter, value);
-    int rc2 = water_indicator_to_uint16_t(indicator_id, *value, &u_value);
-    if (rc1 != APP_OK || rc2 != APP_OK || water_indicator->error_count > 3)
+    int rc2 = water_indicator_to_uint16_t(indicatorID, *value, &u_value);
+    if (rc1 != APP_OK || rc2 != APP_OK || water_indicator->errorCount > 3)
     {
         return APP_ERROR;
     }
     g2_server_sensor_data_indicator_message_t indicator;
     indicator.value = u_value;
-    APP_SENSORS_check_indicator_alert(0, indicator_id, &indicator);
+    APP_SENSORS_CheckIndicatorAlert(0, indicatorID, &indicator);
     *data_status = indicator.data_status;
     return APP_OK;
 }
-int get_sensor_indicator_visibility(uint8_t sensor_id)
+int get_sensor_indicator_visibility(uint8_t sensorID)
 {
-    GET_SENSOR(sensor_id, 0, id);
+    GET_SENSOR(sensorID, 0, id);
     return 1;
 }
 
@@ -90,11 +90,11 @@ int get_sensor_ph_visibility(void)
     return get_sensor_indicator_visibility(RS485_DRIVER_SENSOR_ID_PH);
 }
 
-char *get_water_indicator_value_string(uint8_t indicator_id, char *format)
+char *get_water_indicator_value_string(uint8_t indicatorID, char *format)
 {
     double value;
     uint8_t data_status;
-    int rc = get_water_indicator_value(indicator_id, &value, &data_status);
+    int rc = get_water_indicator_value(indicatorID, &value, &data_status);
     if (rc != APP_OK)
     {
         if (HARDWARE_GET_TICK() > SCREEN_INDICATOR_ERROR_TIMEOUT)
@@ -160,10 +160,10 @@ char *get_water_ph()
 // {
 //     return get_water_indicator_visibility(RS485_DRIVER_SENSOR_ID_NH3);
 // }
-static int has_sensor_by_id(uint8_t sensor_id)
+static int has_sensor_by_id(uint8_t sensorID)
 {
     rs485_sensor_pt sensor = NULL;
-    int rc = APP_SENSORS_sensor_get(sensor_id, &sensor);
+    int rc = APP_SENSORS_SensorGet(sensorID, &sensor);
     return (rc == APP_OK) ? 1 : 0;
 }
 
@@ -185,8 +185,8 @@ static int has_sensor_check(app_screen_page_pt page)
 int has_sensors_visibility(void)
 {
     rs485_sensor_pt sensor = NULL;
-    int rc1 = APP_SENSORS_sensor_get(RS485_DRIVER_SENSOR_ID_DO, &sensor);
-    int rc2 = APP_SENSORS_sensor_get(RS485_DRIVER_SENSOR_ID_PH, &sensor);
+    int rc1 = APP_SENSORS_SensorGet(RS485_DRIVER_SENSOR_ID_DO, &sensor);
+    int rc2 = APP_SENSORS_SensorGet(RS485_DRIVER_SENSOR_ID_PH, &sensor);
     return (rc1 == APP_OK || rc2 == APP_OK) ? 1 : 0;
 }
 

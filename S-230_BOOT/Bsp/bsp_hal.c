@@ -17,7 +17,6 @@ void APP_TASK_run_per_second_ISR()
 {
   BSP_MCU_run_led_flash();
   BSP_WDG_feed();
-  BSP_LOG_debug("feed\r\n");
 }
 
 int BSP_HAL_init(void)

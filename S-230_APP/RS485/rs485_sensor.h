@@ -29,7 +29,7 @@ extern "C"
         .PN = &sensor_PN[_id][0],                                                           \
         .sensor_change = 0,                                                                 \
         .action = NULL, .enable = _enable,                                                  \
-        .error_count = 0, .timeout_error_count = 0, .crc_error_count = 0,                   \
+        .errorCount = 0, .timeout_error_count = 0, .crc_error_count = 0,                   \
         .rs485_error_code_count = 0, .calibration_count = 0, .indicator = { 0 }             \
     }
 
@@ -79,9 +79,9 @@ extern "C"
     typedef int (*rs485_read_value)(rs485_sensor_s_t *rs485, rs485_sensor_indicator_pt indicator);
     typedef int (*rs485_read_info)(rs485_sensor_s_t *rs485);
     typedef int (*rs485_write_info)(rs485_sensor_s_t *rs485, void *params);
-    typedef int (*rs485_write_calibrate)(rs485_sensor_s_t *rs485, uint8_t indicator_id, void *params);
-    typedef int (*rs485_read_compensation)(rs485_sensor_s_t *rs485, uint8_t indicator_id, float *value);
-    typedef int (*rs485_write_compensation)(rs485_sensor_s_t *rs485, uint8_t indicator_id, float value);
+    typedef int (*rs485_write_calibrate)(rs485_sensor_s_t *rs485, uint8_t indicatorID, void *params);
+    typedef int (*rs485_read_compensation)(rs485_sensor_s_t *rs485, uint8_t indicatorID, float *value);
+    typedef int (*rs485_write_compensation)(rs485_sensor_s_t *rs485, uint8_t indicatorID, float value);
     typedef int (*rs485_check_sensor)(rs485_sensor_s_t *rs485, rs485_sensor_driver_pt sd);
     typedef int (*rs485_match_pn)(rs485_sensor_s_t *rs485, void *params);
     typedef int (*rs485_match_model)(rs485_sensor_s_t *rs485, uint8_t model, uint8_t theory);
@@ -135,7 +135,7 @@ extern "C"
         // 应用层配置位 
         uint8_t enable;
         // 应用层记录设备操作的结果 
-        uint16_t error_count;
+        uint16_t errorCount;
         uint16_t timeout_error_count;
         uint16_t crc_error_count;
         uint16_t rs485_error_code_count;

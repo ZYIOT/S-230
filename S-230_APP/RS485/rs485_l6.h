@@ -20,14 +20,14 @@ extern "C"
       uint16_t solenoid_status;      // 电磁阀状态 
       uint16_t liquid_level_status;  // 液位传感器状态 
       uint16_t release;       // 泄气时间 
-      uint16_t read_wait;     // 入水后多长时间允许读取数据（传感器在水中等待时长）
+      uint16_t readWait;     // 入水后多长时间允许读取数据（传感器在水中等待时长）
       uint16_t read;          // 读取数据持续时间 
       uint16_t charge;        // 充气时间 
-      uint16_t charge_wait;   // 气吹自动等待时长(传感器在空气中时长) 
+      uint16_t chargeWait;   // 气吹自动等待时长(传感器在空气中时长) 
       int status;             // 数据查询的状态 
       int error_code;         // 485 通信的错误状态 
       int initialized;
-      uint16_t error_count; // 连续读取错误次数 
+      uint16_t errorCount; // 连续读取错误次数 
       uint16_t reset_count; // 设备重启次数 
     
       uint16_t force_status;// 强制读数状态 
@@ -51,7 +51,7 @@ extern "C"
 
     int RS485_L6_start(rs485_port_pt rs485);
     int RS485_L6_read(rs485_port_pt rs485, rs485_l6_status_pt l6_status);
-    int RS485_L6_set_register(rs485_port_pt rs485, uint16_t release, uint16_t read_wait, uint16_t read, uint16_t charge, uint16_t charge_wait);
+    int RS485_L6_set_register(rs485_port_pt rs485, uint16_t release, uint16_t readWait, uint16_t read, uint16_t charge, uint16_t chargeWait);
 
 #ifdef __cplusplus
 }

@@ -24,11 +24,11 @@ extern "C"
 
     } GPIO_AT24CXX_TypeDef;
 
-    int GPIO_IIC_AT24CXX_read(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t device_id, uint16_t addr, uint8_t *data);
-    int GPIO_IIC_AT24CXX_write(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t device_id, uint16_t addr, uint8_t *data, size_t timeout);
-    int GPIO_IIC_AT24CXX_read_bytes(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t device_id, uint16_t addr, uint8_t *data, size_t len);
-    int GPIO_IIC_AT24CXX_write_bytes(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t device_id, uint16_t addr, uint8_t *data, size_t len, size_t timeout);
-    int GPIO_IIC_AT24CXX_read_id(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t device_id, uint8_t *data, size_t len);
+    int GPIO_IIC_AT24CXX_read(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t deviceID, uint16_t addr, uint8_t *data);
+    int GPIO_IIC_AT24CXX_write(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t deviceID, uint16_t addr, uint8_t *data, size_t timeout);
+    int GPIO_IIC_AT24CXX_read_bytes(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t deviceID, uint16_t addr, uint8_t *data, size_t len);
+    int GPIO_IIC_AT24CXX_write_bytes(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t deviceID, uint16_t addr, uint8_t *data, size_t len, size_t timeout);
+    int GPIO_IIC_AT24CXX_read_id(GPIO_AT24CXX_TypeDef *AT24Cx, uint8_t deviceID, uint8_t *data, size_t len);
 #ifdef __cplusplus
 }
 #endif

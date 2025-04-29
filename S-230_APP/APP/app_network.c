@@ -8,55 +8,56 @@
 #include "app_protocol.h"
 #include "hardware_wrapper.h"
 
-app_network_t app_network = {0};
+APP_NETWORK_t g_appNetwork = {0};
 
 #define CAN_CONNECT_TO_SERVER()      \
     APP_NETWORK_CONNECTED() &&       \
         APP_SERVER_DISCONNECTED() && \
-        (app_network.connect_tick == 0 || (HARDWARE_GET_TICK() - app_network.connect_tick > 15000))
+        (g_appNetwork.connectTick == 0 || (HARDWARE_GET_TICK() - g_appNetwork.connectTick > 15000))
 
-static void _app_network_reset(void)
+static void AppNetworkReset(void)
 {
-    app_network.csq = CSQ_MIN_VALUE;
-    app_network.connected_status = CONNECTED_STATUS_DISCONNECTED;
-    app_network.network_status = CONNECTED_STATUS_DISCONNECTED;
-    app_network.connect_tick = 0;
-    app_network.last_send_tick = 0;
+    g_appNetwork.csq = CSQ_MIN_VALUE;
+    g_appNetwork.connectedStatus = CONNECTED_STATUS_DISCONNECTED;
+    g_appNetwork.networkStatus = CONNECTED_STATUS_DISCONNECTED;
+    g_appNetwork.connectTick = 0;
+    g_appNetwork.lastSendTick = 0;
     SET_APP_SERVER_ONCE_CONNECTED(CONNECTED_STATUS_DISCONNECTED);
 }
 
-static void _on_disconnect(void)
+static void OnConnect(void)
+{
+    g_appNetwork.networkStatus = CONNECTED_STATUS_CONNECTED;
+}
+
+static void OnDisconnect(void)
 {
     if (APP_NETWORK_CONNECTED())
     {
-        _app_network_reset();
+        AppNetworkReset();
     }
 }
 
-void APP_NETWORK_after_send_message(void)
+void APP_NETWORK_AfterSendMessage(void)
 {
-    // app_network.last_send_tick = HARDWARE_GET_TICK();
+    // g_appNetwork.lastSendTick = HARDWARE_GET_TICK();
 }
 
-static void _on_connect(void)
-{
-    app_network.network_status = CONNECTED_STATUS_CONNECTED;
-}
 
-void APP_NETWORK_on_connect_to_server(void)
+void APP_NETWORK_OnConnectToServer(void)
 {
-    app_network.connected_status = CONNECTED_STATUS_CONNECTED;
-    app_network.was_connected_status = CONNECTED_STATUS_CONNECTED;
-    app_network.connect_tick = 0;
-    if (app_config_device_connect.reason != 1)
+    g_appNetwork.connectedStatus = CONNECTED_STATUS_CONNECTED;
+    g_appNetwork.wasConnectedStatus = CONNECTED_STATUS_CONNECTED;
+    g_appNetwork.connectTick = 0;
+    if (g_appConfigDeviceConnect.reason != 1)
     {
-        app_config_device_connect.reason = 1;
-        APP_CONFIG_device_connect_write(&app_config_device_connect);
+        g_appConfigDeviceConnect.reason = 1;
+        APP_CONFIG_DeviceConnectWrite(&g_appConfigDeviceConnect);
     }
     SET_APP_SERVER_ONCE_CONNECTED(CONNECTED_STATUS_CONNECTED);
 }
 
-static void request_time_from_server(void)
+static void RequestTimeFromServer(void)
 {
     if (APP_SERVER_CONNECTED())
     {
@@ -66,9 +67,9 @@ static void request_time_from_server(void)
     }
 }
 
-static datetime_t check_rtc_time = {0};
-static uint32_t refresh_rtc_day = 0;
-static int check_rtc_works(void)
+static datetime_t s_checkRtcTime = {0};
+static uint32_t s_refreshRtcDay = 0;
+static int CheckRtcWorks(void)
 {
     static uint32_t tick = 0;
     static uint32_t use_hse = 0;
@@ -83,9 +84,9 @@ static int check_rtc_works(void)
         BSP_RTC_get(&time.year, &time.month, &time.day, &time.hour, &time.minute, &time.second, &week);
         if (time.year < 20)
         {
-            refresh_rtc_day = 0xffff; //更新时间
+            s_refreshRtcDay = 0xffff; //更新时间
         }
-        if (datetime_equals(&check_rtc_time, &time))
+        if (datetime_equals(&s_checkRtcTime, &time))
         {
             rc = BSP_RTC_use_HSE();
             APP_CHECK_RC(rc);
@@ -94,17 +95,17 @@ static int check_rtc_works(void)
             use_hse = 1;
             use_hse_tick = tick_now;
             BSP_RTC_save_to_backup(&time);
-            refresh_rtc_day = 0xffff; //更新时间
+            s_refreshRtcDay = 0xffff; //更新时间
         }
         else
         {
-            datetime_copy(&check_rtc_time, &time);
+            datetime_copy(&s_checkRtcTime, &time);
         }
         uint32_t refresh_rtc = tick_now / 86400000; //24 hours
-        if (refresh_rtc != refresh_rtc_day && APP_SERVER_CONNECTED())
+        if (refresh_rtc != s_refreshRtcDay && APP_SERVER_CONNECTED())
         {
-            refresh_rtc_day = refresh_rtc;
-            request_time_from_server();
+            s_refreshRtcDay = refresh_rtc;
+            RequestTimeFromServer();
         }
         if (use_hse == 1 && time.year >= 20 && use_hse_tick - tick_now > 5 * 60 * 1000)
         {
@@ -115,31 +116,31 @@ static int check_rtc_works(void)
     return APP_OK;
 }
 
-static void connect_to_server(void)
+static void ConnectToServer(void)
 {
     if (CAN_CONNECT_TO_SERVER())
     {
         g2_server_packet_t packet;
         G2_SERVER_PACKET_init(&packet);
-        g2_server_connect_message_t message = {.reason = app_config_device_connect.reason};
+        g2_server_connect_message_t message = {.reason = g_appConfigDeviceConnect.reason};
         if (message.reason == 0)
         {
             message.reason = 1;
         }
-        if (app_network.was_connected_status == CONNECTED_STATUS_CONNECTED)
+        if (g_appNetwork.wasConnectedStatus == CONNECTED_STATUS_CONNECTED)
         {
             message.reason = 2;
         }
         BSP_PROTOCOL_send_read_connect_message(&packet, &message);
-        app_network.connect_tick = HARDWARE_GET_TICK(); 
+        g_appNetwork.connectTick = HARDWARE_GET_TICK(); 
     }
 }
 
-static void send_heartbeat_to_server(void)
+static void SendHeartbeatToServer(void)
 {
-    if (APP_SERVER_CONNECTED() && HARDWARE_GET_TICK() - app_network.last_send_tick > 120 * 1000)
+    if (APP_SERVER_CONNECTED() && HARDWARE_GET_TICK() - g_appNetwork.lastSendTick > 120 * 1000)
     {
-        app_network.last_send_tick = HARDWARE_GET_TICK();
+        g_appNetwork.lastSendTick = HARDWARE_GET_TICK();
         g2_server_packet_t packet;
         G2_SERVER_PACKET_init(&packet);
         BSP_PROTOCOL_send_read_heartbeat_message(&packet);
@@ -149,62 +150,62 @@ static void send_heartbeat_to_server(void)
 
 #if defined(SUPPORT_TEMPERATURE_AND_HUMIDITY) || defined(SUPPORT_CHECK_POWER_VOL_IN) || defined(SUPPORT_CHECK_POWER_CUR_OUT)
 #include "app_environment.h"
-static void send_environment_to_server(void)
+static void SendEnvironmentToServer(void)
 {
     g2_server_packet_t packet;
     G2_SERVER_PACKET_init(&packet);
     g2_server_environment_message_t message;
     G2_SERVER_environment_message_init(&message);
-    APP_ENVIRONMENT_pack(&message);
+    APP_ENVIRONMENT_Pack(&message);
     BSP_PROTOCOL_send_read_environment_message(&packet, &message);
 }
 #endif
 
 #ifdef SUPPORT_L6
 #include "app_l6.h"
-int send_l6_status_to_server(void)
+int SendL6StatusToServer(void)
 {
     g2_server_packet_t packet;
     G2_SERVER_PACKET_init(&packet);
     g2_server_l6_status_message_t message;
     G2_SERVER_l6_status_message_init(&message);
-    message.probe_id = 1;
-    APP_L6_status_pack(&message);
+    message.probeID = 1;
+    APP_L6_StatusPack(&message);
     BSP_PROTOCOL_send_read_l6_status_message(&packet, &message);
     return PROTOCOL_OK;
 }
 #endif
 
 
-void APP_NETWORK_update_environment_to_server(g2_server_packet_pt packet)
+void APP_NETWORK_UpdateEnvironmentToServer(g2_server_packet_pt packet)
 {
 #if defined(SUPPORT_TEMPERATURE_AND_HUMIDITY) || defined(SUPPORT_CHECK_POWER_VOL_IN) || defined(SUPPORT_CHECK_POWER_CUR_OUT)
-        APP_ENVIRONMENT_read();
+        APP_ENVIRONMENT_Read();
         HARDWARE_OS_DELAY_MS(100);
         G2_SERVER_PACKET_init(packet);
         g2_server_environment_message_t message;
         G2_SERVER_environment_message_init(&message);
-        APP_ENVIRONMENT_pack(&message);
+        APP_ENVIRONMENT_Pack(&message);
         BSP_PROTOCOL_send_read_environment_message(packet, &message);
 #endif
 }
 
-static int send_gprs_signal_to_server(void)
+static int SendGprsSignalToServer(void)
 {
-    if((CSQ_MIN_VALUE == app_network.csq) || (CSQ_MAX_VALUE < app_network.csq))
+    if((CSQ_MIN_VALUE == g_appNetwork.csq) || (CSQ_MAX_VALUE < g_appNetwork.csq))
     {
         return APP_ERROR;
     }
     g2_server_packet_t packet;
     G2_SERVER_PACKET_init(&packet);
     g2_server_gprs_signal_message_t pmsg = {0};
-    pmsg.rssi = app_network.csq;
+    pmsg.rssi = g_appNetwork.csq;
     BSP_PROTOCOL_send_read_gprs_signal_message(&packet, &pmsg);
     return APP_OK;
 }
 
 #define SEND_CSQ_INTERVAL   (30)
-static void send_csq_to_server(void)
+static void SendCsqToServer(void)
 {
     static size_t send_csq_tick = 0;
     static uint8_t csq_connected_server_flag = 0;
@@ -223,7 +224,7 @@ static void send_csq_to_server(void)
     if((APP_SERVER_CONNECTED() && (HARDWARE_GET_TICK() - send_csq_tick) >= SEND_CSQ_INTERVAL * 60 * 1000)
      || ((0x1 == csq_connected_server_flag) && (HARDWARE_GET_TICK() - send_csq_tick >= 10 * 1000)))
     {
-        if(APP_OK == send_gprs_signal_to_server())
+        if(APP_OK == SendGprsSignalToServer())
         {
             csq_connected_server_flag |= 0x2;
             send_csq_tick = HARDWARE_GET_TICK();
@@ -231,26 +232,26 @@ static void send_csq_to_server(void)
     }
 }
 
-extern app_config_diagnosis_message_t diagnosis_msg;
-static void check_and_send_diagnosis_message(void)
+extern APP_CONFIG_DiagnosisMessage_t g_diagnosisMsg;
+static void CheckAndSendDiagnosisMessage(void)
 {
-    app_config_time_t time;
+    APP_CONFIG_Time_t time;
     uint8_t week = 0;
-    app_config_time_pt msg_time = &(diagnosis_msg.msg_time);
+    APP_CONFIG_Time_pt msgTime = &(g_diagnosisMsg.msgTime);
     BSP_RTC_get(&time.year, &time.month, &time.day, &time.hour, &time.minute, &time.second, &week);
-    if(msg_time->year > 0)  // 检查自诊断信息是否有效 
+    if(msgTime->year > 0)  // 检查自诊断信息是否有效 
     {
         // 若不在同一天，则清除自诊断信息 
-        if(time.day != msg_time->day) 
+        if(time.day != msgTime->day) 
         {
-            APP_CONFIG_diagnosis_message_recovery();
+            APP_CONFIG_DiagnosisMessageRecovery();
         }
-        else if((time.year == msg_time->year) && (time.month == msg_time->month) && (time.day == msg_time->day))
+        else if((time.year == msgTime->year) && (time.month == msgTime->month) && (time.day == msgTime->day))
         {
             // 同一天的12:00之后，则清除自诊断信息 
             if(time.hour >= 12)
             {
-                APP_CONFIG_diagnosis_message_recovery();
+                APP_CONFIG_DiagnosisMessageRecovery();
             }
             // 当天7:00之后,则上报自诊断信息，然后清除自诊断信息 
             else if(time.hour >= 7)
@@ -259,10 +260,10 @@ static void check_and_send_diagnosis_message(void)
                 G2_SERVER_PACKET_init(&packet);
                 g2_server_self_diagnosis_message_t message;
                 G2_SERVER_self_diagnosis_message_init(&message);
-                message.type = diagnosis_msg.msg_type;
-                message.status = diagnosis_msg.msg_status;
+                message.type = g_diagnosisMsg.msgType;
+                message.status = g_diagnosisMsg.msgStatus;
                 BSP_PROTOCOL_send_read_self_diagnosis_message(&packet, &message);
-                APP_CONFIG_diagnosis_message_recovery();
+                APP_CONFIG_DiagnosisMessageRecovery();
             }
         }
     }
@@ -271,21 +272,21 @@ static void check_and_send_diagnosis_message(void)
 #define NETWORK_MIN_INTERVAL    (5)
 #define SEND_ENV_INTERVAL_CNT   (10 / NETWORK_MIN_INTERVAL)
 #define SEND_L6_STATUS_INTERVAL_CNT (5 / NETWORK_MIN_INTERVAL)
-static void send_data_to_server(void)
+static void SendDataToServer(void)
 {
     static uint8_t send_env_cnt = 0;
     static uint8_t send_l6_status_cnt = 0;
-    if (APP_SERVER_CONNECTED() && (HARDWARE_GET_TICK() - app_network.last_send_data_tick) > NETWORK_MIN_INTERVAL * 60 * 1000)
+    if (APP_SERVER_CONNECTED() && (HARDWARE_GET_TICK() - g_appNetwork.lastSendDataTick) > NETWORK_MIN_INTERVAL * 60 * 1000)
     {
-        app_network.last_send_data_tick = HARDWARE_GET_TICK();
+        g_appNetwork.lastSendDataTick = HARDWARE_GET_TICK();
         send_env_cnt += 1;
         send_l6_status_cnt += 1;
         if(send_env_cnt == SEND_ENV_INTERVAL_CNT)
         {
 // #if defined(SUPPORT_TEMPERATURE_AND_HUMIDITY) || defined(SUPPORT_CHECK_POWER_VOL_IN) || defined(SUPPORT_CHECK_POWER_CUR_OUT)
-//         APP_ENVIRONMENT_read();
+//         APP_ENVIRONMENT_Read();
 //         HARDWARE_OS_DELAY_MS(100);
-//         send_environment_to_server();
+//         SendEnvironmentToServer();
 // #endif
             send_env_cnt = 0;
         }
@@ -293,11 +294,11 @@ static void send_data_to_server(void)
         {
 #ifdef SUPPORT_L6
             HARDWARE_OS_DELAY_MS(100);
-            send_l6_status_to_server();
+            SendL6StatusToServer();
 #endif
             send_l6_status_cnt = 0;
         }
-        check_and_send_diagnosis_message();
+        CheckAndSendDiagnosisMessage();
     }
 }
 
@@ -311,7 +312,7 @@ static void send_data_to_server(void)
 	# 表示 data1 的 checksum 的二进制数值
 	~ 表示 data2 的 checksum 的二进制数值
 */
-static int parse_csq(uint32_t sample, uint8_t *csq)
+static int ParseCsq(uint32_t sample, uint8_t *csq)
 {
     uint16_t data1 = 0;
     uint32_t mask1 = 1;
@@ -351,35 +352,35 @@ static int parse_csq(uint32_t sample, uint8_t *csq)
     return APP_ERROR;
 }
 
-int APP_NETWORK_init(void)
+int APP_NETWORK_Init(void)
 {
-    _app_network_reset();
-    app_network.was_connected_status = 0;
-    app_network.last_send_data_tick = HARDWARE_GET_TICK();
+    AppNetworkReset();
+    g_appNetwork.wasConnectedStatus = 0;
+    g_appNetwork.lastSendDataTick = HARDWARE_GET_TICK();
     uint8_t week;
-    BSP_RTC_get(&check_rtc_time.year, &check_rtc_time.month, &check_rtc_time.day, &check_rtc_time.hour, &check_rtc_time.minute, &check_rtc_time.second, &week);
+    BSP_RTC_get(&s_checkRtcTime.year, &s_checkRtcTime.month, &s_checkRtcTime.day, &s_checkRtcTime.hour, &s_checkRtcTime.minute, &s_checkRtcTime.second, &week);
     return APP_OK;
 }
 
-void APP_NETWORK_check_stataus(void)
+void APP_NETWORK_CheckStataus(void)
 {
     if (BSP_LINK_connect_read() == 1)
     {
-        _on_connect();
+        OnConnect();
     }
     else
     {
-        _on_disconnect();
+        OnDisconnect();
     }
 }
 
-int load_rtc_time(void)
+static int LoadRtcTime(void)
 {
     datetime_t time = {0};
     uint8_t week = 0;
     int rc = BSP_RTC_get(&time.year, &time.month, &time.day, &time.hour, &time.minute, &time.second, &week);
     APP_CHECK_RC(rc)
-    APP_LOG_debug("load: 20%02d-%02d-%02d %02d:%02d:%02d\r\n", time.year, time.month, time.day, time.hour, time.minute, time.second);
+    APP_LOG_Debug("load: 20%02d-%02d-%02d %02d:%02d:%02d\r\n", time.year, time.month, time.day, time.hour, time.minute, time.second);
     if (time.year == 0)
     {
         return BSP_RTC_load_from_backup();
@@ -387,10 +388,10 @@ int load_rtc_time(void)
     return APP_OK;
 }
 
-void APP_NETWORK_update_csq(uint8_t csq)
+void APP_NETWORK_UpdateCSQ(uint8_t csq)
 {
-    app_network.csq = csq;
-    APP_LOG_debug("CSQ: %d\r\n", app_network.csq);
+    g_appNetwork.csq = csq;
+    APP_LOG_Debug("CSQ: %d\r\n", g_appNetwork.csq);
 }
 
 void APP_NETWORK_task_run(void *argument)
@@ -401,11 +402,11 @@ void APP_NETWORK_task_run(void *argument)
     HARDWARE_OS_DELAY_MS(200);
     BSP_RTC_init();
     HARDWARE_OS_DELAY_MS(1500);
-    load_rtc_time();
+    LoadRtcTime();
 #if defined(SUPPORT_TEMPERATURE_AND_HUMIDITY) || defined(SUPPORT_CHECK_POWER_VOL_IN) || defined(SUPPORT_CHECK_POWER_CUR_OUT)
-    APP_ENVIRONMENT_init();
+    APP_ENVIRONMENT_Init();
     HARDWARE_OS_DELAY_MS(100);
-    APP_ENVIRONMENT_read();
+    APP_ENVIRONMENT_Read();
 #endif
     for (;;)
     {
@@ -413,21 +414,21 @@ void APP_NETWORK_task_run(void *argument)
         sample |= BSP_LINK_csq_read();
         if ((sample & 0xFF000000) == 0xFC000000) // check sample header
         {
-            rc = parse_csq(sample, &csq);
+            rc = ParseCsq(sample, &csq);
             if (rc == APP_OK)
             {
-                app_network.csq = csq;
-                APP_LOG_trace("CSQ: %d\r\n", app_network.csq);
+                g_appNetwork.csq = csq;
+                APP_LOG_Trace("CSQ: %d\r\n", g_appNetwork.csq);
             }
         }
-        APP_NETWORK_check_stataus();
-        connect_to_server();
-        send_heartbeat_to_server();
-        send_csq_to_server();
-        send_data_to_server();
-        check_rtc_works();
-        APP_UPDATE_FIRMWARE_resend_data_ask();
-        APP_GPRS_read_iccid_message_process();
+        APP_NETWORK_CheckStataus();
+        ConnectToServer();
+        SendHeartbeatToServer();
+        SendCsqToServer();
+        SendDataToServer();
+        CheckRtcWorks();
+        APP_UPDATE_FIRMWARE_ResendDataAsk();
+        APP_GPRS_ReadIccidMessageProcess();
         HARDWARE_OS_DELAY_MS(250);
     }
 }

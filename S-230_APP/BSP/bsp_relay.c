@@ -57,13 +57,13 @@ int BSP_RELAY_init(void)
     return APP_OK;
 }
 
-int BSP_RELAY_read_channel(uint8_t relay_id, uint8_t channel_id)
+int BSP_RELAY_read_channel(uint8_t relayID, uint8_t channelID)
 {
-    if (relay_id >= RELAY_SIZE || channel_id >= RELAY_CHANNEL_SIZE)
+    if (relayID >= RELAY_SIZE || channelID >= RELAY_CHANNEL_SIZE)
     {
         return -1;
     }
-    BSP_RELAY_TypeDef *check = &(checks[channel_id]);
+    BSP_RELAY_TypeDef *check = &(checks[channelID]);
     uint8_t s = __BSP_RELAY_OUT_read(check);
     if (s == GPIO_PIN_RESET)
     {
@@ -75,13 +75,13 @@ int BSP_RELAY_read_channel(uint8_t relay_id, uint8_t channel_id)
     }
 }
 
-int BSP_RELAY_set_channel(uint8_t relay_id, uint8_t channel_id, uint8_t status)
+int BSP_RELAY_set_channel(uint8_t relayID, uint8_t channelID, uint8_t status)
 {
-    if (relay_id >= RELAY_SIZE || channel_id >= RELAY_CHANNEL_SIZE)
+    if (relayID >= RELAY_SIZE || channelID >= RELAY_CHANNEL_SIZE)
     {
         return APP_ERROR;
     }
-    BSP_RELAY_TypeDef *channel = &(channels[channel_id]);
+    BSP_RELAY_TypeDef *channel = &(channels[channelID]);
     if (status == 0)
     {
         __BSP_RELAY_WRITE(channel, 1);

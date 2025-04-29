@@ -24,7 +24,7 @@ uint8_t app_file_name_str[64] __attribute__((at(0x8000000 + 0x400))) = APP_FIREW
 uint8_t compiler_time[64] __attribute__((at(0x8000000 + 0x440))) = __DATE__"-"__TIME__;
 
 // 显示程序版本信息 
-static void APP_FILEINFO_SHOW(void)
+static void AppFileInfoShow(void)
 {
     uint8_t *app_version_str = (uint8_t *)&app_file_name_str;
     uint32_t infoAddr = (uint32_t)&app_file_name_str;
@@ -32,37 +32,37 @@ static void APP_FILEINFO_SHOW(void)
     BSP_LOG_show("compiler at <%s>\r\n", compiler_time);
 }
 
-static int _app_init(void)
+static int AppInit(void)
 {
     BSP_AT24CM1_init();
     BSP_PUMP_init();
     return APP_OK;
 }
 
-static int format_eeprom(void)
+static int FormatEeprom(void)
 {
-    int rc = APP_CONFIG_system_load();
+    int rc = APP_CONFIG_SystemLoad();
     BSP_WDG_feed();
     if (rc != APP_OK)
     {
-        rc = APP_CONFIG_system_recovery();
+        rc = APP_CONFIG_SystemRecovery();
         BSP_LOG_trace("system recovery rc: %d\r\n", rc);
         APP_CHECK_RC_AND_RESET(rc);
     }
-    rc = APP_CONFIG_eeprom_recovery_all();
-    rc = APP_CONFIG_eeprom_recovery_free_page();
+    rc = APP_CONFIG_EepromRecoveryAll();
+    rc = APP_CONFIG_EepromRecoveryFreePage();
     BSP_WDG_feed();
     BSP_LOG_debug("config recovery rc: %d\r\n", rc);
     APP_CHECK_RC_AND_RESET(rc);
     return APP_OK;
 }
 
-__weak app_relay_power_config_t app_relay_power_config[RELAY_SIZE][RELAY_CHANNEL_SIZE];
-__weak void APP_NETWORK_check_stataus(void)
+__weak APP_RELAY_PowerConfig_t g_appRelayPowerConfig[RELAY_SIZE][RELAY_CHANNEL_SIZE];
+__weak void APP_NETWORK_CheckStataus(void)
 {
 }
 
-__weak void APP_TASK_run_per_second_ISR(void)
+__weak void APP_TASK_RunPerSecondIsr(void)
 {
     // BSP_WDG_feed();
 }
@@ -138,9 +138,9 @@ int main(void)
     #endif
     BSP_UART_init();
     BSP_LOG_init();
-	APP_FILEINFO_SHOW();
-    _app_init();
-    int rc = format_eeprom();
+	AppFileInfoShow();
+    AppInit();
+    int rc = FormatEeprom();
     if (rc == APP_OK)
     {
         while (1)

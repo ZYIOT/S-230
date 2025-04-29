@@ -79,6 +79,6 @@ static char *log_levels[] = {
 
 void BSP_LOG_level_show(void)
 {
-    uint8_t l = BSP_LOG_LEVEL_TRACE;
+    uint8_t l = BSP_LOG_DEFAULT_LEVEL;
     BSP_LOG_show("Log level: %s\r\n", log_levels[l]);
 }

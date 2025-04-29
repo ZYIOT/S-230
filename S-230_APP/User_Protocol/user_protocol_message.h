@@ -22,9 +22,9 @@ int  USER_PROTOCOL_sim_manufacturer_message_init(uint8_t *manufacturer);
 uint16_t USER_PROTOCOL_sim_manufacturer_message_serialize(uint8_t *buf, uint8_t *manufacturer);
 uint16_t USER_PROTOCOL_sim_manufacturer_message_deserialize(uint8_t *buf, uint8_t *manufacturer);
 
-int USER_PROTOCOL_device_id_message_init(uint8_t *device_id);
-uint16_t USER_PROTOCOL_device_id_message_serialize(uint8_t *buf, uint8_t *device_id);
-uint16_t USER_PROTOCOL_device_id_message_deserialize(uint8_t *buf, uint8_t *device_id);
+int USER_PROTOCOL_device_id_message_init(uint8_t *deviceID);
+uint16_t USER_PROTOCOL_device_id_message_serialize(uint8_t *buf, uint8_t *deviceID);
+uint16_t USER_PROTOCOL_device_id_message_deserialize(uint8_t *buf, uint8_t *deviceID);
 
 typedef struct 
 {

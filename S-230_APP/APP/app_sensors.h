@@ -49,40 +49,41 @@ extern "C"
 #define SENSOR_DATA_CHANGED     1   // 数据(正常)有更新 
 #define SENSOR_DATA_OVERFLOW    2   // 数据溢出上限和下限 
 
-    typedef struct
-    {
-        int status; // 数据是否正常 
-        float value;
-        int16_t vm;
-        uint16_t error_count; // 连续出错次数 
-        mean_filter_t filter;
-        rs485_sensor_pt sensor;
-        double buffer[APP_SENSOR_INDICATOR_BUFFER_SIZE];
-    } app_water_indicator_value_t, *app_water_indicator_value_pt;
+typedef struct
+{
+    int status; // 数据是否正常 
+    float value;
+    int16_t vm;
+    uint16_t errorCount; // 连续出错次数 
+    mean_filter_t filter;
+    rs485_sensor_pt sensor;
+    double buffer[APP_SENSOR_INDICATOR_BUFFER_SIZE];
+} APP_WATER_IndicatorValue_t, *APP_WATER_IndicatorValue_pt;
 
-    typedef void (*rs485_sensor_indicator_fun)(rs485_sensor_indicator_pt indicator);
-    typedef void (*rs485_sensor_fun)(rs485_sensor_pt sensor);
+typedef void (*rs485_sensor_indicator_fun)(rs485_sensor_indicator_pt indicator);
+typedef void (*rs485_sensor_fun)(rs485_sensor_pt sensor);
 
 
 #define APP_SENSOR_IS_ENABLE(sensor) ((sensor)->enable != RS485_DISABLE)
 #define APP_SENSORS_MAX_INDICATOR_SIZE INDICATOR_SIZE
 
-    int APP_SENSORS_init(void);
-    void APP_SENSORS_refresh_new(void);
-    void APP_SENSORS_refresh_status(void);
-    void APP_SENSORS_task_run(void *argument);
-    int APP_SENSORS_water_indicator_get(uint8_t index, app_water_indicator_value_t **vp);
-    int APP_SENSORS_sensor_get(uint8_t addr, rs485_sensor_t **vp);
-    int APP_SENSORS_read_each(rs485_sensor_indicator_fun callback, uint32_t interval_delay_ms);
-    void APP_SENSORS_check_indicator_alert(int probe_id, int indicator_id, g2_server_sensor_data_indicator_message_pt indicator);
-    int APP_SENSORS_send_data_to_server(void);
-    int APP_SENSORS_set_compensations_by_sensor(rs485_sensor_pt sensor);
-    int APP_SENSOR_write_compensation(uint8_t probe_id, uint8_t indicator_id, float value, int force);
-    int APP_SENSOR_calibrate(uint8_t probe_id, uint8_t sensor_id, uint8_t type, uint8_t *params);
-	void APP_SENSORS_check_indicator_Saturability_alert(void);
-    int APP_SENSOR_write_ref(uint8_t sensor_id, uint8_t indicator_id, uint16_t value);
-	void send_self_diagnosis_to_server(void);
-    int APP_SENSORS_read_device_sensors(g2_server_device_sensors_message_pt message);
+int APP_SENSORS_Init(void);
+void APP_SENSORS_RefreshNew(void);
+void APP_SENSORS_RefreshStatus(void);
+void APP_SENSORS_task_run(void *argument);
+int APP_SENSORS_WaterIndicatorGet(uint8_t index, APP_WATER_IndicatorValue_t **vp);
+int APP_SENSORS_SensorGet(uint8_t addr, rs485_sensor_t **vp);
+int APP_SENSORS_ReadEach(rs485_sensor_indicator_fun callback, uint32_t interval_delay_ms);
+void APP_SENSORS_CheckIndicatorAlert(int probeID, int indicatorID, g2_server_sensor_data_indicator_message_pt indicator);
+int APP_SENSORS_SendDataToServer(void);
+int APP_SENSORS_SetCompensationsBySensor(rs485_sensor_pt sensor);
+int APP_SENSOR_WriteCompensation(uint8_t probeID, uint8_t indicatorID, float value, int force);
+int APP_SENSOR_Calibrate(uint8_t probeID, uint8_t sensorID, uint8_t type, uint8_t *params);
+void APP_SENSORS_CheckIndicatorSaturabilityAlert(void);
+int APP_SENSOR_WriteRef(uint8_t sensorID, uint8_t indicatorID, uint16_t value);
+void APP_SENSOR_SendSelfDiagnosisToServer(void);
+int APP_SENSORS_ReadDeviceSensors(g2_server_device_sensors_message_pt message);
+
 #ifdef __cplusplus
 }
 #endif

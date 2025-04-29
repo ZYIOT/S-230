@@ -14,11 +14,11 @@ extern "C"
 #define APP_KEY_OK 2
 #define APP_KEY_MENU 1
 
-#define APP_KEY_init() BSP_KEY_init()
-#define APP_KEY_check_keys() BSP_KEY_check_keys()
-#define APP_KEY_press(key_mask, ms) BSP_KEY_press(key_mask, ms)
+#define APP_KEY_Init() BSP_KEY_init()
+#define APP_KEY_CheckKeys() BSP_KEY_check_keys()
+#define APP_KEY_Press(key_mask, ms) BSP_KEY_press(key_mask, ms)
 
-    int APP_KEY_get(void);
+int APP_KEY_Get(void);
 #ifdef __cplusplus
 }
 #endif

@@ -7,11 +7,11 @@
 #include "bsp_power_key.h"
 
 #define SIM_ICCID_LEN   (20)
-static uint8_t sim_iccid[SIM_ICCID_LEN+5] = "00000000000000000000";
-HARDWARE_SEMAPHORE_TYPE_T sim_iccid_sem = NULL;
-static uint8_t manufacturer = UNKONW_MANUFACTURER;
-static uint8_t get_sim_info_flow = IDLE_FLOW;
-static app_gprs_status_t gprs_model_status = {0, 0, 0};
+static uint8_t s_simIccid[SIM_ICCID_LEN+5] = "00000000000000000000";
+static HARDWARE_SEMAPHORE_TYPE_T s_simIccidSem = NULL;
+static uint8_t s_manufacturer = UNKONW_MANUFACTURER;
+static uint8_t s_getSimInfoFlow = IDLE_FLOW;
+static APP_GPRS_Status_t s_gprsModelStatus = {0, 0, 0};
 
 #define GPRS_MODEL_SET_NORMAL(model)    \
     model.status = 1;\
@@ -19,67 +19,67 @@ static app_gprs_status_t gprs_model_status = {0, 0, 0};
     model.rstcnt = 0
 #define GPRS_MODEL_CAN_RESET(model)     (model.rstcnt < 3 && model.errcnt >= 120)
 
-static void _set_get_sim_info_flow(uint8_t flow)
+static void SetGetSimInfoFlow(uint8_t flow)
 {
-    get_sim_info_flow = flow;
+    s_getSimInfoFlow = flow;
 }
 
-static void _gprs_task_sem_init(void)
+static void GprsTaskSemInit(void)
 {
-    if(NULL == sim_iccid_sem)
+    if(NULL == s_simIccidSem)
     {
-        sim_iccid_sem = HARDWARE_CREATE_SEMAPHORE();
+        s_simIccidSem = HARDWARE_CREATE_SEMAPHORE();
     }
 }
 
-static void _app_gprs_status_init(void)
+static void AppGprsStatusInit(void)
 {
-    gprs_model_status.status = -1;
-    gprs_model_status.errcnt = 0;
-    gprs_model_status.rstcnt = 0;
+    s_gprsModelStatus.status = -1;
+    s_gprsModelStatus.errcnt = 0;
+    s_gprsModelStatus.rstcnt = 0;
 }
 
-int APP_GPRS_init(void)
+int APP_GPRS_Init(void)
 {
-    _app_gprs_status_init();
-    _set_get_sim_info_flow(GET_SIM_ICCID_FLOW);
+    AppGprsStatusInit();
+    SetGetSimInfoFlow(GET_SIM_ICCID_FLOW);
     BSP_USER_PROTOCOL_init();
 }
 
-int USER_PROTOCOL_write_role_message_process(user_protocol_packet_pt packet)
+int USER_PROTOCOL_WriteRoleMessageProcess(user_protocol_packet_pt packet)
 {
     return APP_OK;
 }
 
-int USER_PROTOCOL_read_sim_iccid_message_process(user_protocol_packet_pt packet)
+int USER_PROTOCOL_ReadSimIccidMessageProcess(user_protocol_packet_pt packet)
 {
     uint8_t *pbuf = (uint8_t *)packet->parsed;
-    memset(sim_iccid, 0, SIM_ICCID_LEN+5);
-    memcpy(sim_iccid, pbuf, SIM_ICCID_LEN);
-    uint8_t len = strlen(sim_iccid);
+    memset(s_simIccid, 0, SIM_ICCID_LEN+5);
+    memcpy(s_simIccid, pbuf, SIM_ICCID_LEN);
+    uint8_t len = strlen(s_simIccid);
     if((len > 0) && (len <=20))
     {
-        _set_get_sim_info_flow(GET_SIM_MANUFACTURER_FLOW);
+        SetGetSimInfoFlow(GET_SIM_MANUFACTURER_FLOW);
     }
     else
     {
-        _set_get_sim_info_flow(GET_SIM_ICCID_FLOW);
+        SetGetSimInfoFlow(GET_SIM_ICCID_FLOW);
     }
     return APP_OK;
 }
 
-int USER_PROTOCOL_read_sim_manufacturer_message_process(user_protocol_packet_pt packet)
+int USER_PROTOCOL_ReadSimManufacturerMessageProcess(user_protocol_packet_pt packet)
 {
     uint8_t *pbuf = (uint8_t *)packet->parsed;
-    manufacturer = pbuf[0];
-    _set_get_sim_info_flow(IDLE_FLOW);
-	_gprs_task_sem_init();
-    HARDWARE_GIVE_SEMAPHORE(sim_iccid_sem);
+    s_manufacturer = pbuf[0];
+    SetGetSimInfoFlow(IDLE_FLOW);
+	GprsTaskSemInit();
+    HARDWARE_GIVE_SEMAPHORE(s_simIccidSem);
     return APP_OK;
 }
 
 
-static void _get_sim_info_process(uint8_t flow, user_protocol_packet_pt packet)
+static void GetSimInfoProcess(uint8_t flow, user_protocol_packet_pt packet)
 {
     static uint8_t sim_info_connected_server_flag = 0;
     if(CONNECTED_STATUS_CONNECTED == GET_APP_SERVER_ONCE_CONNECTED())
@@ -107,7 +107,7 @@ static void _get_sim_info_process(uint8_t flow, user_protocol_packet_pt packet)
         case IDLE_FLOW:
             if(0x1 == sim_info_connected_server_flag)
             {
-                _set_get_sim_info_flow(GET_SIM_ICCID_FLOW);
+                SetGetSimInfoFlow(GET_SIM_ICCID_FLOW);
             }
             break;
         default:
@@ -115,37 +115,37 @@ static void _get_sim_info_process(uint8_t flow, user_protocol_packet_pt packet)
     }
 }
 
-static int _check_gprs_model_status(void)
+static int CheckGprsModelStatus(void)
 {
-    if(1 == gprs_model_status.status)
+    if(1 == s_gprsModelStatus.status)
     {
         return APP_OK;
     }
-    else if(-1 == gprs_model_status.status)
+    else if(-1 == s_gprsModelStatus.status)
     {
-        gprs_model_status.errcnt += 1;
-        if(gprs_model_status.errcnt >= 120)
+        s_gprsModelStatus.errcnt += 1;
+        if(s_gprsModelStatus.errcnt >= 120)
         {
-            gprs_model_status.errcnt = 120;
-            if((gprs_model_status.rstcnt >= 3) && (2 != gprs_model_status.status))
+            s_gprsModelStatus.errcnt = 120;
+            if((s_gprsModelStatus.rstcnt >= 3) && (2 != s_gprsModelStatus.status))
             {
-                gprs_model_status.status = 2;
+                s_gprsModelStatus.status = 2;
                 POWER_GPRS_OFF();
                 HARDWARE_OS_DELAY_MS(5000);
                 POWER_GPRS_ON();
-                APP_LOG_debug("GPRS model ERROR!!!\r\n");
+                APP_LOG_Debug("GPRS model ERROR!!!\r\n");
             }
         }
     }
-    if(GPRS_MODEL_CAN_RESET(gprs_model_status))
+    if(GPRS_MODEL_CAN_RESET(s_gprsModelStatus))
     {
         POWER_GPRS_OFF();
         HARDWARE_OS_DELAY_MS(5000);
         POWER_GPRS_ON();
-        gprs_model_status.rstcnt += 1;
-        gprs_model_status.errcnt = 0;
-        gprs_model_status.status = 0;
-        APP_LOG_debug("power off/on GPRS model\r\n");
+        s_gprsModelStatus.rstcnt += 1;
+        s_gprsModelStatus.errcnt = 0;
+        s_gprsModelStatus.status = 0;
+        APP_LOG_Debug("power off/on GPRS model\r\n");
     }
     return APP_ERROR;
 }
@@ -154,61 +154,61 @@ void APP_GPRS_task_run(void *argument)
 {
     int rc = 0;
     user_protocol_packet_t packet = {0};
-    APP_GPRS_init();
+    APP_GPRS_Init();
     for (;;)
     {
         USER_PROTOCOL_PACKET_init(&packet);
         rc = BSP_USER_PROTOCOL_PACKET_read(&packet);
         if (rc == PROTOCOL_OK)
         {
-            GPRS_MODEL_SET_NORMAL(gprs_model_status);
+            GPRS_MODEL_SET_NORMAL(s_gprsModelStatus);
             if (BSP_USER_PROTOCOL_receive_packet(&packet) == PROTOCOL_NOT_SUPPORT)
             {
             }
         }
         else
         {
-            if(gprs_model_status.status <= 0)
+            if(s_gprsModelStatus.status <= 0)
             {
-                gprs_model_status.status = -1;
+                s_gprsModelStatus.status = -1;
             }
         }
-        _get_sim_info_process(get_sim_info_flow, &packet);
-        _check_gprs_model_status();
+        GetSimInfoProcess(s_getSimInfoFlow, &packet);
+        CheckGprsModelStatus();
         HARDWARE_OS_DELAY_MS(500);
     }
 }
 
 
-int G2_SERVER_read_iccid_message_process(g2_server_packet_pt packet)
+int G2_SERVER_ReadIccidMessageProcess(g2_server_packet_pt packet)
 {
     g2_server_sim_iccid_message_t message;
     uint8_t iccid_len = 0;
-    iccid_len = strlen(sim_iccid);
+    iccid_len = strlen(s_simIccid);
     if(iccid_len > 20)
     {
         iccid_len = 20;
     }
     message.len = iccid_len + 1;
-    message.manufacturer = manufacturer;
-    strcpy(message.iccid, sim_iccid);
+    message.manufacturer = s_manufacturer;
+    strcpy(message.iccid, s_simIccid);
     BSP_PROTOCOL_send_read_iccid_message(packet, &message);
     return PROTOCOL_OK;
 }
 
 
 
-int APP_GPRS_read_iccid_message_process(void)
+int APP_GPRS_ReadIccidMessageProcess(void)
 {
     int rc = APP_OK;
-	if(NULL != sim_iccid_sem)
+	if(NULL != s_simIccidSem)
     {
-		HARDWARE_TAKE_SEMAPHORE(sim_iccid_sem);
+		HARDWARE_TAKE_SEMAPHORE(s_simIccidSem);
         g2_server_packet_t packet;
         G2_SERVER_PACKET_init(&packet);
-        rc = G2_SERVER_read_iccid_message_process(&packet);
-        HARDWARE_GIVE_SEMAPHORE(sim_iccid_sem);
-        HARDWARE_DELETE_SEMAPHORE(sim_iccid_sem);
+        rc = G2_SERVER_ReadIccidMessageProcess(&packet);
+        HARDWARE_GIVE_SEMAPHORE(s_simIccidSem);
+        HARDWARE_DELETE_SEMAPHORE(s_simIccidSem);
     }
     return rc;
 }

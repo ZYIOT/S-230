@@ -186,7 +186,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>download_firmware_info</ItemText>
+          <ItemText>g_downloadFirmwareInfo</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

@@ -80,7 +80,7 @@ void do_sensor_calibrate_before_handler(app_screen_page_pt page, app_screen_page
 
 static int do_calibration_full(void)
 {
-    return APP_SENSOR_calibrate(0, RS485_DRIVER_SENSOR_ID_DO, 2, NULL);
+    return APP_SENSOR_Calibrate(0, RS485_DRIVER_SENSOR_ID_DO, 2, NULL);
 }
 
 static int set_do_sensor_calibrate_type_full(app_screen_menu_node_t *node)

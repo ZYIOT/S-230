@@ -8,7 +8,6 @@ extern "C"
 #include "app.h"
 #include "bsp_protocol.h"
 
-#define APP_RELAY_channel_size() RELAY_CHANNEL_SIZE;
 // #define APP_REPLACE_RELAY_DEBUG     // 调试时用上位机替代继电器控制板 
     enum
     {
@@ -56,11 +55,11 @@ extern "C"
     int APP_RELAY_init(void);
     int APP_RELAY_set_channel(void);
     int APP_RELAY_send_data_to_server(void);
-    int APP_RELAY_read_status_protocol(uint8_t relay_id, g2_server_relay_data_message_pt message, int *changed);
+    int APP_RELAY_read_status_protocol(uint8_t relayID, g2_server_relay_data_message_pt message, int *changed);
     int APP_RELAY_send_relay_error_to_server(void);
     void APP_RELAY_task_run(void *argument);
     int G2_SERVER_write_relay_power_config_message_process(g2_server_packet_pt packet);
-    int APP_RELAY_parse_power_config(uint8_t relay_id, uint8_t channel_id, uint8_t *buffer);
+    int APP_RELAY_parse_power_config(uint8_t relayID, uint8_t channelID, uint8_t *buffer);
     int G2_SERVER_write_loader_config_message_process(g2_server_packet_pt packet);
     int G2_SERVER_read_loader_config_message_process(g2_server_packet_pt packet);
     int APP_RELAY_parse_load_type(uint8_t *laod_type);

@@ -103,7 +103,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   if (htim->Instance == TIM2)
   {
-    APP_TASK_run_per_second_ISR();
+    APP_TASK_RunPerSecondIsr();
   }
 }
 
@@ -112,7 +112,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   switch (GPIO_Pin)
   {
   case LINK_Pin:
-    APP_NETWORK_check_stataus();
+    APP_NETWORK_CheckStataus();
     break;
   default:
     break;

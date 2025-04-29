@@ -1,7 +1,7 @@
 int G2_SERVER_read_device_id_message_process(g2_server_packet_pt packet)
 {
     g2_server_device_id_message_t pmsg = {0};
-    pmsg.device_id = APP_CONFIG_device_id();
+    pmsg.deviceID = APP_CONFIG_DeviceID();
     BSP_PROTOCOL_send_read_device_id_message(packet, &pmsg);
     return PROTOCOL_OK;
 }
@@ -10,12 +10,12 @@ int G2_SERVER_write_device_id_message_process(g2_server_packet_pt packet)
 {
     CHECK_PROTOCOL_MESSAGE
     g2_server_device_id_message_pt pmsg = (g2_server_device_id_message_pt)packet->parsed;
-    if (pmsg->device_id < 1 || pmsg->device_id >= 10000000)
+    if (pmsg->deviceID < 1 || pmsg->deviceID >= 10000000)
     {
         BSP_PROTOCOL_send_error_response(packet);
         return PROTOCOL_ERROR;
     }
-    int rc = APP_CONFIG_system_write_device_id(&app_config_system, pmsg->device_id);
+    int rc = APP_CONFIG_SystemWriteDeviceID(&g_appConfigSystem, pmsg->deviceID);
     CHECK_CONFIG_MESSAGE_RC(rc)
     BSP_PROTOCOL_send_ok_response(packet);
     return PROTOCOL_OK;
@@ -24,15 +24,15 @@ int G2_SERVER_write_device_id_message_process(g2_server_packet_pt packet)
 int G2_SERVER_read_version_message_process(g2_server_packet_pt packet)
 {
     g2_server_device_version_message_t pmsg = {0};
-    memcpy(pmsg.hardware, app_config_system.hardware, 3);
+    memcpy(pmsg.hardware, g_appConfigSystem.hardware, 3);
     pmsg.firmware[0] = APP_FIRMWARE_MAJOR;
     pmsg.firmware[1] = APP_FIRMWARE_MINOR;
     pmsg.firmware[2] = APP_FIRMWARE_REVISION;
     strncpy((char *)pmsg.PN, PN_CODE, 10);
     uint8_t sn[11] = {0};
     write_uint16_t_BE(SN_CODE, sn);
-    write_uint32_t_BE(APP_CONFIG_device_id(), &sn[2]);
-    memcpy(&(sn[6]), app_config_system.SN, 5);
+    write_uint32_t_BE(APP_CONFIG_DeviceID(), &sn[2]);
+    memcpy(&(sn[6]), g_appConfigSystem.SN, 5);
     memcpy(pmsg.SN, sn, 11);
     BSP_PROTOCOL_send_read_version_message(packet, &pmsg);
     return PROTOCOL_OK;
@@ -42,7 +42,7 @@ int G2_SERVER_write_version_message_process(g2_server_packet_pt packet)
 {
     CHECK_PROTOCOL_MESSAGE
     g2_server_device_version_message_pt pmsg = (g2_server_device_version_message_pt)packet->parsed;
-    int rc = APP_CONFIG_system_write_sn(&app_config_system, &(pmsg->SN[6]), pmsg->hardware);
+    int rc = APP_CONFIG_SystemWriteSN(&g_appConfigSystem, &(pmsg->SN[6]), pmsg->hardware);
     CHECK_CONFIG_MESSAGE_RC(rc)
     BSP_PROTOCOL_send_ok_response(packet);
     return PROTOCOL_OK;
@@ -73,7 +73,7 @@ int G2_SERVER_read_time_message_process(g2_server_packet_pt packet)
 int G2_SERVER_read_gprs_signal_message_process(g2_server_packet_pt packet)
 {
     g2_server_gprs_signal_message_t pmsg = {0};
-    pmsg.rssi = app_network.csq;
+    pmsg.rssi = g_appNetwork.csq;
     BSP_PROTOCOL_send_read_gprs_signal_message(packet, &pmsg);
     return PROTOCOL_OK;
 }
@@ -84,8 +84,8 @@ int G2_SERVER_read_gprs_signal_message_process(g2_server_packet_pt packet)
 int G2_SERVER_write_restart_message_process(g2_server_packet_pt packet)
 {
     BSP_PROTOCOL_send_ok_response(packet);
-    app_config_device_connect.reason = 3;
-    APP_CONFIG_device_connect_write(&app_config_device_connect);
+    g_appConfigDeviceConnect.reason = 3;
+    APP_CONFIG_DeviceConnectWrite(&g_appConfigDeviceConnect);
     HARDWARE_OS_DELAY_MS(500);
 #ifdef SUPPORT_POWER_OFF_SENSOR
     POWER_SENSOR_OFF();
@@ -105,11 +105,11 @@ int G2_SERVER_write_restart_message_process(g2_server_packet_pt packet)
 
 int G2_SERVER_write_recovery_message_process(g2_server_packet_pt packet)
 {
-    int rc = APP_CONFIG_eeprom_recovery_all();
+    int rc = APP_CONFIG_EepromRecoveryAll();
     CHECK_CONFIG_MESSAGE_RC(rc)
     BSP_PROTOCOL_send_ok_response(packet);
-    app_config_device_connect.reason = 4;
-    APP_CONFIG_device_connect_write(&app_config_device_connect);
+    g_appConfigDeviceConnect.reason = 4;
+    APP_CONFIG_DeviceConnectWrite(&g_appConfigDeviceConnect);
     HARDWARE_OS_DELAY_MS(3000);
 #ifdef BOARD_HAS_RELAY
     APP_CAN_reset_relay();

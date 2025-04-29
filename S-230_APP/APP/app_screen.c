@@ -32,7 +32,7 @@ static HARDWARE_SEMAPHORE_TYPE_T sem = NULL;
 
 static int _show_eeprom_tip(void)
 {
-    switch (eeprom_init_tip)
+    switch (g_eepromInitTip)
     {
     case EEPROM_INIT_TIP_FORMAT:
         BSP_LCD12864_show_row(1, 0, "  格式化成功");
@@ -53,7 +53,7 @@ static int _splash(void)
     BSP_LCD12864_clear_txt();
     BSP_LCD12864_show_row(0, 0, "中易智慧渔业系统");
     BSP_LCD12864_show_row(1, 0, "让水产养殖更容易");
-    snprintf(msg, 19, "主控ID:%07u", APP_CONFIG_device_id());
+    snprintf(msg, 19, "主控ID:%07u", APP_CONFIG_DeviceID());
     BSP_LCD12864_show_row(2, 0, msg);
     snprintf(msg, 19, "版本:V%u.%u.%u", APP_FIRMWARE_MAJOR, APP_FIRMWARE_MINOR, APP_FIRMWARE_REVISION);
     BSP_LCD12864_show_row(3, 0, msg);
@@ -81,7 +81,7 @@ void APP_SCREEN_task_run(void *argument)
     APP_SCREEN_show();
     for (;;)
     {
-        key = APP_KEY_get();
+        key = APP_KEY_Get();
         if (key > 0)
         {
             if (key == APP_KEY_MENU)

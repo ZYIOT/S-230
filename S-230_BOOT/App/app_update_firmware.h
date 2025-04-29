@@ -38,26 +38,26 @@ typedef enum
 	UPDATE_ERROR_NO_FIRMWARE,	// 没有可执行的固件
 	
 	UPDATE_ERROR_END1 = 0xFF,	// 升级流程结束
-}UPDATE_ERROR_TYPE_E;
+}UPDATE_ERROR_TYPE_e;
 
 
 typedef struct
 {
-	UPDATE_ERROR_TYPE_E type;	// 错误码
+	UPDATE_ERROR_TYPE_e type;	// 错误码
 	uint8_t *string;			// 错误信息字符串指针
-}error_type_string_t;
+}errorTypeString_t;
 
 
 typedef struct 
 {
 	uint8_t *pnKeyWords;
-	UPDATE_ERROR_TYPE_E type;	// 错误码
-}pn_check_result_t;
+	UPDATE_ERROR_TYPE_e type;	// 错误码
+}pnCheckResult_t;
 
 
-void APP_UPDATE_FIRMWARE_showErrorTypeContent(UPDATE_ERROR_TYPE_E type);
-UPDATE_ERROR_TYPE_E APP_UPDATE_FIRMWARE_factory_check(void);
-UPDATE_ERROR_TYPE_E APP_UPDATE_FIRMWARE_check_file(void);
+void APP_UPDATE_FIRMWARE_ShowErrorTypeContent(UPDATE_ERROR_TYPE_e type);
+UPDATE_ERROR_TYPE_e APP_UPDATE_FIRMWARE_FactoryCheck(void);
+UPDATE_ERROR_TYPE_e APP_UPDATE_FIRMWARE_CheckFile(void);
 
 
 #ifdef __cplusplus

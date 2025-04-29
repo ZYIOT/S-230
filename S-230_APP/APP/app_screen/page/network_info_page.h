@@ -4,7 +4,7 @@ char *get_network_status()
 {
     if (APP_NETWORK_CONNECTED())
     {
-        switch (app_network.connected_status)
+        switch (g_appNetwork.connectedStatus)
         {
         case CONNECTED_STATUS_CONNECTED:
             snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "已连接");
@@ -30,13 +30,13 @@ char *get_network_status()
 
 char *get_network_csq()
 {
-    if (app_network.csq > 31)
+    if (g_appNetwork.csq > 31)
     {
         snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "网络信号差");
     }
     else
     {
-        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%d", app_network.csq);
+        snprintf(app_screen_msg, APP_SCREEN_MSG_BUFFER_SIZE - 1, "%d", g_appNetwork.csq);
     }
     return app_screen_msg;
 }

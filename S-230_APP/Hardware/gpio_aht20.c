@@ -48,7 +48,7 @@ static int _read_bytes(GPIO_AHT20_TypeDef *AHT20x, uint8_t *data, size_t len)
     return 0;
 }
 
-static int _check_busy(GPIO_AHT20_TypeDef *AHT20x, uint8_t device_id, size_t timeout)
+static int _check_busy(GPIO_AHT20_TypeDef *AHT20x, uint8_t deviceID, size_t timeout)
 {
     int rc = 0;
     size_t start = HARDWARE_GET_TICK();

@@ -2,14 +2,14 @@
 
 WINAPI_EXPORT int WINAPI G2_SERVER_device_id_message_init(g2_server_device_id_message_pt message)
 {
-    message->device_id = 0;
+    message->deviceID = 0;
     return PROTOCOL_OK;
 }
 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_id_message_serialize(uint8_t *bytes, g2_server_device_id_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint32_t_BE(message->device_id, &bytes[pos]);
+    write_uint32_t_BE(message->deviceID, &bytes[pos]);
     pos += 4;
     return pos;
 }
@@ -17,7 +17,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_id_message_serialize(uint8_t *byt
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_id_message_deserialize(uint8_t *bytes, g2_server_device_id_message_pt message)
 {
     uint16_t pos = 0;
-    message->device_id = read_uint32_t_BE(&bytes[pos]);
+    message->deviceID = read_uint32_t_BE(&bytes[pos]);
     pos += 4;
     return pos;
 }
@@ -61,14 +61,14 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_version_message_deserialize(uint8
 
 WINAPI_EXPORT int WINAPI G2_SERVER_probe_id_message_init(g2_server_probe_id_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     return PROTOCOL_OK;
 }
 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_id_message_serialize(uint8_t *bytes, g2_server_probe_id_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -76,7 +76,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_id_message_serialize(uint8_t *byte
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_id_message_deserialize(uint8_t *bytes, g2_server_probe_id_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -84,7 +84,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_id_message_deserialize(uint8_t *by
 WINAPI_EXPORT int WINAPI G2_SERVER_probe_ids_message_init(g2_server_probe_ids_message_pt message)
 {
     message->count = 0;
-    message->probe_id = 1;
+    message->probeID = 1;
     return PROTOCOL_OK;
 }
 
@@ -93,7 +93,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_ids_message_serialize(uint8_t *byt
     uint16_t pos = 0;
     write_uint8_t_BE(message->count, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -103,21 +103,21 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_ids_message_deserialize(uint8_t *b
     uint16_t pos = 0;
     message->count = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_id_message_init(g2_server_relay_id_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     return PROTOCOL_OK;
 }
 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_id_message_serialize(uint8_t *bytes, g2_server_relay_id_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -125,7 +125,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_id_message_serialize(uint8_t *byte
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_id_message_deserialize(uint8_t *bytes, g2_server_relay_id_message_pt message)
 {
     uint16_t pos = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -133,7 +133,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_id_message_deserialize(uint8_t *by
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_ids_message_init(g2_server_relay_ids_message_pt message)
 {
     message->count = 0;
-    message->relay_id = 1;
+    message->relayID = 1;
     return PROTOCOL_OK;
 }
 
@@ -142,7 +142,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_ids_message_serialize(uint8_t *byt
     uint16_t pos = 0;
     write_uint8_t_BE(message->count, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -152,7 +152,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_ids_message_deserialize(uint8_t *b
     uint16_t pos = 0;
     message->count = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -186,7 +186,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_config_data_message_deserialize(u
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_config_message_init(g2_server_sensor_config_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     int i = 0;
     for(i = 0; i < PROBE_SENSOR_SIZE; i++){
@@ -199,7 +199,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_config_message_serialize(uint8_t 
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -224,7 +224,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_config_message_deserialize(uint8_
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -277,7 +277,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_config_message_deserialize(
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_sensor_config_message_init(g2_server_delete_sensor_config_message_pt message)
 {
     message->oper = G2_SERVER_OPERATION_CODE_DELETE;
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     return PROTOCOL_OK;
 }
@@ -287,7 +287,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_config_message_serialize(u
     uint16_t pos = 0;
     write_uint8_t_BE(message->oper, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -299,7 +299,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_config_message_deserialize
     uint16_t pos = 0;
     message->oper = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -350,7 +350,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_data_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_limit_gradient_message_init(g2_server_sensor_limit_gradient_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->gradient = 0;
     int i = 0;
     for(i = 0; i < 8; i++){
@@ -363,7 +363,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_gradient_message_serialize(
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint8_t_BE(message->gradient, &bytes[pos]);
     pos += 1;
@@ -380,7 +380,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_gradient_message_deserializ
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->gradient = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
@@ -395,7 +395,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_gradient_message_deserializ
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_limit_message_init(g2_server_sensor_limit_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     int i = 0;
     for(i = 0; i < INDICATOR_SIZE; i++){
@@ -408,7 +408,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_message_serialize(uint8_t *
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -425,7 +425,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_message_deserialize(uint8_t
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -470,9 +470,9 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_limit_message_deserialize(u
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_sensor_limit_message_init(g2_server_delete_sensor_limit_message_pt message)
 {
     message->oper = G2_SERVER_OPERATION_CODE_DELETE;
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
-    message->relay_id = 1;
+    message->relayID = 1;
     message->gradient = 0;
     return PROTOCOL_OK;
 }
@@ -482,11 +482,11 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_limit_message_serialize(ui
     uint16_t pos = 0;
     write_uint8_t_BE(message->oper, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint8_t_BE(message->gradient, &bytes[pos]);
     pos += 1;
@@ -498,11 +498,11 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_limit_message_deserialize(
     uint16_t pos = 0;
     message->oper = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->gradient = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
@@ -543,7 +543,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_alert_data_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_alert_message_init(g2_server_sensor_alert_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     int i = 0;
     for(i = 0; i < INDICATOR_SIZE; i++){
@@ -556,7 +556,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_alert_message_serialize(uint8_t *
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -573,7 +573,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_alert_message_deserialize(uint8_t
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -618,7 +618,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_alert_message_deserialize(u
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_sensor_alert_message_init(g2_server_delete_sensor_alert_message_pt message)
 {
     message->oper = G2_SERVER_OPERATION_CODE_DELETE;
-    message->probe_id = 1;
+    message->probeID = 1;
     return PROTOCOL_OK;
 }
 
@@ -627,7 +627,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_alert_message_serialize(ui
     uint16_t pos = 0;
     write_uint8_t_BE(message->oper, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -637,17 +637,17 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_alert_message_deserialize(
     uint16_t pos = 0;
     message->oper = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_job_time_message_init(g2_server_relay_job_time_message_pt message)
 {
-    message->start_hour = 0;
-    message->start_minute = 0;
-    message->end_hour = 0;
-    message->end_minute = 0;
+    message->startHour = 0;
+    message->startMinute = 0;
+    message->endHour = 0;
+    message->endMinute = 0;
     message->type = 0;
     return PROTOCOL_OK;
 }
@@ -655,13 +655,13 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_job_time_message_init(g2_server_relay_j
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_job_time_message_serialize(uint8_t *bytes, g2_server_relay_job_time_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->start_hour, &bytes[pos]);
+    write_uint8_t_BE(message->startHour, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->start_minute, &bytes[pos]);
+    write_uint8_t_BE(message->startMinute, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->end_hour, &bytes[pos]);
+    write_uint8_t_BE(message->endHour, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->end_minute, &bytes[pos]);
+    write_uint8_t_BE(message->endMinute, &bytes[pos]);
     pos += 1;
     write_uint8_t_BE(message->type, &bytes[pos]);
     pos += 1;
@@ -671,13 +671,13 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_job_time_message_serialize(uint8_t
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_job_time_message_deserialize(uint8_t *bytes, g2_server_relay_job_time_message_pt message)
 {
     uint16_t pos = 0;
-    message->start_hour = read_uint8_t_BE(&bytes[pos]);
+    message->startHour = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->start_minute = read_uint8_t_BE(&bytes[pos]);
+    message->startMinute = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->end_hour = read_uint8_t_BE(&bytes[pos]);
+    message->endHour = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->end_minute = read_uint8_t_BE(&bytes[pos]);
+    message->endMinute = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->type = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
@@ -686,13 +686,13 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_job_time_message_deserialize(uint8
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_jobs_task_message_init(g2_server_relay_jobs_task_message_pt message)
 {
-    message->has_limit = 0;
+    message->hasLimit = 0;
     message->relay_channel = 0;
-    message->probe_id = 1;
+    message->probeID = 1;
     message->sensor_config = 0;
     message->value = 0;
     message->threshold = 0;
-    message->execute_type = 0;
+    message->executeType = 0;
     message->time_config = 0;
     int i = 0;
     for(i = 0; i < 4; i++){
@@ -705,11 +705,11 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_serialize(uint8_
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->has_limit, &bytes[pos]);
+    write_uint8_t_BE(message->hasLimit, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->relay_channel, &bytes[pos]);
     pos += 2;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->sensor_config, &bytes[pos]);
     pos += 2;
@@ -717,7 +717,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_serialize(uint8_
     pos += 2;
     write_uint16_t_BE(message->threshold, &bytes[pos]);
     pos += 2;
-    write_uint8_t_BE(message->execute_type, &bytes[pos]);
+    write_uint8_t_BE(message->executeType, &bytes[pos]);
     pos += 1;
     write_uint8_t_BE(message->time_config, &bytes[pos]);
     pos += 1;
@@ -734,11 +734,11 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_deserialize(uint
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->has_limit = read_uint8_t_BE(&bytes[pos]);
+    message->hasLimit = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->relay_channel = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->sensor_config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -746,7 +746,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_deserialize(uint
     pos += 2;
     message->threshold = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
-    message->execute_type = read_uint8_t_BE(&bytes[pos]);
+    message->executeType = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->time_config = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
@@ -761,7 +761,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_deserialize(uint
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_jobs_message_init(g2_server_relay_jobs_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->job_config = 0;
     int i = 0;
     for(i = 0; i < 8; i++){
@@ -774,7 +774,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_message_serialize(uint8_t *by
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->job_config, &bytes[pos]);
     pos += 2;
@@ -791,7 +791,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_message_deserialize(uint8_t *
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->job_config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -836,7 +836,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_relay_jobs_message_deserialize(uin
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_relay_jobs_message_init(g2_server_delete_relay_jobs_message_pt message)
 {
     message->oper = G2_SERVER_OPERATION_CODE_DELETE;
-    message->relay_id = 1;
+    message->relayID = 1;
     message->config = 0;
     return PROTOCOL_OK;
 }
@@ -846,7 +846,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_jobs_message_serialize(uint
     uint16_t pos = 0;
     write_uint8_t_BE(message->oper, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -858,7 +858,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_jobs_message_deserialize(ui
     uint16_t pos = 0;
     message->oper = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -867,7 +867,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_jobs_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_salinity_message_init(g2_server_salinity_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->salinity = 0;
     return PROTOCOL_OK;
 }
@@ -875,7 +875,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_salinity_message_init(g2_server_salinity_mess
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_salinity_message_serialize(uint8_t *bytes, g2_server_salinity_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->salinity, &bytes[pos]);
     pos += 2;
@@ -885,7 +885,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_salinity_message_serialize(uint8_t *byte
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_salinity_message_deserialize(uint8_t *bytes, g2_server_salinity_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->salinity = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -894,7 +894,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_salinity_message_deserialize(uint8_t *by
 
 WINAPI_EXPORT int WINAPI G2_SERVER_calibrate_message_init(g2_server_calibrate_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     message->type = 0;
     message->params = 0;
@@ -904,7 +904,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_calibrate_message_init(g2_server_calibrate_me
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_calibrate_message_serialize(uint8_t *bytes, g2_server_calibrate_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -918,7 +918,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_calibrate_message_serialize(uint8_t *byt
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_calibrate_message_deserialize(uint8_t *bytes, g2_server_calibrate_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1030,7 +1030,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_time_without_week_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_manual_message_init(g2_server_relay_manual_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->relay_channel = 0;
     message->type = 0;
     message->duration = 0;
@@ -1040,7 +1040,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_manual_message_init(g2_server_relay_man
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_message_serialize(uint8_t *bytes, g2_server_relay_manual_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->relay_channel, &bytes[pos]);
     pos += 2;
@@ -1054,7 +1054,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_message_serialize(uint8_t *
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_message_deserialize(uint8_t *bytes, g2_server_relay_manual_message_pt message)
 {
     uint16_t pos = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->relay_channel = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1067,7 +1067,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_message_deserialize(uint8_t
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_manual_enable_message_init(g2_server_relay_manual_enable_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->relay_channel = 0;
     message->enable = 0;
     return PROTOCOL_OK;
@@ -1076,7 +1076,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_manual_enable_message_init(g2_server_re
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_enable_message_serialize(uint8_t *bytes, g2_server_relay_manual_enable_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->relay_channel, &bytes[pos]);
     pos += 2;
@@ -1088,7 +1088,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_enable_message_serialize(ui
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_enable_message_deserialize(uint8_t *bytes, g2_server_relay_manual_enable_message_pt message)
 {
     uint16_t pos = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->relay_channel = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1200,7 +1200,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_connect_enable_message_deserialize(uint8
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_limit_enable_message_init(g2_server_sensor_limit_enable_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     message->enable = 0;
     return PROTOCOL_OK;
@@ -1209,7 +1209,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_sensor_limit_enable_message_init(g2_server_se
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_enable_message_serialize(uint8_t *bytes, g2_server_sensor_limit_enable_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -1221,7 +1221,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_enable_message_serialize(ui
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_enable_message_deserialize(uint8_t *bytes, g2_server_sensor_limit_enable_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1327,7 +1327,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_capability_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_data_message_init(g2_server_relay_data_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     G2_SERVER_time_without_week_message_init(&message->time);
     message->config = 0;
     message->limit_status = 0;
@@ -1353,7 +1353,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_data_message_serialize(uint8_t *by
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     len = G2_SERVER_time_without_week_message_serialize(&bytes[pos], &message->time);
     pos += len;
@@ -1430,7 +1430,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_data_message_deserialize(uint8_t *
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     len = G2_SERVER_time_without_week_message_deserialize(&bytes[pos], &message->time);
     pos += len;
@@ -1545,7 +1545,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_data_indicator_message_deserializ
 
 WINAPI_EXPORT int WINAPI G2_SERVER_sensor_data_message_init(g2_server_sensor_data_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     G2_SERVER_time_without_week_message_init(&message->time);
     message->pump_status = 0;
     message->pump_broken_status = 0;
@@ -1562,7 +1562,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_data_message_serialize(uint8_t *b
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     len = G2_SERVER_time_without_week_message_serialize(&bytes[pos], &message->time);
     pos += len;
@@ -1587,7 +1587,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_data_message_deserialize(uint8_t 
 {
     uint16_t pos = 0;
     uint16_t len = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     len = G2_SERVER_time_without_week_message_deserialize(&bytes[pos], &message->time);
     pos += len;
@@ -1637,7 +1637,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_used_capability_message_deseriali
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_config_message_init(g2_server_relay_config_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->channel_count = 0;
     return PROTOCOL_OK;
 }
@@ -1645,7 +1645,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_config_message_init(g2_server_relay_con
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_config_message_serialize(uint8_t *bytes, g2_server_relay_config_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint8_t_BE(message->channel_count, &bytes[pos]);
     pos += 1;
@@ -1655,7 +1655,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_config_message_serialize(uint8_t *
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_config_message_deserialize(uint8_t *bytes, g2_server_relay_config_message_pt message)
 {
     uint16_t pos = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->channel_count = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
@@ -1694,7 +1694,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_relay_config_message_deserialize(u
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_relay_config_message_init(g2_server_delete_relay_config_message_pt message)
 {
     message->oper = G2_SERVER_OPERATION_CODE_WRITE;
-    message->relay_id = 1;
+    message->relayID = 1;
     return PROTOCOL_OK;
 }
 
@@ -1703,7 +1703,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_config_message_serialize(ui
     uint16_t pos = 0;
     write_uint8_t_BE(message->oper, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     return pos;
 }
@@ -1713,14 +1713,14 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_config_message_deserialize(
     uint16_t pos = 0;
     message->oper = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     return pos;
 }
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_jobs_enable_message_init(g2_server_relay_jobs_enable_message_pt message)
 {
-    message->relay_id = 1;
+    message->relayID = 1;
     message->config = 0;
     message->enable = 0;
     return PROTOCOL_OK;
@@ -1729,7 +1729,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_jobs_enable_message_init(g2_server_rela
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_enable_message_serialize(uint8_t *bytes, g2_server_relay_jobs_enable_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->relay_id, &bytes[pos]);
+    write_uint8_t_BE(message->relayID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -1741,7 +1741,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_enable_message_serialize(uint
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_enable_message_deserialize(uint8_t *bytes, g2_server_relay_jobs_enable_message_pt message)
 {
     uint16_t pos = 0;
-    message->relay_id = read_uint8_t_BE(&bytes[pos]);
+    message->relayID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1752,7 +1752,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_enable_message_deserialize(ui
 
 WINAPI_EXPORT int WINAPI G2_SERVER_pump_message_init(g2_server_pump_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->channel = 0;
     message->status = 0;
     return PROTOCOL_OK;
@@ -1761,7 +1761,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_pump_message_init(g2_server_pump_message_pt m
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_pump_message_serialize(uint8_t *bytes, g2_server_pump_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->channel, &bytes[pos]);
     pos += 2;
@@ -1773,7 +1773,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_pump_message_serialize(uint8_t *bytes, g
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_pump_message_deserialize(uint8_t *bytes, g2_server_pump_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->channel = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1806,20 +1806,20 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_gprs_signal_message_deserialize(uint8_t 
 
 WINAPI_EXPORT int WINAPI G2_SERVER_l6_settings_message_init(g2_server_l6_settings_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     message->release = 20;
-    message->read_wait = 90;
+    message->readWait = 90;
     message->read = 50;
     message->charge = 20;
-    message->charge_wait = 6;
+    message->chargeWait = 6;
     return PROTOCOL_OK;
 }
 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_serialize(uint8_t *bytes, g2_server_l6_settings_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -1828,7 +1828,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_serialize(uint8_t *b
         pos += 1;
     }
     if(config_bit_is_set(message->config,2)){
-        write_uint8_t_BE(message->read_wait, &bytes[pos]);
+        write_uint8_t_BE(message->readWait, &bytes[pos]);
         pos += 1;
     }
     if(config_bit_is_set(message->config,3)){
@@ -1840,7 +1840,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_serialize(uint8_t *b
         pos += 1;
     }
     if(config_bit_is_set(message->config,5)){
-        write_uint8_t_BE(message->charge_wait, &bytes[pos]);
+        write_uint8_t_BE(message->chargeWait, &bytes[pos]);
         pos += 1;
     }
     return pos;
@@ -1849,7 +1849,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_serialize(uint8_t *b
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_deserialize(uint8_t *bytes, g2_server_l6_settings_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1858,7 +1858,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_deserialize(uint8_t 
         pos += 1;
     }
     if(config_bit_is_set(message->config,2)){
-        message->read_wait = read_uint8_t_BE(&bytes[pos]);
+        message->readWait = read_uint8_t_BE(&bytes[pos]);
         pos += 1;
     }
     if(config_bit_is_set(message->config,3)){
@@ -1870,7 +1870,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_deserialize(uint8_t 
         pos += 1;
     }
     if(config_bit_is_set(message->config,5)){
-        message->charge_wait = read_uint8_t_BE(&bytes[pos]);
+        message->chargeWait = read_uint8_t_BE(&bytes[pos]);
         pos += 1;
     }
     return pos;
@@ -1878,7 +1878,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_deserialize(uint8_t 
 
 WINAPI_EXPORT int WINAPI G2_SERVER_l6_status_message_init(g2_server_l6_status_message_pt message)
 {
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0;
     message->device_status = 0;
     message->data_status = 0;
@@ -1891,7 +1891,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_l6_status_message_init(g2_server_l6_status_me
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_status_message_serialize(uint8_t *bytes, g2_server_l6_status_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -1921,7 +1921,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_status_message_serialize(uint8_t *byt
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_status_message_deserialize(uint8_t *bytes, g2_server_l6_status_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -1975,35 +1975,35 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_environment_message_serialize(uint8_t *b
         pos += 2;
     }
     if(config_bit_is_set(message->config,4)){
-        write_uint16_t_BE(message->phase_voltage_A, &bytes[pos]);
+        write_uint16_t_BE(message->phaseVoltageA, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,5)){
-        write_uint16_t_BE(message->phase_voltage_B, &bytes[pos]);
+        write_uint16_t_BE(message->phaseVoltageB, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,6)){
-        write_uint16_t_BE(message->phase_voltage_C, &bytes[pos]);
+        write_uint16_t_BE(message->phaseVoltageC, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,7)){
-        write_uint16_t_BE(message->channel_current_1, &bytes[pos]);
+        write_uint16_t_BE(message->channelCurrent1, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,8)){
-        write_uint16_t_BE(message->channel_current_2, &bytes[pos]);
+        write_uint16_t_BE(message->channelCurrent2, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,9)){
-        write_uint16_t_BE(message->channel_current_3, &bytes[pos]);
+        write_uint16_t_BE(message->channelCurrent3, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,10)){
-        write_uint16_t_BE(message->channel_current_4, &bytes[pos]);
+        write_uint16_t_BE(message->channelCurrent4, &bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,11)){
-        write_uint16_t_BE(message->channel_current_5, &bytes[pos]);
+        write_uint16_t_BE(message->channelCurrent5, &bytes[pos]);
         pos += 2;
     }
   return pos;
@@ -2027,35 +2027,35 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_environment_message_deserialize(uint8_t 
         pos += 2;
     }
     if(config_bit_is_set(message->config,4)){
-        message->phase_voltage_A = read_uint16_t_BE(&bytes[pos]);
+        message->phaseVoltageA = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,5)){
-        message->phase_voltage_B = read_uint16_t_BE(&bytes[pos]);
+        message->phaseVoltageB = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,6)){
-        message->phase_voltage_C = read_uint16_t_BE(&bytes[pos]);
+        message->phaseVoltageC = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,7)){
-        message->channel_current_1 = read_uint16_t_BE(&bytes[pos]);
+        message->channelCurrent1 = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,8)){
-        message->channel_current_2 = read_uint16_t_BE(&bytes[pos]);
+        message->channelCurrent2 = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,9)){
-        message->channel_current_3 = read_uint16_t_BE(&bytes[pos]);
+        message->channelCurrent3 = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,10)){
-        message->channel_current_4 = read_uint16_t_BE(&bytes[pos]);
+        message->channelCurrent4 = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     if(config_bit_is_set(message->config,11)){
-        message->channel_current_5 = read_uint16_t_BE(&bytes[pos]);
+        message->channelCurrent5 = read_uint16_t_BE(&bytes[pos]);
         pos += 2;
     }
     return pos;
@@ -2112,17 +2112,17 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_firmware_start_message_deserialize(uint8
     uint16_t pos = 0;
     
     // 处理接收到的数据
-    message->device_type = read_uint8_t_BE(&bytes[pos]);
+    message->deviceType = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->version_h = read_uint8_t_BE(&bytes[pos]);
+    message->versionH = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->version_m = read_uint8_t_BE(&bytes[pos]);
+    message->versionM = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->version_l = read_uint8_t_BE(&bytes[pos]);
+    message->versionL = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
-    message->file_len = read_uint32_t_BE(&bytes[pos]);
+    message->fileLen = read_uint32_t_BE(&bytes[pos]);
     pos += 4;
-    message->file_crc = read_uint32_t_BE(&bytes[pos]);
+    message->fileCrc = read_uint32_t_BE(&bytes[pos]);
     pos += 4;
     
     return pos;
@@ -2154,7 +2154,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_firmware_data_message_deserialize(uint8_
 
     message->data_offset = read_uint32_t_BE(&bytes[pos]);
     pos += 4;
-    message->data_len = G2_SERVER_get_request_data_length();
+    message->data_len = G2_SERVER_GetRequestDataLength();
     message->data = &bytes[pos];
     pos += message->data_len;
     
@@ -2211,7 +2211,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_info_message_deserialize(uint8_t 
 WINAPI_EXPORT int WINAPI G2_SERVER_device_sensors_message_init(g2_server_device_sensors_message_pt message)
 {
     message->type = 0x21;
-    message->probe_id = 1;
+    message->probeID = 1;
     message->config = 0x0000;
     g2_server_sensor_info_message_pt sensor_info = message->sensors_info;
     for(uint8_t i=0; i<PROBE_SENSOR_SIZE; i++)
@@ -2228,7 +2228,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_sensors_message_serialize(uint8_t
     uint16_t len = 0;    
     write_uint8_t_BE(message->type, &bytes[pos]);
     pos += 1;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(message->config, &bytes[pos]);
     pos += 2;
@@ -2241,7 +2241,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_sensors_message_serialize(uint8_t
         {
             len = G2_SERVER_sensor_info_message_serialize(&bytes[pos], &message->sensors_info[bits[i] - 1]);
         }
-        else  // 不上传 DO 传感器中包含的温度配置信息 
+        else  // 不上�? DO 传感器中包含的温度配置信�? 
         {
             len = 0;
         }
@@ -2280,7 +2280,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_iccid_message_deserialize(uint8_t *bytes
 }
 
 
-/* 继电器通道功率和保护配置相关 */
+/* 继电器通道功率和保护配置相�? */
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_power_config_message_init(g2_server_relay_power_config_message_pt message)
 {
     return PROTOCOL_OK;
@@ -2289,7 +2289,7 @@ WINAPI_EXPORT int WINAPI G2_SERVER_relay_power_config_message_init(g2_server_rel
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_power_config_message_serialize(uint8_t *bytes, g2_server_relay_power_config_message_pt message)
 {
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(0xF800 , &bytes[pos]);
     pos += 2;
@@ -2300,15 +2300,15 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_power_config_message_serialize(uin
         power = (g2_server_channel_power_pt)(&message->power[j][0]);
         for(uint8_t i=0; i< RELAY_CHANNEL_SIZE; i++)
         {
-            write_uint8_t_BE(power->phase_config, &bytes[pos]);
+            write_uint8_t_BE(power->phaseConfig, &bytes[pos]);
             pos += 1;
             write_uint8_t_BE(power->power, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->loss_phase_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->lossPhaseProtectEnable, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->overload_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->overloadProtectEnable, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->ouv_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->ouvProtectEnable, &bytes[pos]);
             pos += 1;
             power++;
         }
@@ -2320,7 +2320,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_power_config_message_serialize(uin
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_power_config_message_deserialize(uint8_t *bytes, g2_server_relay_power_config_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -2331,15 +2331,15 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_power_config_message_deserialize(u
         {
             if(config_bit_is_set(message->config, (j * RELAY_SIZE) + (i + 1)))
             {
-                relay_channel_power->phase_config = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->phaseConfig = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
                 relay_channel_power->power = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->loss_phase_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->lossPhaseProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->overload_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->overloadProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->ouv_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->ouvProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
             }
             relay_channel_power++;
@@ -2357,9 +2357,8 @@ WINAPI_EXPORT int WINAPI G2_SERVER_loader_config_message_init(g2_server_loader_c
 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_loader_config_message_serialize(uint8_t *bytes, g2_server_loader_config_message_pt message)
 {
-    uint8_t *loader = NULL;
     uint16_t pos = 0;
-    write_uint8_t_BE(message->probe_id, &bytes[pos]);
+    write_uint8_t_BE(message->probeID, &bytes[pos]);
     pos += 1;
     write_uint16_t_BE(0xF800 , &bytes[pos]);
     pos += 2;
@@ -2370,17 +2369,17 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_loader_config_message_serialize(uint8_t 
         power = (g2_server_channel_power_pt)(&message->power[j][0]);
         for(uint8_t i=0; i< RELAY_CHANNEL_SIZE; i++)
         {
-            write_uint8_t_BE(power->loader_type, &bytes[pos]);
+            write_uint8_t_BE(power->loaderType, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->phase_config, &bytes[pos]);
+            write_uint8_t_BE(power->phaseConfig, &bytes[pos]);
             pos += 1;
             write_uint8_t_BE(power->power, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->loss_phase_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->lossPhaseProtectEnable, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->overload_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->overloadProtectEnable, &bytes[pos]);
             pos += 1;
-            write_uint8_t_BE(power->ouv_protect_enable, &bytes[pos]);
+            write_uint8_t_BE(power->ouvProtectEnable, &bytes[pos]);
             pos += 1;
             power++;
         }
@@ -2392,7 +2391,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_loader_config_message_serialize(uint8_t 
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_loader_config_message_deserialize(uint8_t *bytes, g2_server_loader_config_message_pt message)
 {
     uint16_t pos = 0;
-    message->probe_id = read_uint8_t_BE(&bytes[pos]);
+    message->probeID = read_uint8_t_BE(&bytes[pos]);
     pos += 1;
     message->config = read_uint16_t_BE(&bytes[pos]);
     pos += 2;
@@ -2403,17 +2402,17 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_loader_config_message_deserialize(uint8_
         {
             if(config_bit_is_set(message->config, (j * RELAY_SIZE) + (i + 1)))
             {
-                relay_channel_power->loader_type = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->loaderType = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->phase_config = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->phaseConfig = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
                 relay_channel_power->power = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->loss_phase_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->lossPhaseProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->overload_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->overloadProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
-                relay_channel_power->ouv_protect_enable = read_uint8_t_BE(&bytes[pos]);
+                relay_channel_power->ouvProtectEnable = read_uint8_t_BE(&bytes[pos]);
                 pos += 1;
             }
             relay_channel_power++;

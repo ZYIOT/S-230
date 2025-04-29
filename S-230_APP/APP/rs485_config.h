@@ -11,6 +11,5 @@
     #define ENABLE_RS485_DRIVER_SENSOR_DO_DEFAULT 
 #endif
 #define ENABLE_RS485_DRIVER_SENSORS_CHEMINS_NHN760   // (PH260 仿冒 NH3传感器) 
-// #define SENSOR_NHN_TEST_DEBUG
-#define SENSOR_NGN_RAND_CNT_DEBUG   (30)
+#define SENSOR_NHN_TEST_DEBUG
 #define RS485_delay_ms(ms) osDelay(ms)

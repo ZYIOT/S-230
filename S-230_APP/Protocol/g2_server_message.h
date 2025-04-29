@@ -9,7 +9,7 @@ extern "C"
 
 typedef struct
 {
-    uint32_t device_id;  /* 设备ID */
+    uint32_t deviceID;  /* 设备ID */
 } g2_server_device_id_message_t, *g2_server_device_id_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_device_id_message_init(g2_server_device_id_message_pt message);
@@ -30,7 +30,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_version_message_deserialize(uint8
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
 } g2_server_probe_id_message_t, *g2_server_probe_id_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_probe_id_message_init(g2_server_probe_id_message_pt message);
@@ -40,7 +40,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_id_message_deserialize(uint8_t *by
 typedef struct
 {
     uint8_t count;  /* 变送器ID个数 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
 } g2_server_probe_ids_message_t, *g2_server_probe_ids_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_probe_ids_message_init(g2_server_probe_ids_message_pt message);
@@ -49,7 +49,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_probe_ids_message_deserialize(uint8_t *b
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
 } g2_server_relay_id_message_t, *g2_server_relay_id_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_id_message_init(g2_server_relay_id_message_pt message);
@@ -59,7 +59,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_id_message_deserialize(uint8_t *by
 typedef struct
 {
     uint8_t count;  /* 继电器ID个数 */
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
 } g2_server_relay_ids_message_t, *g2_server_relay_ids_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_relay_ids_message_init(g2_server_relay_ids_message_pt message);
@@ -78,7 +78,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_config_data_message_deserialize(u
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 变送器配置 */
     g2_server_sensor_config_data_message_t data[PROBE_SENSOR_SIZE];  /* 数据 */
 } g2_server_sensor_config_message_t, *g2_server_sensor_config_message_pt;
@@ -100,7 +100,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_config_message_deserialize(
 typedef struct
 {
     uint8_t oper;  /* 设置类型 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 传感器配置 */
 } g2_server_delete_sensor_config_message_t, *g2_server_delete_sensor_config_message_pt;
 
@@ -123,7 +123,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_data_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint8_t gradient;  /* 梯度配置 */
     g2_server_sensor_limit_data_message_t data[8];  /* 数据 */
 } g2_server_sensor_limit_gradient_message_t, *g2_server_sensor_limit_gradient_message_pt;
@@ -134,7 +134,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_limit_gradient_message_deserializ
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 传感器配置 */
     g2_server_sensor_limit_gradient_message_t sensors[INDICATOR_SIZE];  /* 数据 */
 } g2_server_sensor_limit_message_t, *g2_server_sensor_limit_message_pt;
@@ -156,9 +156,9 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_limit_message_deserialize(u
 typedef struct
 {
     uint8_t oper;  /* 设置类型 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 传感器配置 */
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint8_t gradient;  /* 梯度配置 */
 } g2_server_delete_sensor_limit_message_t, *g2_server_delete_sensor_limit_message_pt;
 
@@ -179,7 +179,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_alert_data_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 报警配置 */
     g2_server_sensor_alert_data_message_t data[INDICATOR_SIZE];  /* 数据 */
 } g2_server_sensor_alert_message_t, *g2_server_sensor_alert_message_pt;
@@ -201,7 +201,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_sensor_alert_message_deserialize(u
 typedef struct
 {
     uint8_t oper;  /* 设置类型 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
 } g2_server_delete_sensor_alert_message_t, *g2_server_delete_sensor_alert_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_sensor_alert_message_init(g2_server_delete_sensor_alert_message_pt message);
@@ -210,10 +210,10 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_sensor_alert_message_deserialize(
 
 typedef struct
 {
-    uint8_t start_hour;  /* 开启时 */
-    uint8_t start_minute;  /* 开启分 */
-    uint8_t end_hour;  /* 关闭时 */
-    uint8_t end_minute;  /* 关闭分 */
+    uint8_t startHour;  /* 开启时 */
+    uint8_t startMinute;  /* 开启分 */
+    uint8_t endHour;  /* 关闭时 */
+    uint8_t endMinute;  /* 关闭分 */
     uint8_t type;  /* 控制类型 */
 } g2_server_relay_job_time_message_t, *g2_server_relay_job_time_message_pt;
 
@@ -223,13 +223,13 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_job_time_message_deserialize(uint8
 
 typedef struct
 {
-    uint8_t has_limit;  /* 门限判断条件类型 */
+    uint8_t hasLimit;  /* 门限判断条件类型 */
     uint16_t relay_channel;  /* 继电器通道 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t sensor_config;  /* 变送器探头类型 */
     uint16_t value;  /* 相应类型门限值 */
     uint16_t threshold;  /* 窗口值 */
-    uint8_t execute_type;  /* 执行类型 */
+    uint8_t executeType;  /* 执行类型 */
     uint8_t time_config;  /* 时间配置 */
     g2_server_relay_job_time_message_t times[4];  /* 数据 */
 } g2_server_relay_jobs_task_message_t, *g2_server_relay_jobs_task_message_pt;
@@ -240,7 +240,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_task_message_deserialize(uint
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t job_config;  /* 任务配置编号 */
     g2_server_relay_jobs_task_message_t tasks[8];  /* 任务 */
 } g2_server_relay_jobs_message_t, *g2_server_relay_jobs_message_pt;
@@ -262,7 +262,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_relay_jobs_message_deserialize(uin
 typedef struct
 {
     uint8_t oper;  /* 设置类型 */
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t config;  /* 任务配置 */
 } g2_server_delete_relay_jobs_message_t, *g2_server_delete_relay_jobs_message_pt;
 
@@ -272,7 +272,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_jobs_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t salinity;  /* 盐度值 */
 } g2_server_salinity_message_t, *g2_server_salinity_message_pt;
 
@@ -282,7 +282,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_salinity_message_deserialize(uint8_t *by
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 校正配置 */
     uint8_t type;  /* 校正类型 */
     uint8_t params;  /* 校正参数 */
@@ -323,7 +323,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_time_without_week_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t relay_channel;  /* 继电器通道 */
     uint8_t type;  /* 控制类型 */
     uint16_t duration;  /* 控制时长（分） */
@@ -335,7 +335,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_manual_message_deserialize(uint8_t
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t relay_channel;  /* 继电器通道 */
     uint16_t enable;  /* 使能位 */
 } g2_server_relay_manual_enable_message_t, *g2_server_relay_manual_enable_message_pt;
@@ -380,7 +380,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_connect_enable_message_deserialize(uint8
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 变送器配置 */
     uint16_t enable;  /* 使能位 */
 } g2_server_sensor_limit_enable_message_t, *g2_server_sensor_limit_enable_message_pt;
@@ -419,7 +419,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_capability_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     g2_server_time_without_week_message_t time;  /* 时间 */
     uint16_t config;  /* 数据配置 */
     uint16_t limit_status;  /* 智能控制通道状态 */
@@ -459,7 +459,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_sensor_data_indicator_message_deserializ
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     g2_server_time_without_week_message_t time;  /* 时间 */
     uint16_t pump_status;  /* 水泵输出状态 */
     uint16_t pump_broken_status;  /* 水泵故障状态 */
@@ -484,7 +484,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_device_used_capability_message_deseriali
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint8_t channel_count;  /* 继电器通道数 */
 } g2_server_relay_config_message_t, *g2_server_relay_config_message_pt;
 
@@ -505,7 +505,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_write_relay_config_message_deserialize(u
 typedef struct
 {
     uint8_t oper;  /* 设置类型 */
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
 } g2_server_delete_relay_config_message_t, *g2_server_delete_relay_config_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_delete_relay_config_message_init(g2_server_delete_relay_config_message_pt message);
@@ -514,7 +514,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_delete_relay_config_message_deserialize(
 
 typedef struct
 {
-    uint8_t relay_id;  /* 继电器ID */
+    uint8_t relayID;  /* 继电器ID */
     uint16_t config;  /* 固定时间任务配置 */
     uint16_t enable;  /* 使能位 */
 } g2_server_relay_jobs_enable_message_t, *g2_server_relay_jobs_enable_message_pt;
@@ -525,7 +525,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_relay_jobs_enable_message_deserialize(ui
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t channel;  /* 通道 */
     uint16_t status;  /* 开关标志 */
 } g2_server_pump_message_t, *g2_server_pump_message_pt;
@@ -546,13 +546,13 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_gprs_signal_message_deserialize(uint8_t 
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 数据配置 */
     uint8_t release;  /* 泄气时长（秒） */
-    uint8_t read_wait;  /* 入水后多长时间允许读取数据（秒） */
+    uint8_t readWait;  /* 入水后多长时间允许读取数据（秒） */
     uint8_t read;  /* 读取数据持续时长（秒） */
     uint8_t charge;  /* 充气时长（秒） */
-    uint8_t charge_wait;  /* 气吹自动等待时长（分钟） */
+    uint8_t chargeWait;  /* 气吹自动等待时长（分钟） */
 } g2_server_l6_settings_message_t, *g2_server_l6_settings_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_l6_settings_message_init(g2_server_l6_settings_message_pt message);
@@ -561,7 +561,7 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_l6_settings_message_deserialize(uint8_t 
 
 typedef struct
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 数据配置 */
     uint8_t device_status;  /* 气吹装置状态（0为正常，1为异常） */
     uint8_t data_status;  /* 获取数据状态（0为允许读数据，1为不允许读数据） */
@@ -580,14 +580,14 @@ typedef struct
     int16_t temperature;  /* 温度 */
     int16_t humidity;  /* 湿度 */
     int16_t voltage;  /* 电压 */
-    uint16_t phase_voltage_A;
-    uint16_t phase_voltage_B;
-    uint16_t phase_voltage_C;
-    uint16_t channel_current_1;
-    uint16_t channel_current_2;
-    uint16_t channel_current_3;
-    uint16_t channel_current_4;
-    uint16_t channel_current_5;
+    uint16_t phaseVoltageA;
+    uint16_t phaseVoltageB;
+    uint16_t phaseVoltageC;
+    uint16_t channelCurrent1;
+    uint16_t channelCurrent2;
+    uint16_t channelCurrent3;
+    uint16_t channelCurrent4;
+    uint16_t channelCurrent5;
 } g2_server_environment_message_t, *g2_server_environment_message_pt;
 
 WINAPI_EXPORT int WINAPI G2_SERVER_environment_message_init(g2_server_environment_message_pt message);
@@ -607,8 +607,8 @@ WINAPI_EXPORT uint16_t WINAPI G2_SERVER_self_diagnosis_message_deserialize(uint8
 
 
 /* 固件升级相关数据解析函数 */
-typedef app_config_firmware_info_t	(g2_server_firmware_start_message_t);
-typedef app_config_firmware_info_pt	(g2_server_firmware_start_message_pt);
+typedef FirmwareInfo_t	(g2_server_firmware_start_message_t);
+typedef FirmwareInfo_pt	(g2_server_firmware_start_message_pt);
 
 typedef struct
 {
@@ -656,7 +656,7 @@ typedef struct
 typedef struct
 {
     uint8_t type;  /* 传感器类型 */
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 变送器配置 */
     g2_server_sensor_info_message_t sensors_info[PROBE_SENSOR_SIZE];  /* 信号值 */
 } g2_server_device_sensors_message_t, *g2_server_device_sensors_message_pt;	
@@ -675,12 +675,12 @@ WINAPI_EXPORT int WINAPI G2_SERVER_iccid_message_init(g2_server_sim_iccid_messag
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_iccid_message_serialize(uint8_t *bytes, g2_server_sim_iccid_message_pt message);
 WINAPI_EXPORT uint16_t WINAPI G2_SERVER_iccid_message_deserialize(uint8_t *bytes, g2_server_sim_iccid_message_pt message);
 
-typedef app_relay_power_config_t g2_server_channel_power_t;
-typedef app_relay_power_config_pt g2_server_channel_power_pt;
+typedef APP_RELAY_PowerConfig_t g2_server_channel_power_t;
+typedef APP_RELAY_PowerConfig_pt g2_server_channel_power_pt;
 
 typedef struct 
 {
-    uint8_t probe_id;  /* 变送器ID */
+    uint8_t probeID;  /* 变送器ID */
     uint16_t config;  /* 变送器配置 */
     g2_server_channel_power_t power[RELAY_SIZE][RELAY_CHANNEL_SIZE];
 }g2_server_relay_power_config_message_t, *g2_server_relay_power_config_message_pt;

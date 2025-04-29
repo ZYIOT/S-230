@@ -1,8 +1,0 @@
-将原本 relay 任务，拆分为 5 个 sub_relay 任务，负责各个通道的操作和读写状态。
-sub_relay 任务的主要功能包含：
-1、APP_RELAY_refresh() 计算当前通道计算输出状态 
-2、APP_RELAY_set_channels() 执行输出操作 
-3、delay 
-4、APP_RELAY_check_refresh() 检测计算输出状态和实际状态 
-5、APP_RELAY_read_status_protocol() 回读当前通道状态 
-6、发消息给 relay 任务 

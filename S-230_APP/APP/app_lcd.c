@@ -6,13 +6,13 @@
 #include "app.h"
 
 #ifdef SHOW_DEVICE_TIME
-#define APP_LOG_SHOW_TIME(...)  APP_LOG_debug(##__VA_ARGS__)
+#define APP_LOG_SHOW_TIME(...)  APP_LOG_Debug(##__VA_ARGS__)
 #else
 #define APP_LOG_SHOW_TIME(...)  
 #endif
 
 #ifdef SHOW_LCD_SENSOR_STATUS
-#define APP_LOG_LCD_SENSOR(...) APP_LOG_debug(##__VA_ARGS__)
+#define APP_LOG_LCD_SENSOR(...) APP_LOG_Debug(##__VA_ARGS__)
 #else
 #define APP_LOG_LCD_SENSOR(...)
 #endif
@@ -20,7 +20,7 @@
 // 传感器数据顺序与LCD显示顺序的映射关系 
 const uint8_t cDataItemMap[3] = {1, 0, 2};  // DO - item0, 温度 - item1,  pH - item2 
 
-float LcdSensorData[3] = {0.00};    // 温度 溶氧 pH 
+float g_lcdSensorData[3] = {0.00};    // 温度 溶氧 pH 
 t_LcdSensorShow g_lcdSensorShow = 
 {
     .sensorHasConfig = SENSOR_HAS_NO_CONFIG,
@@ -47,15 +47,15 @@ int AppLcdShowAllItem(void)
 uint8_t getSignalRange(void)
 {
     uint8_t range = LCD_SIGNAL_RANGE0;
-    if(app_network.csq >= 28 && app_network.csq <= 31)
+    if(g_appNetwork.csq >= 28 && g_appNetwork.csq <= 31)
     {
         range = LCD_SIGNAL_RANGE3;
     }
-    else if(app_network.csq >= 20 && app_network.csq <= 27)
+    else if(g_appNetwork.csq >= 20 && g_appNetwork.csq <= 27)
     {
         range = LCD_SIGNAL_RANGE2;
     }
-    else if(app_network.csq >= 1 && app_network.csq <= 19)
+    else if(g_appNetwork.csq >= 1 && g_appNetwork.csq <= 19)
     {
         range = LCD_SIGNAL_RANGE1;
     }
@@ -110,7 +110,7 @@ int AppLcdLightControl(void)
 // #define LCD_DATA_STATUS(i)      (g_lcdSensorShow.lcdSensorDataStatus[i])
 #define LCD_SENSOR_STATUS(i)    (g_lcdSensorShow.lcdSensorStatus[cDataItemMap[i]])
 #define LCD_DATA_STATUS(i)      (g_lcdSensorShow.lcdSensorDataStatus[cDataItemMap[i]])
-#define LCD_DATA_VALUE(i)       (LcdSensorData[cDataItemMap[i]])
+#define LCD_DATA_VALUE(i)       (g_lcdSensorData[cDataItemMap[i]])
 #define LAST_SENSOR_STATUS(i)   (lastSensorState[cDataItemMap[i]])
 #define LAST_DATA_STATUS(i)     (lastDataState[cDataItemMap[i]])
 
@@ -242,7 +242,7 @@ int AppLcdIredCheck(void)
         {
             sIredCheckTick = HARDWARE_GET_TICK();
             BSP_LCD_LIGHT_ON();
-            APP_LOG_debug("IRED toggle ON\r\n");
+            APP_LOG_Debug("IRED toggle ON\r\n");
         }
     }
     else
@@ -250,7 +250,7 @@ int AppLcdIredCheck(void)
         if(HARDWARE_GET_TICK() - sIredCheckTick >= LCD_LIGHT_ON_TIMEOUT)
         {
             BSP_LCD_LIGHT_OFF();
-            APP_LOG_debug("IRED toggle OFF\r\n");
+            APP_LOG_Debug("IRED toggle OFF\r\n");
         }
     }
     return APP_OK;
@@ -275,7 +275,7 @@ int AppLcdIredCheck(void)
                 BSP_LCD_LIGHT_ON();
                 sLightOnFlag = 1;
                 sIredCheckTick = HARDWARE_GET_TICK();
-                APP_LOG_debug("IRED toggle ON\r\n");
+                APP_LOG_Debug("IRED toggle ON\r\n");
             }
         }
     }
@@ -287,7 +287,7 @@ int AppLcdIredCheck(void)
             {
                 BSP_LCD_LIGHT_OFF();
                 sLightOnFlag = 0;
-                APP_LOG_debug("IRED toggle OFF\r\n");
+                APP_LOG_Debug("IRED toggle OFF\r\n");
                 sFirstTimeout = 0;
             }
         }
@@ -302,7 +302,7 @@ int AppLcdIredCheck(void)
                     {
                         BSP_LCD_LIGHT_OFF();
                         sLightOnFlag = 0;
-                        APP_LOG_debug("IRED toggle OFF\r\n");
+                        APP_LOG_Debug("IRED toggle OFF\r\n");
                     }
                 }
             }
@@ -314,7 +314,7 @@ int AppLcdIredCheck(void)
 
 void APP_IRED_task_run(void *argument)
 {
-    app_config_time_t time;
+    APP_CONFIG_Time_t time;
     uint8_t week = 0;
     static size_t time_tick = 0;
     for (;;)
