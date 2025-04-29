@@ -1,0 +1,2 @@
+https://github.com/ZYIOT/S-230.git  main  S-230_APP 和 S-230_BOOT 
+964e56e163f0168246e57216025b4d99d60971b4  
