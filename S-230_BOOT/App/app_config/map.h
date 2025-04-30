@@ -124,6 +124,8 @@ ____________________________________
 #define FLASH_FACTORY_START_ADDR			(FLASH_DOWNLOAD_START_ADDR + FLASH_DOWNLOAD_SIZE)		// 0x8060000
 #define FLASH_FACTORY_SIZE					(0x20000)	// 128K
 #define FLASH_END_ADDR						(0x807FFFF)
+#define FLASH_APP_MAX_SIZE0                 (0x10000)   // 64K 
+#define FLASH_APP_MAX_SIZE1                 (0x20000)   // 128K 
 
 
 #ifdef __cplusplus

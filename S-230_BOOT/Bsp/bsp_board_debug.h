@@ -13,7 +13,7 @@ extern "C"
 // <h> Log打印相关配置 
 // <e1> 使能Log功能  
     // <o> Log等级  <0=> NONE    <1=> ERROR  <2=> WARN  <3=> INFO  <4=> DEBUG  <5=> TRACE 
-    #define BSP_LOG_DEFAULT_LEVEL 5
+    #define BSP_LOG_DEFAULT_LEVEL 4
 // </e>
 #define ENABLE_LOG_TRACE 1
 // </h>

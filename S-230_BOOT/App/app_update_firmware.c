@@ -98,37 +98,29 @@ __weak void FirmwareSettingInfoTestRecv(void)
 {
 }
 
+// 【注意】直接擦除 APP 的整个 192K 可能会导致 WDG 复位(具体参照STM32/GD32的芯片手册说明)，因此在擦除 APP 时采用分段擦除 
+static UPDATE_ERROR_TYPE_e FlashEraseFlash(uint32_t startAddr, uint32_t len) 
+{
+	UPDATE_ERROR_TYPE_e ret = UPDATE_NO_ERROR;
+	BSP_WDG_feed();
+	if(0 != stm32_flashErase(startAddr, len))
+	{
+		ret = UPDATE_ERROR_FLASHERASE;
+	}
+	BSP_WDG_feed();
+	return ret;
+}
 
 static UPDATE_ERROR_TYPE_e FlashWriteDireFlash(uint32_t readAddr, uint32_t writeAddr, uint32_t fileLen)
 {
 	uint32_t *pread = (uint32_t *)readAddr;
 	UPDATE_ERROR_TYPE_e ret = UPDATE_NO_ERROR;
-
+    BSP_WDG_feed();
 	if(0 != stm32_flashWrite_Dire(writeAddr, pread, fileLen))
 	{
 		ret = UPDATE_ERROR_FLASHWRITE;
 	}
-
-	return ret;
-}
-
-static UPDATE_ERROR_TYPE_e FlashWriteFlash(uint32_t readAddr, uint32_t writeAddr, uint32_t fileLen)
-{
-	uint32_t *pread = (uint32_t *)readAddr;
-	UPDATE_ERROR_TYPE_e ret = UPDATE_NO_ERROR;
-
-	if(0 == stm32_flashErase(writeAddr, fileLen))
-    {
-		if(0 != stm32_flashWrite_Dire(writeAddr, pread, (fileLen)))
-		{
-			ret = UPDATE_ERROR_FLASHWRITE;
-		}
-	}
-	else
-	{
-		ret = UPDATE_ERROR_FLASHERASE;
-	}
-
+    BSP_WDG_feed();
 	return ret;
 }
 
@@ -175,10 +167,8 @@ static UPDATE_ERROR_TYPE_e CopyAppToFactory(void)
 	
 	// 执行升级操作
 	APP_LOG_trace("Start copy APP1 to Factory...\r\n");
-    BSP_WDG_feed();
-	ret = FlashWriteFlash(FLASH_APP_START_ADDR, 
-							FLASH_FACTORY_START_ADDR, 
-							FLASH_FACTORY_SIZE);
+	ret = FlashEraseFlash(FLASH_FACTORY_START_ADDR, FLASH_FACTORY_SIZE);
+	ret = FlashWriteDireFlash(FLASH_APP_START_ADDR, FLASH_FACTORY_START_ADDR, FLASH_FACTORY_SIZE);
 	APP_LOG_trace("Stop,copy APP1 to Factory finish!!!\r\n");
     
 	return ret;
@@ -191,9 +181,9 @@ static UPDATE_ERROR_TYPE_e CopyFactoryToApp(void)
 
 	// 执行升级操作
 	APP_LOG_trace("Start copy Factory to APP1...\r\n");
-	ret = FlashWriteFlash(FLASH_FACTORY_START_ADDR, 
-							FLASH_APP_START_ADDR, 
-							FLASH_FACTORY_SIZE);	
+	ret = FlashEraseFlash(FLASH_APP_START_ADDR, FLASH_APP_MAX_SIZE0);
+	ret = FlashEraseFlash((FLASH_APP_START_ADDR + FLASH_APP_MAX_SIZE0), FLASH_APP_MAX_SIZE1);
+	ret = FlashWriteDireFlash(FLASH_FACTORY_START_ADDR, FLASH_APP_START_ADDR, FLASH_FACTORY_SIZE);
 	APP_LOG_trace("Stop,copy Factory to APP1 finish!!!\r\n");
 	
 	return ret;
@@ -203,20 +193,19 @@ static UPDATE_ERROR_TYPE_e CopyDownloadToApp(uint32_t fileLen)
 {
 	UPDATE_ERROR_TYPE_e ret = UPDATE_NO_ERROR;
 
+	ret = FlashEraseFlash(FLASH_APP_START_ADDR, FLASH_APP_MAX_SIZE0);
+	if(fileLen > FLASH_APP_MAX_SIZE0)
+	{
+		ret = FlashEraseFlash((FLASH_APP_START_ADDR + FLASH_APP_MAX_SIZE0), FLASH_APP_MAX_SIZE1);
+	}
 	if(fileLen <= FLASH_DOWNLOAD_SIZE)
 	{
-		ret = FlashWriteFlash(FLASH_DOWNLOAD_START_ADDR,
-								FLASH_APP_START_ADDR,
-								fileLen);
+		ret = FlashWriteDireFlash(FLASH_DOWNLOAD_START_ADDR, FLASH_APP_START_ADDR, fileLen);
 	}		
 	else
 	{
-		ret = FlashWriteFlash(FLASH_DOWNLOAD_START_ADDR,
-								FLASH_APP_START_ADDR,
-								FLASH_DOWNLOAD_SIZE);
-		ret = FlashWriteDireFlash(FLASH_DOWNLOAD1_START_ADDR,
-								FLASH_APP_START_ADDR+FLASH_DOWNLOAD_SIZE,
-								fileLen-FLASH_DOWNLOAD_SIZE);
+		ret = FlashWriteDireFlash(FLASH_DOWNLOAD_START_ADDR, FLASH_APP_START_ADDR, FLASH_DOWNLOAD_SIZE);
+		ret = FlashWriteDireFlash(FLASH_DOWNLOAD1_START_ADDR, FLASH_APP_START_ADDR+FLASH_DOWNLOAD_SIZE, (fileLen - FLASH_DOWNLOAD_SIZE));
 	}
 
 	return ret;
@@ -277,78 +266,6 @@ static uint32_t CheckBootUpdateInfo(void)
 }
 
 // 搬运前，检查 Download 文件信息，以及文件的 PN_CODE
-#if 0
-static uint32_t CheckAppUpdateInfo(uint8_t *ret)
-{
-	uint32_t flag = OLD_FILE;
-	uint32_t download_pn_code_addr = FLASH_DOWNLOAD_START_ADDR + 0x400;
-	uint8_t downloadPnCode[32] = {0};
-	uint8_t pnCodeKeyStrLen = 0;
-	uint8_t i = 0;
-	
-	APP_LOG_trace("PN_CODE:");
-	*ret = UPDATE_NO_ERROR;
-	if((0 == g_downloadFirmwareInfo.downloadLen) 
-		|| (IAP_UPDATE_UNKNOW == g_downloadFirmwareInfo.updateResult) 
-		|| (UNKONW_FIRMWARE == g_downloadFirmwareInfo.firmwareType) 
-		|| ((FLASH_DOWNLOAD_SIZE == g_downloadFirmwareInfo.firmwareInfo.fileLen) && (DEFAULT_CRC32_VALUE == g_downloadFirmwareInfo.firmwareInfo.fileCrc)))
-	{	// download 完成, flush 完成, 成功跳转到了 APP 中
-		*ret = UPDATE_ERROR_FILE_EXIST;
-	}
-	// else if()
-	// {	// download 未完成 
-	// 	*ret = UPDATE_ERROR_DOWNLOAD_UNFINISH;
-	// }
-	else
-	{
-		uint8_t arraySize = sizeof(c_pnCheckArray)/sizeof(c_pnCheckArray[0]);
-		uint8_t index = 0;
-		stm32_flashRead(download_pn_code_addr, (uint32_t *)downloadPnCode, 32/sizeof(uint32_t));
-		APP_LOG_debug("%s\r\n", downloadPnCode);
-		for(index=0; index<arraySize; index++)
-		{
-			if(NULL == c_pnCheckArray[index].pnKeyWords)
-			{
-				break;
-			}
-			pnCodeKeyStrLen = strlen(c_pnCheckArray[index].pnKeyWords);
-			// APP_LOG_debug("PN keystr len = %d, str:%s\r\n", pnCodeKeyStrLen, c_pnCheckArray[index].pnKeyWords);
-			for(i=0; i<pnCodeKeyStrLen; i++)
-			{
-				if(downloadPnCode[i] != c_pnCheckArray[index].pnKeyWords[i])
-				{
-					break;
-				}
-			}
-			if(i == pnCodeKeyStrLen)
-			{
-				break;
-			}
-		}
-		if(index >= arraySize - 1)
-		{
-			// 不在支持的固件类型列表中，判定为不识别的固件类型 
-			*ret = UPDATE_ERROR_FILETYPE;
-		}
-		else if(i == pnCodeKeyStrLen)
-		{
-			if(0 == index)
-			{
-				// 是自身的 APP 固件 
-				*ret = UPDATE_NO_ERROR;
-				flag = NEW_FILE;// 需要执行 flush
-				APP_LOG_trace("find new app file\r\n");
-			}
-			else
-			{
-				*ret = UPDATE_ERROR_BINTYPE;
-
-			}
-		}
-	}
-	return flag;
-}
-#else
 char *board_pn_key_table[] = 
 {
 	"S-230_APP", 
@@ -397,7 +314,6 @@ static uint32_t CheckAppUpdateInfo(uint8_t *ret)
 		}
 	}
 }
-#endif
 
 
 /*****************************************************************************
