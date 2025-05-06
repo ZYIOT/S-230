@@ -222,7 +222,7 @@ int APP_CONFIG_FirmwareInfoLoad()
 }
 
 
-int APP_CONFIG_AppFirmwareInfoRecovery(void)
+int APP_CONFIG_AppFirmwareRecovery(void)
 {
 	int rc = 0;
 	APP_CONFIG_FirmwareInfo_pt info = &g_appFirmwareInfo;
@@ -243,7 +243,7 @@ int APP_CONFIG_AppFirmwareInfoRecovery(void)
 	return APP_OK;
 }
 
-int APP_CONFIG_DownloadFirmwareInfoRecovery(void)
+int APP_CONFIG_DownloadFirmwareRecovery(void)
 {
 	int rc = 0;
 	APP_CONFIG_FirmwareInfo_pt info = &g_downloadFirmwareInfo;
@@ -286,6 +286,17 @@ int APP_CONFIG_AllFirmwareInfoRecovery()
 	APP_CHECK_RC(rc)
 }
 
+
+// info 区的数据是否有效 
+int APP_CONFIG_FirmwareCheckInfoValid(APP_CONFIG_FirmwareInfo_pt info)
+{
+    if((0 == info->downloadLen) || (UNKONW_FIRMWARE == info->firmwareType) || (DEFAULT_CRC32_VALUE == info->firmwareInfo.fileCrc))
+    {
+        return APP_ERROR;
+    }
+    return APP_OK;
+}
+
 int APP_CONFIG_AppFirmwareInfoSync(UPDATE_RESULT_e iapResult)
 {
 	int rc = 0;
@@ -302,7 +313,7 @@ int APP_CONFIG_AppFirmwareInfoSync(UPDATE_RESULT_e iapResult)
 	}
 	else
 	{
-		APP_CONFIG_AppFirmwareInfoRecovery();
+		APP_CONFIG_AppFirmwareRecovery();
 		appInfo->updateResult = IAP_UPDATE_FAIL;
 	}
 	rc = APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, &g_appFirmwareInfo);

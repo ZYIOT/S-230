@@ -111,8 +111,8 @@ int APP_CONFIG_FirmwareInfoOverwrite(void);
 int APP_CONFIG_FirmwareInfoLoad(void);
 int APP_CONFIG_app_firmware_update_success(void);
 int APP_CONFIG_app_firmware_update_fail(void);
-int APP_CONFIG_AppFirmwareInfoRecovery(void);
-int APP_CONFIG_DownloadFirmwareInfoRecovery(void);
+int APP_CONFIG_AppFirmwareRecovery(void);
+int APP_CONFIG_DownloadFirmwareRecovery(void);
 int APP_CONFIG_firmware_check_info_valid(APP_CONFIG_FirmwareInfo_pt info);
 
 

@@ -12,6 +12,9 @@
 #include "app_log.h"
 #include "utils.h"
 
+#define DOWNLOAD_FIRMWARE_CRC	(0)
+#define APP_FIRMWARE_CRC 		(1)
+
 const uint8_t c_appInfoCheckStr[] = "waiting for check app info ... ...\r\n";
 const uint8_t c_appInfoSuccessStr[] = "app info check success !!!\r\nnow run application\r\n";
 const uint8_t c_eraseFirmwareInfoStr[] = "erase firmware info page... ...\r\nnow run application\r\n";
@@ -20,33 +23,25 @@ const uint8_t c_appFileNameHeadStr[] = "_APP";
 const errorTypeString_t c_updateErrorContent[] = 
 {
 	// 与定义的 UPDATE_ERROR_TYPE_e 中定义的类型和位置一一对应
-	{UPDATE_NO_ERROR, "no error\r\n"},
-	{UPDATE_ERROR_BINTYPE, "bin type is error\r\n"},
-	{UPDATE_ERROR_FILETYPE, "file type is error\r\n"},
+	{UPDATE_ERROR_BIN_CONTENT, "bin content is error\r\n"},
 	{UPDATE_ERROR_FILELEN, "file len is error\r\n"},
-	{UPDATE_ERROR_FILECRC, "file crc is error\r\n"},
-	{UPDATE_ERROR_OFFSET, "offset address is error\r\n"},
 	{UPDATE_ERROR_FRAMELEN, "frame len is error\r\n"},
 	{UPDATE_ERROR_FLASHERASE, "erase flash is error\r\n"},
 	{UPDATE_ERROR_FLASHWRITE, "write flash is error\r\n"},
-	{UPDATE_ERROR_RETRYFAIL, "retry send max but fail\r\n"},
-	{UPDATE_ERROR_FILE_EXIST, "firmware file exist\r\n"},
 	{UPDATE_ERROR_DOWNLOAD_DATA, "download data check error\r\n"},
 	{UPDATE_ERROR_DOWNLOAD_UNFINISH, "download data not finish\r\n"},
+	{UPDATE_ERROR_FILE_EXIST, "firmware file exist\r\n"},
 	{UPDATE_ERROR_NO_FIRMWARE, "no firmware exist\r\n"},
 	
 	{UPDATE_ERROR_END1, "update flow is end\r\n"},
 };
 
-const pnCheckResult_t c_pnCheckArray[] = 
-{
-	{"S-230_APP", UPDATE_NO_ERROR}, 
-	{"S-230_BOOT", UPDATE_ERROR_BINTYPE},
-	{"S-230_G_APP", UPDATE_ERROR_BINTYPE},
-	{"S-230_G_BOOT", UPDATE_ERROR_BINTYPE},
-	{NULL, UPDATE_ERROR_FILETYPE}
-};
 
+const pn_check_result_t c_boardPnKeyTable[] = 
+{
+	{"S-230_APP"},
+	{"S-230_BOOT"},
+};
 
 
 // 本地 boot 程序文件默认信息
@@ -124,18 +119,6 @@ static UPDATE_ERROR_TYPE_e FlashWriteDireFlash(uint32_t readAddr, uint32_t write
 	return ret;
 }
 
-// 擦除 download 区 
-static UPDATE_ERROR_TYPE_e FlashEarseDownload(void)
-{
-	APP_LOG_debug("Erase Download Sector\r\n");
-    BSP_WDG_feed();
-	stm32_flashErase(FLASH_DOWNLOAD_START_ADDR, FLASH_DOWNLOAD_SIZE);
-    BSP_WDG_feed();
-	stm32_flashErase(FLASH_DOWNLOAD1_START_ADDR, FLASH_DOWNLOAD1_SIZE);
-    BSP_WDG_feed();
-	return UPDATE_NO_ERROR;
-}
-
 static UPDATE_ERROR_TYPE_e CheckBlockCrc(uint32_t addr, uint32_t len, uint32_t crc)
 {
 	uint32_t calCrc = 0;
@@ -159,6 +142,29 @@ static UPDATE_ERROR_TYPE_e CheckTwoBlockCrc(uint32_t addr, uint32_t len, uint32_
 		return UPDATE_ERROR_FILECRC;
 	}
 	return UPDATE_NO_ERROR;
+}
+
+static UPDATE_ERROR_TYPE_e AppCheckFirmwareCrc(uint8_t type, uint32_t len, uint32_t crc)
+{
+	UPDATE_ERROR_TYPE_e ret = UPDATE_NO_ERROR;
+	if(DOWNLOAD_FIRMWARE_CRC == type)
+	{
+		if(len <= FLASH_DOWNLOAD_SIZE)
+		{
+			ret = CheckBlockCrc(FLASH_DOWNLOAD_START_ADDR, len, crc);
+		}
+		else
+		{
+			ret = CheckTwoBlockCrc(FLASH_DOWNLOAD_START_ADDR, FLASH_DOWNLOAD_SIZE,
+									FLASH_DOWNLOAD1_START_ADDR, len - FLASH_DOWNLOAD_SIZE,
+									crc);
+		}
+	}
+	else if(APP_FIRMWARE_CRC == type)
+	{
+		ret = CheckBlockCrc(FLASH_APP_START_ADDR, len, crc);
+	}
+	return ret;
 }
 
 static UPDATE_ERROR_TYPE_e CopyAppToFactory(void)
@@ -231,7 +237,8 @@ static int AppParamentsInit(void)
 	rc = APP_CONFIG_FirmwareInfoLoad();
 	if(APP_OK != rc)
 	{
-		APP_CONFIG_AllFirmwareInfoRecovery();
+		APP_CONFIG_AppFirmwareRecovery();
+		APP_CONFIG_DownloadFirmwareRecovery();
 	}
 	APP_CHECK_RC(rc)
 
@@ -265,12 +272,6 @@ static uint32_t CheckBootUpdateInfo(void)
     return flag;
 }
 
-// 搬运前，检查 Download 文件信息，以及文件的 PN_CODE
-char *board_pn_key_table[] = 
-{
-	"S-230_APP", 
-};
-
 static uint32_t CheckAppUpdateInfo(uint8_t *ret)
 {
 	uint32_t flag = OLD_FILE;
@@ -278,26 +279,15 @@ static uint32_t CheckAppUpdateInfo(uint8_t *ret)
 	char *downloadPnName = (char *)(FLASH_DOWNLOAD_START_ADDR + 0x400);
 	char *appPnName = (char *)(FLASH_APP_START_ADDR + 0x400);
 	uint8_t findSubstrFlag = 0;
+    uint8_t count = ARRAY_LEN(c_boardPnKeyTable);
 	uint8_t i = 0;
 
-	APP_LOG_trace("PN_CODE:");
+	APP_LOG_debug("APP PN_CODE:%s\r\n", appPnName);
 	*ret = UPDATE_NO_ERROR;
-	if((0 == info->downloadLen) 
-		|| (IAP_UPDATE_UNKNOW == info->updateResult) 
-		|| (UNKONW_FIRMWARE == info->firmwareType) 
-		|| (DEFAULT_CRC32_VALUE == info->firmwareInfo.fileCrc))
-	{	// download 完成, flush 完成, 成功跳转到了 APP 中
-		*ret = UPDATE_ERROR_FILE_EXIST;
-	}
-	// else if()
-	// {	// download 未完成 
-	// 	*ret = UPDATE_ERROR_DOWNLOAD_UNFINISH;
-	// }
-	else
 	{
-		for(i = 0; i < ARRAY_LEN(board_pn_key_table); i++)
+		for(i = 0; i < count; i++)
 		{
-			if(NULL != strstr(downloadPnName, board_pn_key_table[i]))
+			if(NULL != strstr(downloadPnName, c_boardPnKeyTable[i].pnKeyWords))
 			{
 				findSubstrFlag = 1;
 			}
@@ -305,16 +295,66 @@ static uint32_t CheckAppUpdateInfo(uint8_t *ret)
 		if(findSubstrFlag)
 		{	// DOWNLOAD 文件的 PN_CODE 与 APP 文件的 PN_CODE 相同
 			flag = NEW_FILE;// 需要执行 flush
-			APP_LOG_trace("find new app file\r\n");
+			APP_LOG_debug("find new app file\r\n");
 		}
 		else
 		{
-			*ret = UPDATE_ERROR_BINTYPE;
-			APP_LOG_trace("DOWNLOAD PN_CODE data:%s\r\n", downloadPnName);
+			*ret = UPDATE_ERROR_FILETYPE;
+			APP_LOG_error("DOWNLOAD PN_CODE data:%s\r\n", downloadPnName);
 		}
 	}
 }
 
+// 检查 download 区固件的完整性(文件长度、flash末尾内容、crc) 
+static UPDATE_ERROR_TYPE_e CheckDownloadFirmwareIntegrity(void)
+{
+	UPDATE_ERROR_TYPE_e result = UPDATE_NO_ERROR;
+	APP_CONFIG_FirmwareInfo_pt info = &g_downloadFirmwareInfo;
+	if(APP_OK != APP_CONFIG_FirmwareCheckInfoValid(info))
+	{
+		return UPDATE_ERROR_FILE_EXIST;
+	}
+	if(info->downloadLen != info->firmwareInfo.fileLen)
+	{
+		result = UPDATE_ERROR_DOWNLOAD_UNFINISH;
+	}
+	else
+	{
+		uint32_t endAddr = 0;
+		if(info->downloadLen > FLASH_DOWNLOAD_SIZE + FLASH_DOWNLOAD1_SIZE)
+		{
+			result = UPDATE_ERROR_FILELEN;
+		}
+		else if(info->downloadLen > FLASH_DOWNLOAD_SIZE)
+		{
+			endAddr = info->downloadLen - FLASH_DOWNLOAD_SIZE + FLASH_DOWNLOAD1_START_ADDR;
+			if(0xFFFFFFFF != *(uint32_t *)(endAddr))
+			{
+				result = UPDATE_ERROR_DOWNLOAD_DATA;
+			}
+		}
+		else if(info->downloadLen)
+		{
+			endAddr = FLASH_DOWNLOAD_START_ADDR + info->downloadLen;
+			if(0xFFFFFFFF != *(uint32_t *)(endAddr))
+			{
+				result = UPDATE_ERROR_DOWNLOAD_DATA;
+			}
+		}
+		else
+		{
+			result = UPDATE_ERROR_FILELEN;
+		}
+	}
+	if(UPDATE_NO_ERROR == result)
+	{
+		if(UPDATE_NO_ERROR != AppCheckFirmwareCrc(DOWNLOAD_FIRMWARE_CRC, info->downloadLen, info->firmwareInfo.fileCrc))
+        {
+            result = UPDATE_ERROR_BIN_CONTENT;
+        }
+	}
+	return result;
+}
 
 /*****************************************************************************
  * 函 数 名  : AppInfoCheck
@@ -399,17 +439,6 @@ static uint8_t CheckAppFactoryExit(void)
 		ret |= ONLY_APP1_FILE_EXIST;
 		APP_LOG_trace("APP file exist\r\n");
 	}
-	// firstData = 0x0;
-	// memset(fileNameStr, 0, 64);
-	// stm32_flashRead(FLASH_FACTORY_START_ADDR, &firstData, 1);
-	// stm32_flashRead(FLASH_FACTORY_START_ADDR + 0x400, (uint32_t *)fileNameStr, 64>>2);
-	// if((0xFFFFFFFF != firstData) 
-	// && (NULL != strstr(fileNameStr, c_pnCheckArray[0].pnKeyWords)))
-	// {
-	// 	ret |= ONLY_FACTORY_FILE_EXIST;
-	// 	APP_LOG_trace("Factory file exist\r\n");
-	// }
-	
 	return ret;
 }
 
@@ -444,55 +473,84 @@ UPDATE_ERROR_TYPE_e APP_UPDATE_FIRMWARE_FactoryCheck(void)
 }
 
 
+uint8_t eraseDownloadDataFlag = APP_FALSE;
+uint8_t recoveryFactoryFlag = APP_FALSE;
+void AppIapErrorProcess(UPDATE_ERROR_TYPE_e type)
+{
+    APP_UPDATE_FIRMWARE_ShowErrorTypeContent(type);
+    if((UPDATE_ERROR_FILE_EXIST == type) || (UPDATE_ERROR_DOWNLOAD_UNFINISH == type))
+    {
+        // 固件更新完成/未下载完毕，均不作处理 
+    }
+    else if((UPDATE_ERROR_BIN_CONTENT == type) || (UPDATE_ERROR_DOWNLOAD_DATA == type) || (UPDATE_ERROR_FILELEN == type))
+    {   // Download 区固件内容错误、区间数据错误、固件信息错误，则擦除 Download 区的 flash 数据 
+        eraseDownloadDataFlag = APP_TRUE;
+    }
+    else if((UPDATE_ERROR_FLASHWRITE == type) || (UPDATE_ERROR_FLASHERASE == type))
+    {   // 更新 APP 区间过程中出错，则擦除 Download 区 flash 数据，并将 Factory 区数据拷贝到 APP 区 
+        eraseDownloadDataFlag = APP_TRUE;
+        recoveryFactoryFlag = APP_TRUE;
+    }
+    else
+    {
+
+    }
+}
+
 
 UPDATE_ERROR_TYPE_e APP_UPDATE_FIRMWARE_CheckFile(void)
 {
 	UPDATE_ERROR_TYPE_e check = UPDATE_NO_ERROR;
-	uint8_t eraseDownloadDataFlag = 0;
     int rc = APP_OK;
 
 	// DEBUG 时设置 EEPROM 中的参数值
 	FirmwareSettingInfoTestSend();
 	// 读取 EEPROM 中的 firmware setting 信息
-	rc = AppParamentsInit();
+	check = AppParamentsInit();
 	if(APP_OK != rc)
 	{
 		APP_LOG_trace("%s", c_eraseFirmwareInfoStr);
 		HARDWARE_HAL_DELAY_MS(100);
-		return rc;
+		return check;
 	}
-	// 检查 APP 信息字段和 Download 区数据内容
-	APP_LOG_trace("%s", c_appInfoCheckStr);
-	HARDWARE_HAL_DELAY_MS(10);
-	check = AppInfoCheck();
-	APP_UPDATE_FIRMWARE_ShowErrorTypeContent(check);
-	if(UPDATE_NO_ERROR == check)
+	check = CheckDownloadFirmwareIntegrity();
+    if(UPDATE_NO_ERROR != check)
+    {
+		APP_LOG_error("file:%s, line:%d\r\n", __FILE__ ,__LINE__);
+        AppIapErrorProcess(check);
+    }
+    else
 	{
-		// flush 成功, 更新 g_appFirmwareInfo 
-		eraseDownloadDataFlag = 1;
-		APP_CONFIG_AppFirmwareInfoSync(IAP_UPDATE_SUCESS);
-		APP_LOG_trace("%s\r\n", c_appInfoSuccessStr);
-		HARDWARE_HAL_DELAY_MS(100);
-		// 跳转到对应的 APP 程序中
+		// 检查 APP 信息字段和 Download 区数据内容
+		APP_LOG_trace("%s", c_appInfoCheckStr);
+		HARDWARE_HAL_DELAY_MS(10);
+		check = AppInfoCheck();
+        if(UPDATE_NO_ERROR != check)
+        {
+			APP_LOG_error("file:%s, line:%d\r\n", __FILE__ ,__LINE__);
+            AppIapErrorProcess(check);
+        }
+        else
+        {
+            // flush 成功, 更新 g_appFirmwareInfo 
+            eraseDownloadDataFlag = APP_TRUE;
+            APP_CONFIG_AppFirmwareInfoSync(IAP_UPDATE_SUCESS);
+            APP_LOG_debug("%s\r\n", c_appInfoSuccessStr);
+            HARDWARE_HAL_DELAY_MS(100);
+            // 跳转到对应的 APP 程序中
+        }
 	}
-	else if((UPDATE_ERROR_FILE_EXIST == check) || (UPDATE_ERROR_DOWNLOAD_UNFINISH == check) || (UPDATE_ERROR_BINTYPE == check))
-	{	
-		if(UPDATE_ERROR_BINTYPE == check)
+	if(APP_TRUE == eraseDownloadDataFlag)
+	{
+		APP_LOG_debug("Erase Download Sector\r\n");
+		APP_CONFIG_FirmwareInfo_pt info = &g_downloadFirmwareInfo;
+		FlashEraseFlash(FLASH_DOWNLOAD_START_ADDR, FLASH_DOWNLOAD_SIZE);
+		if(info->downloadLen >= FLASH_DOWNLOAD_SIZE)
 		{
-			eraseDownloadDataFlag = 1;
+			FlashEraseFlash(FLASH_DOWNLOAD1_START_ADDR, FLASH_DOWNLOAD1_SIZE);
 		}
-		// 无固件更新，直接运行原 APP 程序 
-		// 跳转到对应的 APP 程序中
-	}
-	else if(UPDATE_ERROR_FLASHWRITE == check)	// APP烧写失败 
-	{
-		eraseDownloadDataFlag = 1;
-		APP_CONFIG_AppFirmwareInfoSync(IAP_UPDATE_FAIL);
-	}
-	if(1 == eraseDownloadDataFlag)
-	{
-		FlashEarseDownload();
-		APP_CONFIG_DownloadFirmwareInfoRecovery();
+		APP_CONFIG_DownloadFirmwareRecovery();
+        eraseDownloadDataFlag = APP_FALSE;
 	}
 	return check;
 }

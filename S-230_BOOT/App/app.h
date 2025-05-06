@@ -13,6 +13,9 @@ extern "C"
 #define APP_ERROR -1
 #define APP_MALLOC_ERROR -2
 
+#define APP_TRUE    1 
+#define APP_FALSE   0 
+
 #ifndef ARRAY_LEN
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 #endif

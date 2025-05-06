@@ -8,7 +8,7 @@ extern "C"
 #include "hardware_wrapper.h"
 #define BSP_RELAY_init()
 #define BSP_RELAY_check()
-#define BSP_RELAY_set_channel(relay_id, channel_id, status)
+#define BSP_RELAY_set_channel(relayID, channelID, status)
 
 #ifdef __cplusplus
 }

@@ -11,7 +11,7 @@ int BSP_PROTOCOL_init(void)
     return APP_OK;
 }
 
-extern void APP_NETWORK_after_send_message(void);
+extern void APP_NETWORK_AfterSendMessage(void);
 
 int _write(uint8_t buffer[G2_SERVER_PROTOCOL_BUFFER_SIZE], size_t len, size_t tick)
 {
@@ -23,7 +23,7 @@ int _write(uint8_t buffer[G2_SERVER_PROTOCOL_BUFFER_SIZE], size_t len, size_t ti
     HARDWARE_GIVE_SEMAPHORE(sem);
     if (rc == PROTOCOL_OK)
     {
-        APP_NETWORK_after_send_message();
+        APP_NETWORK_AfterSendMessage();
     }
     return rc;
 }

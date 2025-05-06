@@ -83,8 +83,8 @@ void FirmwareSettingInfoTestSend(void)
 	usr_setting_firmware_info.firmwareInfo.fileCrc = DEFAULT_CRC32_VALUE;
 	APP_CONFIG_FirmwareInfoWrite(APP_FIRMWARE_INFO, &usr_setting_firmware_info);
 #elif DEBUG_EEPROM_RECOVERY_SET
-	APP_CONFIG_AppFirmwareInfoRecovery();
-	APP_CONFIG_DownloadFirmwareInfoRecovery();
+	APP_CONFIG_AppFirmwareRecovery();
+	APP_CONFIG_DownloadFirmwareRecovery();
 #else
 #endif
     HARDWARE_HAL_DELAY_MS(20);
@@ -117,7 +117,7 @@ void FirmwareSettingInfoTestRecv(void)
 		 				(uint8_t *)pinfo2, 
 						 sizeof(APP_CONFIG_FirmwareInfo_t))))
 		{
-			APP_CONFIG_DownloadFirmwareInfoRecovery();
+			APP_CONFIG_DownloadFirmwareRecovery();
 			APP_LOG_trace("create flush ok thread...\r\n");
 			while(1)
 			{

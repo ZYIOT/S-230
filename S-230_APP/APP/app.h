@@ -13,6 +13,13 @@ extern "C"
 #define APP_ERROR -1
 #define APP_MALLOC_ERROR -2
 
+#define APP_FALSE   false
+#define APP_TRUE    true
+
+#define APP_SET_TRUE(var)   (var = APP_TRUE) 
+#define APP_SET_FALSE(var)  (var = APP_FALSE) 
+#define APP_IF_TRUE(var)    (APP_TRUE == var) 
+
 #ifndef ARRAY_LEN
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 #endif

@@ -107,7 +107,7 @@ int APP_MAIN(void)
         if((UPDATE_NO_ERROR == check) 
         || (UPDATE_ERROR_FILE_EXIST == check) 
         || (UPDATE_ERROR_DOWNLOAD_UNFINISH == check) 
-        || (UPDATE_ERROR_BINTYPE == check) 
+        || (UPDATE_ERROR_BIN_CONTENT == check) 
 #if (1 == HAS_FACTORY_SECTOR)        
         || (UPDATE_ERROR_FLASHWRITE == check) 
 #endif
@@ -120,7 +120,7 @@ int APP_MAIN(void)
     {
         APP_UPDATE_FIRMWARE_ShowErrorTypeContent(check);
         APP_LOG_trace("%s", c_appInfoErrorStr);
-        HARDWARE_HAL_DELAY_MS(2000);
+        HARDWARE_HAL_DELAY_MS(3000);
     }
     return 0;
 }

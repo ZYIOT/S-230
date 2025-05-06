@@ -10,7 +10,7 @@ extern "C"
 int G2_SERVER_read_device_id_message_process(g2_server_packet_pt packet)
 {
     g2_server_device_id_message_t pmsg = {0};
-    pmsg.device_id = APP_CONFIG_device_id();
+    pmsg.deviceID = APP_CONFIG_DeviceID();
     BSP_PROTOCOL_send_read_device_id_message(packet, &pmsg);
     return PROTOCOL_OK;
 }
@@ -26,6 +26,6 @@ public:
 };
 Mock_FOO mocker;
 
-TEST(APP_CONFIG_device_id, pass)
+TEST(APP_CONFIG_DeviceID, pass)
 {
 }
